@@ -1,8 +1,8 @@
-package entities;
+package khaEngine2D.entities;
 
 import kha.graphics2.Graphics;
-import entities.Entity;
-import entities.EntityComponent;
+import khaEngine2D.entities.Entity;
+import khaEngine2D.entities.EntityComponent;
 
 class EntityManager
 {

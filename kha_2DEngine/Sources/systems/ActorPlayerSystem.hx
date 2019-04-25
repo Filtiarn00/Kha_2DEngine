@@ -1,14 +1,13 @@
 package systems;
 
-import components.ActorPlayerComponent;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
-import entities.Entity;
-import entities.EntityComponent;
-import entities.EntitySystem;
-import input.Input;
+import khaEngine2D.entities.Entity;
+import khaEngine2D.entities.EntityComponent;
+import khaEngine2D.entities.EntitySystem;
+import khaEngine2D.input.Input;
 import components.ActorInputComponent;
-
+import components.ActorPlayerComponent;
 
 class ActorPlayerSystem extends EntitySystem
 {

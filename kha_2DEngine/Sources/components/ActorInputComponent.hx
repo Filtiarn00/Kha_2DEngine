@@ -1,6 +1,6 @@
 package components;
 
-import entities.EntityComponent;
+import khaEngine2D.entities.EntityComponent;
 
 class ActorInputComponent extends EntityComponent
 {

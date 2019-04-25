@@ -1,4 +1,4 @@
-package entities;
+package khaEngine2D.entities;
 
 class Entity
 {

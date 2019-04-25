@@ -1,10 +1,10 @@
 package systems;
 
 import kha.graphics2.Graphics;
-import camera.Camera;
-import entities.Entity;
-import entities.EntitySystem;
-import entities.EntityComponent;
+import khaEngine2D.camera.Camera;
+import khaEngine2D.entities.Entity;
+import khaEngine2D.entities.EntitySystem;
+import khaEngine2D.entities.EntityComponent;
 import components.Position2DComponent;
 import components.ActorPlayerComponent;
 

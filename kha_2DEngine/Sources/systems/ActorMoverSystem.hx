@@ -1,9 +1,9 @@
 package systems;
 
 import kha.graphics2.Graphics;
-import entities.Entity;
-import entities.EntitySystem;
-import entities.EntityComponent;
+import khaEngine2D.entities.Entity;
+import khaEngine2D.entities.EntitySystem;
+import khaEngine2D.entities.EntityComponent;
 import components.Position2DComponent;
 import components.ActorInputComponent;
 

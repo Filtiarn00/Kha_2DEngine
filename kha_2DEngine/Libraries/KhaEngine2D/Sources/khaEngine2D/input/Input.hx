@@ -1,4 +1,4 @@
-package input;
+package khaEngine2D.input;
 
 import kha.input.KeyCode;
 import kha.input.Keyboard;

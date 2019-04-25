@@ -1,4 +1,4 @@
-package camera;
+package khaEngine2D.camera;
 
 import kha.graphics2.Graphics;
 import kha.math.FastMatrix3;
