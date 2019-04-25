@@ -35,6 +35,18 @@ class ActorCameraSystem extends EntitySystem
 
 	public override function update():Void 
     {
+        if (entities.length == 0)
+            return;
+
+        var camera = Camera.GetCamera();
+            
+        //Update position to target
+        camera.x += (positions[0].x - camera.x) / 15;
+        camera.y += (positions[0].y - camera.y) / 15;
+
+        //Set Caemra View
+        camera.viewX = 100;
+        camera.viewY = 100; 
     }
 
 	public override function render(graphics:Graphics):Void 

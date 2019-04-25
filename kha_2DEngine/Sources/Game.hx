@@ -10,6 +10,7 @@ import entities.EntityManager;
 import entities.Entity;
 import components.Position2DComponent;
 import components.ActorInputComponent;
+import components.ActorPlayerComponent;
 import systems.ActorCameraSystem;
 import systems.ActorPlayerSystem;
 import systems.ActorMoverSystem;
@@ -38,17 +39,9 @@ class Game
    
 		entity = entityManager.createEntity();
 
-		var p = new Position2DComponent();
-		p.x = 0;
-		p.y = 0;
-
-		entityManager.addComponent(entity,p);
-
-		var a = new ActorInputComponent();
-		a.xInput = 0;
-		a.yInput = 0;
-
-		entityManager.addComponent(entity,a);
+		entityManager.addComponent(entity,new Position2DComponent());
+		entityManager.addComponent(entity,new ActorInputComponent());
+		entityManager.addComponent(entity,new ActorPlayerComponent());
 
 		entityManager.addSystem(new ActorCameraSystem());
 		entityManager.addSystem(new ActorPlayerSystem());

@@ -1,5 +1,6 @@
 package systems;
 
+import components.ActorPlayerComponent;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
 import entities.Entity;
@@ -17,7 +18,7 @@ class ActorPlayerSystem extends EntitySystem
 
     public override function onCreate():Void 
     {
-        entityGroup = [new ActorInputComponent()];
+        entityGroup = [new ActorInputComponent(),new ActorPlayerComponent()];
     }
 
     public override function onChange():Void 
