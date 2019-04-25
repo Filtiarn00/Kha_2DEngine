@@ -1,7 +1,6 @@
 package entities;
 
-import Type.ValueType;
-import kha.Framebuffer;
+import kha.graphics2.Graphics;
 import entities.Entity;
 import entities.EntityComponent;
 
@@ -35,14 +34,10 @@ class EntityManager
         isDirty = false;
 	}
 
-	public function render(frames: Array<Framebuffer>):Void 
+	public function render(graphics:Graphics):Void 
 	{
-        var graphics = frames[0].g2;
-
-        graphics.begin(true);
         for (i in systems)
             i.render(graphics);
-        graphics.end();
 	}
 
     public function addSystem(system:EntitySystem):Void 

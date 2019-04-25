@@ -1,44 +1,40 @@
 package systems;
 
 import kha.graphics2.Graphics;
+import camera.Camera;
 import entities.Entity;
 import entities.EntitySystem;
 import entities.EntityComponent;
 import components.Position2DComponent;
-import components.ActorInputComponent;
+import components.ActorPlayerComponent;
 
-class ActorMoverSystem extends EntitySystem
+class ActorCameraSystem extends EntitySystem
 {
     private var entityGroup:Array<EntityComponent>;
     private var entities:Array<Entity>;
     private var positions:Array<Position2DComponent>;
-    private var actorInputs:Array<ActorInputComponent>;
+    private var actorPlayers:Array<ActorPlayerComponent>;
 
     public override function onCreate():Void 
     {
-        entityGroup = [new Position2DComponent(),new ActorInputComponent()];
+        entityGroup = [new Position2DComponent(),new ActorPlayerComponent()];
     }
 
     public override function onChange():Void 
     {
         entities = entityManager.getEntitiesWithComponents(entityGroup);
         positions = new Array<Position2DComponent>();
-        actorInputs = new Array<ActorInputComponent>();
+        actorPlayers = new Array<ActorPlayerComponent>();
 
         for (i in entities)
         {
             positions.push(cast(entityManager.getComponent(i,new Position2DComponent()),Position2DComponent));
-            actorInputs.push(cast(entityManager.getComponent(i,new ActorInputComponent()),ActorInputComponent));
+            actorPlayers.push(cast(entityManager.getComponent(i,new ActorPlayerComponent()),ActorPlayerComponent));
         }
     }
 
 	public override function update():Void 
     {
-        for (i in entities)
-        {
-            positions[i.getIndex()].x += actorInputs[i.getIndex()].xInput;
-            positions[i.getIndex()].y += actorInputs[i.getIndex()].yInput;
-        }
     }
 
 	public override function render(graphics:Graphics):Void 

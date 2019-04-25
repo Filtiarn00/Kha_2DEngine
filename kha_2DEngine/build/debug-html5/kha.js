@@ -12,12 +12,13 @@ function $extend(from, fields) {
 }
 var Game = function() {
 	var _gthis = this;
+	kha_Scheduler.addTimeTask($bind(this,this.update),0,0.0166666666666666664);
+	kha_System.notifyOnFrames(function(frames) {
+		_gthis.render(frames);
+	});
+	this.camera = new camera_Camera();
 	this.input = new input_Input();
 	this.entityManager = new entities_EntityManager();
-	kha_System.notifyOnFrames(function(frames) {
-		_gthis.entityManager.render(frames);
-	});
-	kha_Scheduler.addTimeTask(($_=this.entityManager,$bind($_,$_.update)),0,0.0166666666666666664);
 	this.entity = this.entityManager.createEntity();
 	var p = new components_Position2DComponent();
 	p.x = 0;
@@ -27,6 +28,7 @@ var Game = function() {
 	a.xInput = 0;
 	a.yInput = 0;
 	this.entityManager.addComponent(this.entity,a);
+	this.entityManager.addSystem(new systems_ActorCameraSystem());
 	this.entityManager.addSystem(new systems_ActorPlayerSystem());
 	this.entityManager.addSystem(new systems_ActorMoverSystem());
 	this.entityManager.addSystem(new systems_ActorRenderSystem());
@@ -35,8 +37,15 @@ $hxClasses["Game"] = Game;
 Game.__name__ = "Game";
 Game.prototype = {
 	update: function() {
+		this.entityManager.update();
 	}
 	,render: function(frames) {
+		var graphics = frames[0].get_g2();
+		graphics.begin();
+		this.camera.set(graphics);
+		this.entityManager.render(graphics);
+		this.camera.unset(graphics);
+		graphics.end();
 	}
 	,__class__: Game
 };
@@ -212,6 +221,36 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 		return int + 0.0;
 	}
 };
+var camera_Camera = function() {
+	camera_Camera.i = this;
+	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
+};
+$hxClasses["camera.Camera"] = camera_Camera;
+camera_Camera.__name__ = "camera.Camera";
+camera_Camera.I = function() {
+	return camera_Camera.i;
+};
+camera_Camera.prototype = {
+	set: function(graphics) {
+		var transformation = this.transformation;
+		graphics.setTransformation(transformation);
+		var _this = graphics.transformations[graphics.transformations.length - 1];
+		_this._00 = transformation._00;
+		_this._10 = transformation._10;
+		_this._20 = transformation._20;
+		_this._01 = transformation._01;
+		_this._11 = transformation._11;
+		_this._21 = transformation._21;
+		_this._02 = transformation._02;
+		_this._12 = transformation._12;
+		_this._22 = transformation._22;
+		graphics.translate(-this.x,-this.y);
+	}
+	,unset: function(graphics) {
+		graphics.popTransformation();
+	}
+	,__class__: camera_Camera
+};
 var entities_EntityComponent = function() {
 };
 $hxClasses["entities.EntityComponent"] = entities_EntityComponent;
@@ -227,6 +266,15 @@ components_ActorInputComponent.__name__ = "components.ActorInputComponent";
 components_ActorInputComponent.__super__ = entities_EntityComponent;
 components_ActorInputComponent.prototype = $extend(entities_EntityComponent.prototype,{
 	__class__: components_ActorInputComponent
+});
+var components_ActorPlayerComponent = function() {
+	entities_EntityComponent.call(this);
+};
+$hxClasses["components.ActorPlayerComponent"] = components_ActorPlayerComponent;
+components_ActorPlayerComponent.__name__ = "components.ActorPlayerComponent";
+components_ActorPlayerComponent.__super__ = entities_EntityComponent;
+components_ActorPlayerComponent.prototype = $extend(entities_EntityComponent.prototype,{
+	__class__: components_ActorPlayerComponent
 });
 var components_Position2DComponent = function() {
 	entities_EntityComponent.call(this);
@@ -270,9 +318,7 @@ entities_EntityManager.prototype = {
 		}
 		this.isDirty = false;
 	}
-	,render: function(frames) {
-		var graphics = frames[0].get_g2();
-		graphics.begin(true);
+	,render: function(graphics) {
 		var _g = 0;
 		var _g1 = this.systems;
 		while(_g < _g1.length) {
@@ -280,7 +326,6 @@ entities_EntityManager.prototype = {
 			++_g;
 			i.render(graphics);
 		}
-		graphics.end();
 	}
 	,addSystem: function(system) {
 		system.entityManager = this;
@@ -19018,6 +19063,35 @@ kha_vr_TimeWarpParms.__name__ = "kha.vr.TimeWarpParms";
 kha_vr_TimeWarpParms.prototype = {
 	__class__: kha_vr_TimeWarpParms
 };
+var systems_ActorCameraSystem = function() {
+	entities_EntitySystem.call(this);
+};
+$hxClasses["systems.ActorCameraSystem"] = systems_ActorCameraSystem;
+systems_ActorCameraSystem.__name__ = "systems.ActorCameraSystem";
+systems_ActorCameraSystem.__super__ = entities_EntitySystem;
+systems_ActorCameraSystem.prototype = $extend(entities_EntitySystem.prototype,{
+	onCreate: function() {
+		this.entityGroup = [new components_Position2DComponent(),new components_ActorPlayerComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.positions = [];
+		this.actorPlayers = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
+			this.actorPlayers.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorPlayerComponent()) , components_ActorPlayerComponent));
+		}
+	}
+	,update: function() {
+	}
+	,render: function(graphics) {
+	}
+	,__class__: systems_ActorCameraSystem
+});
 var systems_ActorMoverSystem = function() {
 	entities_EntitySystem.call(this);
 };
