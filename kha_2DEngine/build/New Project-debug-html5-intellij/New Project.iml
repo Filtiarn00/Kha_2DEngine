@@ -19,10 +19,14 @@
       <sourceFolder url="file:///Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Backends/HTML5" isTestSource="false" />
       <sourceFolder url="file:///Users/nickkorta/Desktop/kha_2DEngine/Sources" isTestSource="false" />
       <sourceFolder url="file:///Users/nickkorta/Desktop/kha_2DEngine/Libraries/Entities/Sources" isTestSource="false" />
+      <sourceFolder url="file:///Users/nickkorta/Desktop/kha_2DEngine/Libraries/Input/Sources" isTestSource="false" />
 
     </content>
     <content url="file://Libraries/Entities">
       <sourceFolder url="file:///Users/nickkorta/Desktop/kha_2DEngine/Libraries/Entities" isTestSource="false" />
+    </content>
+    <content url="file://Libraries/Input">
+      <sourceFolder url="file:///Users/nickkorta/Desktop/kha_2DEngine/Libraries/Input" isTestSource="false" />
     </content>
     
     <orderEntry type="jdk" jdkName="Haxe 3.2.0" jdkType="Haxe toolkit" />

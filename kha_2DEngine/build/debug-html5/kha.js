@@ -12,6 +12,7 @@ function $extend(from, fields) {
 }
 var Game = function() {
 	var _gthis = this;
+	this.input = new input_Input();
 	this.entityManager = new entities_EntityManager();
 	kha_System.notifyOnFrames(function(frames) {
 		_gthis.entityManager.render(frames);
@@ -22,7 +23,13 @@ var Game = function() {
 	p.x = 0;
 	p.y = 0;
 	this.entityManager.addComponent(this.entity,p);
-	this.entityManager.addSystem(new systems_CharacterSystem());
+	var a = new components_ActorInputComponent();
+	a.xInput = 0;
+	a.yInput = 0;
+	this.entityManager.addComponent(this.entity,a);
+	this.entityManager.addSystem(new systems_ActorPlayerSystem());
+	this.entityManager.addSystem(new systems_ActorMoverSystem());
+	this.entityManager.addSystem(new systems_ActorRenderSystem());
 };
 $hxClasses["Game"] = Game;
 Game.__name__ = "Game";
@@ -212,6 +219,15 @@ entities_EntityComponent.__name__ = "entities.EntityComponent";
 entities_EntityComponent.prototype = {
 	__class__: entities_EntityComponent
 };
+var components_ActorInputComponent = function() {
+	entities_EntityComponent.call(this);
+};
+$hxClasses["components.ActorInputComponent"] = components_ActorInputComponent;
+components_ActorInputComponent.__name__ = "components.ActorInputComponent";
+components_ActorInputComponent.__super__ = entities_EntityComponent;
+components_ActorInputComponent.prototype = $extend(entities_EntityComponent.prototype,{
+	__class__: components_ActorInputComponent
+});
 var components_Position2DComponent = function() {
 	entities_EntityComponent.call(this);
 };
@@ -1308,6 +1324,34 @@ haxe_io_FPHelper.__name__ = "haxe.io.FPHelper";
 haxe_io_FPHelper.floatToI32 = function(f) {
 	haxe_io_FPHelper.helper.setFloat32(0,f,true);
 	return haxe_io_FPHelper.helper.getInt32(0,true);
+};
+var input_Input = function() {
+	input_Input.i = this;
+	this.keyDowns = new haxe_ds_IntMap();
+	kha_input_Keyboard.get().notify($bind(this,this.onKeyDown),$bind(this,this.onKeyUp));
+};
+$hxClasses["input.Input"] = input_Input;
+input_Input.__name__ = "input.Input";
+input_Input.I = function() {
+	return input_Input.i;
+};
+input_Input.prototype = {
+	isKeyDown: function(keyCode) {
+		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
+			this.keyDowns.h[keyCode] = false;
+		}
+		return this.keyDowns.h[keyCode];
+	}
+	,onKeyDown: function(keyCode) {
+		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
+			this.keyDowns.h[keyCode] = false;
+		}
+		this.keyDowns.h[keyCode] = true;
+	}
+	,onKeyUp: function(keyCode) {
+		this.keyDowns.h[keyCode] = false;
+	}
+	,__class__: input_Input
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -18974,13 +19018,98 @@ kha_vr_TimeWarpParms.__name__ = "kha.vr.TimeWarpParms";
 kha_vr_TimeWarpParms.prototype = {
 	__class__: kha_vr_TimeWarpParms
 };
-var systems_CharacterSystem = function() {
+var systems_ActorMoverSystem = function() {
 	entities_EntitySystem.call(this);
 };
-$hxClasses["systems.CharacterSystem"] = systems_CharacterSystem;
-systems_CharacterSystem.__name__ = "systems.CharacterSystem";
-systems_CharacterSystem.__super__ = entities_EntitySystem;
-systems_CharacterSystem.prototype = $extend(entities_EntitySystem.prototype,{
+$hxClasses["systems.ActorMoverSystem"] = systems_ActorMoverSystem;
+systems_ActorMoverSystem.__name__ = "systems.ActorMoverSystem";
+systems_ActorMoverSystem.__super__ = entities_EntitySystem;
+systems_ActorMoverSystem.prototype = $extend(entities_EntitySystem.prototype,{
+	onCreate: function() {
+		this.entityGroup = [new components_Position2DComponent(),new components_ActorInputComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.positions = [];
+		this.actorInputs = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
+			this.actorInputs.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
+		}
+	}
+	,update: function() {
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput;
+			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput;
+		}
+	}
+	,render: function(graphics) {
+	}
+	,__class__: systems_ActorMoverSystem
+});
+var systems_ActorPlayerSystem = function() {
+	entities_EntitySystem.call(this);
+};
+$hxClasses["systems.ActorPlayerSystem"] = systems_ActorPlayerSystem;
+systems_ActorPlayerSystem.__name__ = "systems.ActorPlayerSystem";
+systems_ActorPlayerSystem.__super__ = entities_EntitySystem;
+systems_ActorPlayerSystem.prototype = $extend(entities_EntitySystem.prototype,{
+	onCreate: function() {
+		this.entityGroup = [new components_ActorInputComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.actorInputs = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.actorInputs.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
+		}
+	}
+	,update: function() {
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			var actorInput = this.actorInputs[i.getIndex()];
+			actorInput.xInput = 0;
+			actorInput.yInput = 0;
+			if(input_Input.I().isKeyDown(65)) {
+				actorInput.xInput = -1;
+			}
+			if(input_Input.I().isKeyDown(68)) {
+				actorInput.xInput = 1;
+			}
+			if(input_Input.I().isKeyDown(87)) {
+				actorInput.yInput = -1;
+			}
+			if(input_Input.I().isKeyDown(83)) {
+				actorInput.yInput = 1;
+			}
+		}
+	}
+	,render: function(graphics) {
+	}
+	,__class__: systems_ActorPlayerSystem
+});
+var systems_ActorRenderSystem = function() {
+	entities_EntitySystem.call(this);
+};
+$hxClasses["systems.ActorRenderSystem"] = systems_ActorRenderSystem;
+systems_ActorRenderSystem.__name__ = "systems.ActorRenderSystem";
+systems_ActorRenderSystem.__super__ = entities_EntitySystem;
+systems_ActorRenderSystem.prototype = $extend(entities_EntitySystem.prototype,{
 	onCreate: function() {
 		this.entityGroup = [new components_Position2DComponent()];
 	}
@@ -18996,14 +19125,6 @@ systems_CharacterSystem.prototype = $extend(entities_EntitySystem.prototype,{
 		}
 	}
 	,update: function() {
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			this.positions[i.getIndex()].x += 2.5;
-			this.positions[i.getIndex()].y += 2.5;
-		}
 	}
 	,render: function(graphics) {
 		var _g = 0;
@@ -19014,7 +19135,7 @@ systems_CharacterSystem.prototype = $extend(entities_EntitySystem.prototype,{
 			graphics.drawRect(this.positions[i.getIndex()].x,this.positions[i.getIndex()].y,20,20);
 		}
 	}
-	,__class__: systems_CharacterSystem
+	,__class__: systems_ActorRenderSystem
 });
 function $getIterator(o) { if( o instanceof Array ) return HxOverrides.iter(o); else return o.iterator(); }
 var $fid = 0;
