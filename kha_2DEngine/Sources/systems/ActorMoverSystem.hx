@@ -36,8 +36,8 @@ class ActorMoverSystem extends EntitySystem
     {
         for (i in entities)
         {
-            positions[i.getIndex()].x += actorInputs[i.getIndex()].xInput;
-            positions[i.getIndex()].y += actorInputs[i.getIndex()].yInput;
+            positions[i.getIndex()].x += actorInputs[i.getIndex()].xInput * 3;
+            positions[i.getIndex()].y += actorInputs[i.getIndex()].yInput * 3;
         }
     }
 

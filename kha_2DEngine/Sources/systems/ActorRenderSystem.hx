@@ -1,5 +1,6 @@
 package systems;
 
+import kha.Color;
 import kha.graphics2.Graphics;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
@@ -32,6 +33,12 @@ class ActorRenderSystem extends EntitySystem
 
 	public override function render(graphics:Graphics):Void 
     {
+        //Debug borders of level
+        graphics.color = Color.Red;
+        graphics.drawRect(0,0,2000,2000,5);
+        graphics.color = Color.White;
+
+        //Draw Entities
         for (i in entities)
             graphics.drawRect(positions[i.getIndex()].x,positions[i.getIndex()].y,20,20);
     }

@@ -43,10 +43,10 @@ class Game
 		entityManager.addComponent(entity,new ActorInputComponent());
 		entityManager.addComponent(entity,new ActorPlayerComponent());
 
-		entityManager.addSystem(new ActorCameraSystem());
 		entityManager.addSystem(new ActorPlayerSystem());
 		entityManager.addSystem(new ActorMoverSystem());
 		entityManager.addSystem(new ActorRenderSystem());
+		entityManager.addSystem(new ActorCameraSystem());
 	}
 
     public function update():Void 

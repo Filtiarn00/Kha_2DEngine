@@ -23,10 +23,10 @@ var Game = function() {
 	this.entityManager.addComponent(this.entity,new components_Position2DComponent());
 	this.entityManager.addComponent(this.entity,new components_ActorInputComponent());
 	this.entityManager.addComponent(this.entity,new components_ActorPlayerComponent());
-	this.entityManager.addSystem(new systems_ActorCameraSystem());
 	this.entityManager.addSystem(new systems_ActorPlayerSystem());
 	this.entityManager.addSystem(new systems_ActorMoverSystem());
 	this.entityManager.addSystem(new systems_ActorRenderSystem());
+	this.entityManager.addSystem(new systems_ActorCameraSystem());
 };
 $hxClasses["Game"] = Game;
 Game.__name__ = "Game";
@@ -18858,10 +18858,9 @@ kha_vr_TimeWarpParms.prototype = {
 	__class__: kha_vr_TimeWarpParms
 };
 var khaEngine2D_camera_Camera = function() {
-	this.viewY = 0;
-	this.viewX = 0;
-	this.y = 0;
-	this.x = 0;
+	this.position = new kha_math_FastVector2(0,0);
+	this.view = new kha_math_FastVector4(0,0,0,0);
+	this.bounds = new kha_math_FastVector4(0,0,0,0);
 	khaEngine2D_camera_Camera.i = this;
 	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
 };
@@ -18872,8 +18871,32 @@ khaEngine2D_camera_Camera.GetCamera = function() {
 };
 khaEngine2D_camera_Camera.prototype = {
 	set: function(graphics) {
+		this.view.z = 800;
+		this.view.w = 600;
+		if(this.bounds.z > this.bounds.x) {
+			if(this.position.x < this.view.x) {
+				this.position.x = this.view.x;
+			}
+			if(this.position.x > this.bounds.z - this.view.x) {
+				this.position.x = this.bounds.z - this.view.x;
+			}
+		}
+		if(this.bounds.w > this.bounds.y) {
+			if(this.position.y < this.view.y) {
+				this.position.y = this.view.y;
+			}
+			if(this.position.y > this.bounds.w - this.view.y) {
+				this.position.y = this.bounds.w - this.view.y;
+			}
+		}
 		graphics.pushTransformation(this.transformation);
-		graphics.translate(-this.x + this.viewX,-this.y + this.viewY);
+		graphics.translate(-this.position.x + this.view.x,-this.position.y + this.view.y);
+	}
+	,GetViewWidth: function() {
+		return this.view.z;
+	}
+	,GetViewHeight: function() {
+		return this.view.w;
 	}
 	,unset: function(graphics) {
 		graphics.popTransformation();
@@ -19083,10 +19106,11 @@ systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 			return;
 		}
 		var camera = khaEngine2D_camera_Camera.GetCamera();
-		camera.x += (this.positions[0].x - camera.x) / 15;
-		camera.y += (this.positions[0].y - camera.y) / 15;
-		camera.viewX = 100;
-		camera.viewY = 100;
+		camera.position.x += (this.positions[0].x - camera.position.x) / 15;
+		camera.position.y += (this.positions[0].y - camera.position.y) / 15;
+		camera.bounds = new kha_math_FastVector4(0,0,2000,2000);
+		camera.view.x = camera.view.z * 0.5;
+		camera.view.y = camera.view.w * 0.5;
 	}
 	,render: function(graphics) {
 	}
@@ -19121,8 +19145,8 @@ systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.p
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput;
-			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput;
+			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput * 3;
+			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput * 3;
 		}
 	}
 	,render: function(graphics) {
@@ -19201,6 +19225,9 @@ systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 	,update: function() {
 	}
 	,render: function(graphics) {
+		graphics.set_color(-65536);
+		graphics.drawRect(0,0,2000,2000,5);
+		graphics.set_color(-1);
 		var _g = 0;
 		var _g1 = this.entities;
 		while(_g < _g1.length) {
