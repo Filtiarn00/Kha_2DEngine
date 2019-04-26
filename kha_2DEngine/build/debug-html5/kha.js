@@ -18916,7 +18916,6 @@ khaEngine2D_entities_Entity.prototype = {
 };
 var khaEngine2D_entities_EntityManager = function() {
 	this.systems = [];
-	this.systemsToChange = [];
 	this.entities = [];
 	this.entityComponents = new haxe_ds_IntMap();
 };
@@ -19195,6 +19194,7 @@ systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 				position2DComponent.x = Math.floor(Math.random() * 2000 + 1);
 				position2DComponent.y = Math.floor(Math.random() * 2000 + 1);
 				this.entityManager.addComponent(entity,position2DComponent);
+				this.entityManager.addComponent(entity,new components_ActorInputComponent());
 				--i;
 			}
 		}

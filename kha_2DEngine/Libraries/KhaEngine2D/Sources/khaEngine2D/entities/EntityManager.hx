@@ -7,7 +7,6 @@ import khaEngine2D.entities.EntityComponent;
 class EntityManager
 {
     public var systems:Array<EntitySystem>;
-    public var systemsToChange:Array<EntitySystem>;
     private var entities:Array<Entity>;
     private var entityComponents:Map<Int,Array<EntityComponent>>;
     private var activeEntity:Entity;
@@ -16,7 +15,6 @@ class EntityManager
     public function new()
 	{		
         systems = new Array<EntitySystem>();
-        systemsToChange = new Array<EntitySystem>();
         entities = new Array<Entity>();
         entityComponents = new Map<Int,Array<EntityComponent>>();
 	}

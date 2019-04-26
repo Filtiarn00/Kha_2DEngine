@@ -42,6 +42,7 @@ class ActorPlayerSystem extends EntitySystem
 					position2DComponent.x = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
 					position2DComponent.y = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
 					entityManager.addComponent(entity,position2DComponent);
+                    entityManager.addComponent(entity,new ActorInputComponent());
 					i--;
 				}
 		}
