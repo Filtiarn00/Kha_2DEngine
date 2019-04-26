@@ -2,6 +2,7 @@ package systems;
 
 import kha.Color;
 import kha.graphics2.Graphics;
+import khaEngine2D.camera.Camera;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
@@ -33,6 +34,8 @@ class ActorRenderSystem extends EntitySystem
 
 	public override function render(graphics:Graphics):Void 
     {
+        var camera = Camera.GetCamera();
+
         //Debug borders of level
         graphics.color = Color.Red;
         graphics.drawRect(0,0,2000,2000,5);
@@ -40,6 +43,11 @@ class ActorRenderSystem extends EntitySystem
 
         //Draw Entities
         for (i in entities)
-            graphics.drawRect(positions[i.getIndex()].x,positions[i.getIndex()].y,20,20);
+        {
+            var p = positions[i.getIndex()];
+
+            if (camera.isInView(p.x,p.y))
+                graphics.drawRect(p.x,p.y,20,20);
+        }
     }
 }

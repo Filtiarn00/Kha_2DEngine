@@ -64,4 +64,21 @@ class Camera
 	{
   		graphics.popTransformation();
 	}
+
+	public function isInView(x:Float, y:Float):Bool
+	{
+		var inBounds = true;
+
+		//X Left Check
+		if (inBounds) inBounds = x >= position.x - view.x;
+		//X Right Check
+		if (inBounds) inBounds = x <= position.x + view.z - view.x;
+		//Y Up Check
+		if (inBounds) inBounds = y >= position.y - view.y;
+		//Y Bottom Check
+		if (inBounds) inBounds = y <= position.y + view.w - view.y;
+
+		return inBounds;
+	}
+
 }
