@@ -7,6 +7,7 @@ import khaEngine2D.entities.EntityComponent;
 class EntityManager
 {
     public var systems:Array<EntitySystem>;
+    public var systemsToChange:Array<EntitySystem>;
     private var entities:Array<Entity>;
     private var entityComponents:Map<Int,Array<EntityComponent>>;
     private var activeEntity:Entity;
@@ -15,23 +16,22 @@ class EntityManager
     public function new()
 	{		
         systems = new Array<EntitySystem>();
+        systemsToChange = new Array<EntitySystem>();
         entities = new Array<Entity>();
         entityComponents = new Map<Int,Array<EntityComponent>>();
-
-        isDirty = true;
 	}
 
     public function update():Void 
-	{
+	{   
         for (i in systems)
-        {
-            if (isDirty)
-                i.onChange();
-
 			i.update();
+    
+        if (isDirty)
+        {
+            for (i in systems)
+                i.onChange();
+            isDirty = false;
         }
-
-        isDirty = false;
 	}
 
 	public function render(graphics:Graphics):Void 
@@ -44,6 +44,7 @@ class EntityManager
 	{
 		system.entityManager = this;
         system.onCreate();
+        system.onChange();
 		systems.push(system);
 	}
 
@@ -63,6 +64,9 @@ class EntityManager
         //Create component array for this entity
         entityComponents[v.getIndex()] = new Array<EntityComponent>();
 		
+        //Set to update our entity lists
+        isDirty = true;
+
 		//Return entity
 		return v;
 	}
@@ -80,13 +84,20 @@ class EntityManager
 
     public function addComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
-        entityComponents[entity.getIndex()].push(entityComponent);		
+        if (!hasComponent(entity,entityComponent))
+        {
+            entityComponents[entity.getIndex()].push(entityComponent);
+            isDirty = true;	
+        }
 	}
 
     public function removeComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
         if (hasComponent(entity,entityComponent))
+        {
             entityComponents[entity.getIndex()].remove(entityComponent);	
+            isDirty = true;
+        }
 	}
 
     public function getComponent(entity:Entity,entityComponent:EntityComponent):EntityComponent
