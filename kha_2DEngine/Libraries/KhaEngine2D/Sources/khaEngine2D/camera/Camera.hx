@@ -56,7 +56,7 @@ class Camera
 	}
 
 	public function GetViewHeight():Float
-	{		
+	{
 		return view.w;
 	}
 

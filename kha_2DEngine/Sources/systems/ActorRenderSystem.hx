@@ -45,9 +45,9 @@ class ActorRenderSystem extends EntitySystem
         for (i in entities)
         {
             var p = positions[i.getIndex()];
-
+               
             if (camera.isInView(p.x,p.y))
-                graphics.drawRect(p.x,p.y,20,20);
+                graphics.drawRect(p.x - 10,p.y - 10,20,20);
         }
     }
 }

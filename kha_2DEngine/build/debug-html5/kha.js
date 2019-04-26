@@ -18913,7 +18913,7 @@ khaEngine2D_camera_Camera.prototype = {
 			inBounds = y >= this.position.y - this.view.y;
 		}
 		if(inBounds) {
-			inBounds = y <= this.position.y + this.view.w - this.view.y - 50;
+			inBounds = y <= this.position.y + this.view.w - this.view.y;
 		}
 		return inBounds;
 	}
@@ -19275,7 +19275,7 @@ systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 			++_g;
 			var p = this.positions[i.getIndex()];
 			if(camera.isInView(p.x,p.y)) {
-				graphics.drawRect(p.x,p.y,20,20);
+				graphics.drawRect(p.x - 10,p.y - 10,20,20);
 			}
 		}
 	}
