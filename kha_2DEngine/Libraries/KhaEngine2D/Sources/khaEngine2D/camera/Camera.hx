@@ -1,5 +1,6 @@
 package khaEngine2D.camera;
 
+import kha.System;
 import kha.graphics2.Graphics;
 import kha.math.FastMatrix3;
 import kha.math.FastVector4;
@@ -28,8 +29,8 @@ class Camera
 
 	public function set(graphics:Graphics):Void 
 	{
-		view.z = 800;
-		view.w = 600;
+		view.z = System.windowWidth();
+		view.w = System.windowHeight();
 
 		 //Clamp X position to fit in bounds
 		 if (bounds.z > bounds.x)

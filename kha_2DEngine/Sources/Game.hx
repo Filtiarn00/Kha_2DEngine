@@ -1,5 +1,6 @@
 package;
 
+import kha.Window;
 import kha.System;
 import kha.Scheduler;
 import kha.Framebuffer;
@@ -46,7 +47,7 @@ class Game
 		entityManager.addSystem(new ActorPlayerSystem());
 		entityManager.addSystem(new ActorMoverSystem());
 		entityManager.addSystem(new ActorRenderSystem());
-		entityManager.addSystem(new ActorCameraSystem());
+		entityManager.addSystem(new ActorCameraSystem()); 
 	}
 
     public function update():Void 

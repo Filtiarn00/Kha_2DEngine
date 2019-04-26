@@ -18871,8 +18871,8 @@ khaEngine2D_camera_Camera.GetCamera = function() {
 };
 khaEngine2D_camera_Camera.prototype = {
 	set: function(graphics) {
-		this.view.z = 800;
-		this.view.w = 600;
+		this.view.z = kha_System.windowWidth();
+		this.view.w = kha_System.windowHeight();
 		if(this.bounds.z > this.bounds.x) {
 			if(this.position.x < this.view.x) {
 				this.position.x = this.view.x;
