@@ -19203,7 +19203,7 @@ systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 	}
 	,update: function() {
 		if(khaEngine2D_input_Input.I().isKeyDown(13)) {
-			var i = 100;
+			var i = 1000;
 			while(i > 0) {
 				var entity = this.entityManager.createEntity();
 				var position2DComponent = new components_Position2DComponent();

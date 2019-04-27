@@ -34,7 +34,7 @@ class ActorPlayerSystem extends EntitySystem
     {
         if (Input.I().isKeyDown(KeyCode.Return))
 		{
-			var i = 100;
+			var i = 1000;
 				while (i > 0)
 				{
 					var entity = entityManager.createEntity();
