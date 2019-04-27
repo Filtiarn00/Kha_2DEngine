@@ -23,11 +23,11 @@ class ActorPlayerSystem extends EntitySystem
 
     public override function onChange():Void 
     {
-        entities = entityManager.getEntitiesWithComponents(entityGroup);
+        entities = world.getEntitiesWithComponents(entityGroup);
         actorInputs = new Array<ActorInputComponent>();
 
         for (i in entities)
-             actorInputs.push(cast(entityManager.getComponent(i,new ActorInputComponent()),ActorInputComponent));
+             actorInputs.push(cast(world.getComponent(i,new ActorInputComponent()),ActorInputComponent));
     }
 
 	public override function update():Void 
@@ -37,12 +37,12 @@ class ActorPlayerSystem extends EntitySystem
 			var i = 1000;
 				while (i > 0)
 				{
-					var entity = entityManager.createEntity();
+					var entity = world.createEntity();
 					var position2DComponent = new Position2DComponent();
 					position2DComponent.x = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
 					position2DComponent.y = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
-					entityManager.addComponent(entity,position2DComponent);
-                    entityManager.addComponent(entity,new ActorInputComponent());
+					world.addComponent(entity,position2DComponent);
+                    world.addComponent(entity,new ActorInputComponent());
 					i--;
 				}
 		}

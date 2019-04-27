@@ -892,6 +892,29 @@ haxe_ds_ObjectMap.prototype = {
 	}
 	,__class__: haxe_ds_ObjectMap
 };
+var haxe_ds__$StringMap_StringMapIterator = function(map,keys) {
+	this.map = map;
+	this.keys = keys;
+	this.index = 0;
+	this.count = keys.length;
+};
+$hxClasses["haxe.ds._StringMap.StringMapIterator"] = haxe_ds__$StringMap_StringMapIterator;
+haxe_ds__$StringMap_StringMapIterator.__name__ = "haxe.ds._StringMap.StringMapIterator";
+haxe_ds__$StringMap_StringMapIterator.prototype = {
+	hasNext: function() {
+		return this.index < this.count;
+	}
+	,next: function() {
+		var _this = this.map;
+		var key = this.keys[this.index++];
+		if(__map_reserved[key] != null) {
+			return _this.getReserved(key);
+		} else {
+			return _this.h[key];
+		}
+	}
+	,__class__: haxe_ds__$StringMap_StringMapIterator
+};
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
@@ -917,6 +940,22 @@ haxe_ds_StringMap.prototype = {
 			return false;
 		}
 		return this.rh.hasOwnProperty("$" + key);
+	}
+	,arrayKeys: function() {
+		var out = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) {
+			out.push(key);
+		}
+		}
+		if(this.rh != null) {
+			for( var key in this.rh ) {
+			if(key.charCodeAt(0) == 36) {
+				out.push(key.substr(1));
+			}
+			}
+		}
+		return out;
 	}
 	,__class__: haxe_ds_StringMap
 };
@@ -18869,14 +18908,104 @@ khaEngine2D_entities_Entity.prototype = {
 	,__class__: khaEngine2D_entities_Entity
 };
 var khaEngine2D_entities_EntityManager = function() {
-	this.systems = [];
-	this.entities = [];
-	this.entityComponents = new haxe_ds_IntMap();
+	this.addWorld("Main");
 };
 $hxClasses["khaEngine2D.entities.EntityManager"] = khaEngine2D_entities_EntityManager;
 khaEngine2D_entities_EntityManager.__name__ = "khaEngine2D.entities.EntityManager";
 khaEngine2D_entities_EntityManager.prototype = {
 	update: function() {
+		var _this = this.worlds;
+		var i = new haxe_ds__$StringMap_StringMapIterator(_this,_this.arrayKeys());
+		while(i.hasNext()) {
+			var i1 = i.next();
+			i1.update();
+		}
+	}
+	,render: function(graphics) {
+		var _this = this.worlds;
+		var i = new haxe_ds__$StringMap_StringMapIterator(_this,_this.arrayKeys());
+		while(i.hasNext()) {
+			var i1 = i.next();
+			i1.render(graphics);
+		}
+	}
+	,addWorld: function(key) {
+		if(this.worlds == null) {
+			this.worlds = new haxe_ds_StringMap();
+		}
+		var _this = this.worlds;
+		if(!(__map_reserved[key] != null ? _this.existsReserved(key) : _this.h.hasOwnProperty(key))) {
+			var this1 = this.worlds;
+			var value = new khaEngine2D_entities_EntityWorld();
+			var _this1 = this1;
+			if(__map_reserved[key] != null) {
+				_this1.setReserved(key,value);
+			} else {
+				_this1.h[key] = value;
+			}
+			var _this2 = this.worlds;
+			this.worldToEdit = __map_reserved[key] != null ? _this2.getReserved(key) : _this2.h[key];
+		}
+	}
+	,addSystem: function(system) {
+		this.worldToEdit.addSystem(system);
+	}
+	,removeSystem: function(system) {
+		HxOverrides.remove(this.worldToEdit.systems,system);
+	}
+	,createEntity: function() {
+		return this.worldToEdit.createEntity();
+	}
+	,getEntitiesWithComponents: function(entityComponents) {
+		return this.worldToEdit.getEntitiesWithComponents(entityComponents);
+	}
+	,addComponent: function(entity,entityComponent) {
+		this.worldToEdit.addComponent(entity,entityComponent);
+	}
+	,removeComponent: function(entity,entityComponent) {
+		this.worldToEdit.removeComponent(entity,entityComponent);
+	}
+	,getComponent: function(entity,entityComponent) {
+		return this.worldToEdit.getComponent(entity,entityComponent);
+	}
+	,hasComponents: function(entity,entityComponentsToCheckFor) {
+		return this.worldToEdit.hasComponents(entity,entityComponentsToCheckFor);
+	}
+	,hasComponent: function(entity,entityComponent) {
+		return this.hasComponent(entity,entityComponent);
+	}
+	,__class__: khaEngine2D_entities_EntityManager
+};
+var khaEngine2D_entities_EntitySystem = function() {
+	this.onCreate();
+};
+$hxClasses["khaEngine2D.entities.EntitySystem"] = khaEngine2D_entities_EntitySystem;
+khaEngine2D_entities_EntitySystem.__name__ = "khaEngine2D.entities.EntitySystem";
+khaEngine2D_entities_EntitySystem.prototype = {
+	onCreate: function() {
+	}
+	,onChange: function() {
+	}
+	,update: function() {
+	}
+	,render: function(graphics) {
+	}
+	,__class__: khaEngine2D_entities_EntitySystem
+};
+var khaEngine2D_entities_EntityWorld = function() {
+	this.isActive = true;
+	this.isDirty = true;
+	this.entityComponents = new haxe_ds_IntMap();
+	this.entities = [];
+	this.systems = [];
+};
+$hxClasses["khaEngine2D.entities.EntityWorld"] = khaEngine2D_entities_EntityWorld;
+khaEngine2D_entities_EntityWorld.__name__ = "khaEngine2D.entities.EntityWorld";
+khaEngine2D_entities_EntityWorld.prototype = {
+	update: function() {
+		if(!this.isActive) {
+			return;
+		}
 		var _g = 0;
 		var _g1 = this.systems;
 		while(_g < _g1.length) {
@@ -18896,6 +19025,9 @@ khaEngine2D_entities_EntityManager.prototype = {
 		}
 	}
 	,render: function(graphics) {
+		if(!this.isActive) {
+			return;
+		}
 		var _g = 0;
 		var _g1 = this.systems;
 		while(_g < _g1.length) {
@@ -18905,7 +19037,7 @@ khaEngine2D_entities_EntityManager.prototype = {
 		}
 	}
 	,addSystem: function(system) {
-		system.entityManager = this;
+		system.world = this;
 		system.onCreate();
 		system.onChange();
 		this.systems.push(system);
@@ -18997,23 +19129,7 @@ khaEngine2D_entities_EntityManager.prototype = {
 		}
 		return false;
 	}
-	,__class__: khaEngine2D_entities_EntityManager
-};
-var khaEngine2D_entities_EntitySystem = function() {
-	this.onCreate();
-};
-$hxClasses["khaEngine2D.entities.EntitySystem"] = khaEngine2D_entities_EntitySystem;
-khaEngine2D_entities_EntitySystem.__name__ = "khaEngine2D.entities.EntitySystem";
-khaEngine2D_entities_EntitySystem.prototype = {
-	onCreate: function() {
-	}
-	,onChange: function() {
-	}
-	,update: function() {
-	}
-	,render: function(graphics) {
-	}
-	,__class__: khaEngine2D_entities_EntitySystem
+	,__class__: khaEngine2D_entities_EntityWorld
 };
 var khaEngine2D_graphics_Camera = function() {
 	this.position = new kha_math_FastVector2(0,0);
@@ -19116,7 +19232,7 @@ systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 		this.entityGroup = [new components_Position2DComponent(),new components_ActorPlayerComponent()];
 	}
 	,onChange: function() {
-		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
 		this.positions = [];
 		this.actorPlayers = [];
 		var _g = 0;
@@ -19124,8 +19240,8 @@ systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
-			this.actorPlayers.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorPlayerComponent()) , components_ActorPlayerComponent));
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
+			this.actorPlayers.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorPlayerComponent()) , components_ActorPlayerComponent));
 		}
 	}
 	,update: function() {
@@ -19154,7 +19270,7 @@ systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.p
 		this.entityGroup = [new components_Position2DComponent(),new components_ActorInputComponent()];
 	}
 	,onChange: function() {
-		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
 		this.positions = [];
 		this.actorInputs = [];
 		var _g = 0;
@@ -19162,8 +19278,8 @@ systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.p
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
-			this.actorInputs.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
+			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
 		}
 	}
 	,update: function() {
@@ -19191,26 +19307,26 @@ systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 		this.entityGroup = [new components_ActorInputComponent(),new components_ActorPlayerComponent()];
 	}
 	,onChange: function() {
-		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
 		this.actorInputs = [];
 		var _g = 0;
 		var _g1 = this.entities;
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.actorInputs.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
+			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
 		}
 	}
 	,update: function() {
 		if(khaEngine2D_input_Input.I().isKeyDown(13)) {
 			var i = 1000;
 			while(i > 0) {
-				var entity = this.entityManager.createEntity();
+				var entity = this.world.createEntity();
 				var position2DComponent = new components_Position2DComponent();
 				position2DComponent.x = Math.floor(Math.random() * 2000 + 1);
 				position2DComponent.y = Math.floor(Math.random() * 2000 + 1);
-				this.entityManager.addComponent(entity,position2DComponent);
-				this.entityManager.addComponent(entity,new components_ActorInputComponent());
+				this.world.addComponent(entity,position2DComponent);
+				this.world.addComponent(entity,new components_ActorInputComponent());
 				--i;
 			}
 		}
@@ -19251,14 +19367,14 @@ systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 		this.entityGroup = [new components_Position2DComponent()];
 	}
 	,onChange: function() {
-		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
 		this.positions = [];
 		var _g = 0;
 		var _g1 = this.entities;
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions.push(js_Boot.__cast(this.entityManager.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
 		}
 	}
 	,update: function() {

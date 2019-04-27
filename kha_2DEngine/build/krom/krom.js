@@ -17,22 +17,17 @@ var Game = $hxClasses["Game"] = function() {
 	kha_System.notifyOnFrames(function(frames) {
 		_gthis.render(frames);
 	});
-	this.camera = new camera_Camera();
-	this.input = new input_Input();
-	this.entityManager = new entities_EntityManager();
-	this.entity = this.entityManager.createEntity();
-	var p = new components_Position2DComponent();
-	p.x = 0;
-	p.y = 0;
-	this.entityManager.addComponent(this.entity,p);
-	var a = new components_ActorInputComponent();
-	a.xInput = 0;
-	a.yInput = 0;
-	this.entityManager.addComponent(this.entity,a);
-	this.entityManager.addSystem(new systems_ActorCameraSystem());
+	this.camera = new khaEngine2D_graphics_Camera();
+	this.input = new khaEngine2D_input_Input();
+	this.entityManager = new khaEngine2D_entities_EntityManager();
+	var entity = this.entityManager.createEntity();
+	this.entityManager.addComponent(entity,new components_Position2DComponent());
+	this.entityManager.addComponent(entity,new components_ActorInputComponent());
+	this.entityManager.addComponent(entity,new components_ActorPlayerComponent());
 	this.entityManager.addSystem(new systems_ActorPlayerSystem());
 	this.entityManager.addSystem(new systems_ActorMoverSystem());
 	this.entityManager.addSystem(new systems_ActorRenderSystem());
+	this.entityManager.addSystem(new systems_ActorCameraSystem());
 };
 Game.__name__ = "Game";
 Game.prototype = {
@@ -202,210 +197,40 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 		return int + 0.0;
 	}
 };
-var camera_Camera = $hxClasses["camera.Camera"] = function() {
-	camera_Camera.i = this;
-	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
-	this.x = 0;
-	this.y = 0;
+var khaEngine2D_entities_EntityComponent = $hxClasses["khaEngine2D.entities.EntityComponent"] = function() {
 };
-camera_Camera.__name__ = "camera.Camera";
-camera_Camera.I = function() {
-	return camera_Camera.i;
-};
-camera_Camera.prototype = {
-	set: function(graphics) {
-		var transformation = this.transformation;
-		graphics.setTransformation(transformation);
-		var _this = graphics.transformations[graphics.transformations.length - 1];
-		_this._00 = transformation._00;
-		_this._10 = transformation._10;
-		_this._20 = transformation._20;
-		_this._01 = transformation._01;
-		_this._11 = transformation._11;
-		_this._21 = transformation._21;
-		_this._02 = transformation._02;
-		_this._12 = transformation._12;
-		_this._22 = transformation._22;
-		graphics.translate(-this.x,-this.y);
-	}
-	,unset: function(graphics) {
-	}
-	,__class__: camera_Camera
-};
-var entities_EntityComponent = $hxClasses["entities.EntityComponent"] = function() {
-};
-entities_EntityComponent.__name__ = "entities.EntityComponent";
-entities_EntityComponent.prototype = {
-	__class__: entities_EntityComponent
+khaEngine2D_entities_EntityComponent.__name__ = "khaEngine2D.entities.EntityComponent";
+khaEngine2D_entities_EntityComponent.prototype = {
+	__class__: khaEngine2D_entities_EntityComponent
 };
 var components_ActorInputComponent = $hxClasses["components.ActorInputComponent"] = function() {
-	entities_EntityComponent.call(this);
+	this.yInput = 0;
+	this.xInput = 0;
+	khaEngine2D_entities_EntityComponent.call(this);
 };
 components_ActorInputComponent.__name__ = "components.ActorInputComponent";
-components_ActorInputComponent.__super__ = entities_EntityComponent;
-components_ActorInputComponent.prototype = $extend(entities_EntityComponent.prototype,{
+components_ActorInputComponent.__super__ = khaEngine2D_entities_EntityComponent;
+components_ActorInputComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
 	__class__: components_ActorInputComponent
 });
 var components_ActorPlayerComponent = $hxClasses["components.ActorPlayerComponent"] = function() {
-	entities_EntityComponent.call(this);
+	khaEngine2D_entities_EntityComponent.call(this);
 };
 components_ActorPlayerComponent.__name__ = "components.ActorPlayerComponent";
-components_ActorPlayerComponent.__super__ = entities_EntityComponent;
-components_ActorPlayerComponent.prototype = $extend(entities_EntityComponent.prototype,{
+components_ActorPlayerComponent.__super__ = khaEngine2D_entities_EntityComponent;
+components_ActorPlayerComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
 	__class__: components_ActorPlayerComponent
 });
 var components_Position2DComponent = $hxClasses["components.Position2DComponent"] = function() {
-	entities_EntityComponent.call(this);
+	this.y = 0;
+	this.x = 0;
+	khaEngine2D_entities_EntityComponent.call(this);
 };
 components_Position2DComponent.__name__ = "components.Position2DComponent";
-components_Position2DComponent.__super__ = entities_EntityComponent;
-components_Position2DComponent.prototype = $extend(entities_EntityComponent.prototype,{
+components_Position2DComponent.__super__ = khaEngine2D_entities_EntityComponent;
+components_Position2DComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
 	__class__: components_Position2DComponent
 });
-var entities_Entity = $hxClasses["entities.Entity"] = function(index) {
-	this.index = index;
-};
-entities_Entity.__name__ = "entities.Entity";
-entities_Entity.prototype = {
-	getIndex: function() {
-		return this.index;
-	}
-	,__class__: entities_Entity
-};
-var entities_EntityManager = $hxClasses["entities.EntityManager"] = function() {
-	this.systems = [];
-	this.entities = [];
-	this.entityComponents = new haxe_ds_IntMap();
-	this.isDirty = true;
-};
-entities_EntityManager.__name__ = "entities.EntityManager";
-entities_EntityManager.prototype = {
-	update: function() {
-		var _g = 0;
-		var _g1 = this.systems;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			if(this.isDirty) {
-				i.onChange();
-			}
-			i.update();
-		}
-		this.isDirty = false;
-	}
-	,render: function(graphics) {
-		var _g = 0;
-		var _g1 = this.systems;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			i.render(graphics);
-		}
-	}
-	,addSystem: function(system) {
-		system.entityManager = this;
-		system.onCreate();
-		this.systems.push(system);
-	}
-	,removeSystem: function(system) {
-		HxOverrides.remove(this.systems,system);
-	}
-	,createEntity: function() {
-		var v = new entities_Entity(this.entities.length);
-		this.entities.push(v);
-		var this1 = this.entityComponents;
-		var k = v.getIndex();
-		var v1 = [];
-		this1.h[k] = v1;
-		return v;
-	}
-	,getEntitiesWithComponents: function(entityComponents) {
-		var entitiesWithComponents = [];
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			if(this.hasComponents(i,entityComponents)) {
-				entitiesWithComponents.push(i);
-			}
-		}
-		return entitiesWithComponents;
-	}
-	,addComponent: function(entity,entityComponent) {
-		var this1 = this.entityComponents;
-		var key = entity.getIndex();
-		this1.h[key].push(entityComponent);
-	}
-	,removeComponent: function(entity,entityComponent) {
-		if(this.hasComponent(entity,entityComponent)) {
-			var this1 = this.entityComponents;
-			var key = entity.getIndex();
-			HxOverrides.remove(this1.h[key],entityComponent);
-		}
-	}
-	,getComponent: function(entity,entityComponent) {
-		var _g = 0;
-		var this1 = this.entityComponents;
-		var key = entity.getIndex();
-		var _g1 = this1.h[key];
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			var c = i == null ? null : js_Boot.getClass(i);
-			var tmp = c.__name__;
-			var c1 = entityComponent == null ? null : js_Boot.getClass(entityComponent);
-			if(tmp == c1.__name__) {
-				return i;
-			}
-		}
-		return null;
-	}
-	,hasComponents: function(entity,entityComponentsToCheckFor) {
-		var _g = 0;
-		while(_g < entityComponentsToCheckFor.length) {
-			var i = entityComponentsToCheckFor[_g];
-			++_g;
-			if(!this.hasComponent(entity,i)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	,hasComponent: function(entity,entityComponent) {
-		var _g = 0;
-		var this1 = this.entityComponents;
-		var key = entity.getIndex();
-		var _g1 = this1.h[key];
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			var c = i == null ? null : js_Boot.getClass(i);
-			var tmp = c.__name__;
-			var c1 = entityComponent == null ? null : js_Boot.getClass(entityComponent);
-			if(tmp == c1.__name__) {
-				return true;
-			}
-		}
-		return false;
-	}
-	,__class__: entities_EntityManager
-};
-var entities_EntitySystem = $hxClasses["entities.EntitySystem"] = function() {
-	this.onCreate();
-};
-entities_EntitySystem.__name__ = "entities.EntitySystem";
-entities_EntitySystem.prototype = {
-	onCreate: function() {
-	}
-	,onChange: function() {
-	}
-	,update: function() {
-	}
-	,render: function(graphics) {
-	}
-	,__class__: entities_EntitySystem
-};
 var haxe_IMap = $hxClasses["haxe.IMap"] = function() { };
 haxe_IMap.__name__ = "haxe.IMap";
 var haxe_Log = $hxClasses["haxe.Log"] = function() { };
@@ -1254,33 +1079,6 @@ haxe_io_FPHelper.__name__ = "haxe.io.FPHelper";
 haxe_io_FPHelper.floatToI32 = function(f) {
 	haxe_io_FPHelper.helper.setFloat32(0,f,true);
 	return haxe_io_FPHelper.helper.getInt32(0,true);
-};
-var input_Input = $hxClasses["input.Input"] = function() {
-	input_Input.i = this;
-	this.keyDowns = new haxe_ds_IntMap();
-	kha_input_Keyboard.get().notify($bind(this,this.onKeyDown),$bind(this,this.onKeyUp));
-};
-input_Input.__name__ = "input.Input";
-input_Input.I = function() {
-	return input_Input.i;
-};
-input_Input.prototype = {
-	isKeyDown: function(keyCode) {
-		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
-			this.keyDowns.h[keyCode] = false;
-		}
-		return this.keyDowns.h[keyCode];
-	}
-	,onKeyDown: function(keyCode) {
-		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
-			this.keyDowns.h[keyCode] = false;
-		}
-		this.keyDowns.h[keyCode] = true;
-	}
-	,onKeyUp: function(keyCode) {
-		this.keyDowns.h[keyCode] = false;
-	}
-	,__class__: input_Input
 };
 var js__$Boot_HaxeError = $hxClasses["js._Boot.HaxeError"] = function(val) {
 	Error.call(this);
@@ -15378,12 +15176,255 @@ kha_simd_Float32x4.sqrt = function(t) {
 kha_simd_Float32x4.prototype = {
 	__class__: kha_simd_Float32x4
 };
+var khaEngine2D_entities_Entity = $hxClasses["khaEngine2D.entities.Entity"] = function(index) {
+	this.index = index;
+};
+khaEngine2D_entities_Entity.__name__ = "khaEngine2D.entities.Entity";
+khaEngine2D_entities_Entity.prototype = {
+	getIndex: function() {
+		return this.index;
+	}
+	,__class__: khaEngine2D_entities_Entity
+};
+var khaEngine2D_entities_EntityManager = $hxClasses["khaEngine2D.entities.EntityManager"] = function() {
+	this.systems = [];
+	this.entities = [];
+	this.entityComponents = new haxe_ds_IntMap();
+};
+khaEngine2D_entities_EntityManager.__name__ = "khaEngine2D.entities.EntityManager";
+khaEngine2D_entities_EntityManager.prototype = {
+	update: function() {
+		var _g = 0;
+		var _g1 = this.systems;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			i.update();
+		}
+		if(this.isDirty) {
+			var _g2 = 0;
+			var _g3 = this.systems;
+			while(_g2 < _g3.length) {
+				var i1 = _g3[_g2];
+				++_g2;
+				i1.onChange();
+			}
+			this.isDirty = false;
+		}
+	}
+	,render: function(graphics) {
+		var _g = 0;
+		var _g1 = this.systems;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			i.render(graphics);
+		}
+	}
+	,addSystem: function(system) {
+		system.entityManager = this;
+		system.onCreate();
+		system.onChange();
+		this.systems.push(system);
+	}
+	,removeSystem: function(system) {
+		HxOverrides.remove(this.systems,system);
+	}
+	,createEntity: function() {
+		var v = new khaEngine2D_entities_Entity(this.entities.length);
+		this.entities.push(v);
+		var this1 = this.entityComponents;
+		var k = v.getIndex();
+		var v1 = [];
+		this1.h[k] = v1;
+		this.isDirty = true;
+		return v;
+	}
+	,getEntitiesWithComponents: function(entityComponents) {
+		var entitiesWithComponents = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			if(this.hasComponents(i,entityComponents)) {
+				entitiesWithComponents.push(i);
+			}
+		}
+		return entitiesWithComponents;
+	}
+	,addComponent: function(entity,entityComponent) {
+		if(!this.hasComponent(entity,entityComponent)) {
+			var this1 = this.entityComponents;
+			var key = entity.getIndex();
+			this1.h[key].push(entityComponent);
+			this.isDirty = true;
+		}
+	}
+	,removeComponent: function(entity,entityComponent) {
+		if(this.hasComponent(entity,entityComponent)) {
+			var this1 = this.entityComponents;
+			var key = entity.getIndex();
+			HxOverrides.remove(this1.h[key],entityComponent);
+			this.isDirty = true;
+		}
+	}
+	,getComponent: function(entity,entityComponent) {
+		var _g = 0;
+		var this1 = this.entityComponents;
+		var key = entity.getIndex();
+		var _g1 = this1.h[key];
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			var c = i == null ? null : js_Boot.getClass(i);
+			var tmp = c.__name__;
+			var c1 = entityComponent == null ? null : js_Boot.getClass(entityComponent);
+			if(tmp == c1.__name__) {
+				return i;
+			}
+		}
+		return null;
+	}
+	,hasComponents: function(entity,entityComponentsToCheckFor) {
+		var _g = 0;
+		while(_g < entityComponentsToCheckFor.length) {
+			var i = entityComponentsToCheckFor[_g];
+			++_g;
+			if(!this.hasComponent(entity,i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	,hasComponent: function(entity,entityComponent) {
+		var _g = 0;
+		var this1 = this.entityComponents;
+		var key = entity.getIndex();
+		var _g1 = this1.h[key];
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			var c = i == null ? null : js_Boot.getClass(i);
+			var tmp = c.__name__;
+			var c1 = entityComponent == null ? null : js_Boot.getClass(entityComponent);
+			if(tmp == c1.__name__) {
+				return true;
+			}
+		}
+		return false;
+	}
+	,__class__: khaEngine2D_entities_EntityManager
+};
+var khaEngine2D_entities_EntitySystem = $hxClasses["khaEngine2D.entities.EntitySystem"] = function() {
+	this.onCreate();
+};
+khaEngine2D_entities_EntitySystem.__name__ = "khaEngine2D.entities.EntitySystem";
+khaEngine2D_entities_EntitySystem.prototype = {
+	onCreate: function() {
+	}
+	,onChange: function() {
+	}
+	,update: function() {
+	}
+	,render: function(graphics) {
+	}
+	,__class__: khaEngine2D_entities_EntitySystem
+};
+var khaEngine2D_graphics_Camera = $hxClasses["khaEngine2D.graphics.Camera"] = function() {
+	this.position = new kha_math_FastVector2(0,0);
+	this.view = new kha_math_FastVector4(0,0,0,0);
+	this.bounds = new kha_math_FastVector4(0,0,0,0);
+	khaEngine2D_graphics_Camera.i = this;
+	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
+};
+khaEngine2D_graphics_Camera.__name__ = "khaEngine2D.graphics.Camera";
+khaEngine2D_graphics_Camera.GetCamera = function() {
+	return khaEngine2D_graphics_Camera.i;
+};
+khaEngine2D_graphics_Camera.prototype = {
+	set: function(graphics) {
+		this.view.z = kha_System.windowWidth();
+		this.view.w = kha_System.windowHeight();
+		if(this.bounds.z > this.bounds.x) {
+			if(this.position.x < this.view.x) {
+				this.position.x = this.view.x;
+			}
+			if(this.position.x > this.bounds.z - this.view.x) {
+				this.position.x = this.bounds.z - this.view.x;
+			}
+		}
+		if(this.bounds.w > this.bounds.y) {
+			if(this.position.y < this.view.y) {
+				this.position.y = this.view.y;
+			}
+			if(this.position.y > this.bounds.w - this.view.y) {
+				this.position.y = this.bounds.w - this.view.y;
+			}
+		}
+		graphics.pushTransformation(this.transformation);
+		graphics.translate(-this.position.x + this.view.x,-this.position.y + this.view.y);
+	}
+	,GetViewWidth: function() {
+		return this.view.z;
+	}
+	,GetViewHeight: function() {
+		return this.view.w;
+	}
+	,unset: function(graphics) {
+		graphics.popTransformation();
+	}
+	,isInView: function(x,y) {
+		var inBounds = true;
+		if(inBounds) {
+			inBounds = x >= this.position.x - this.view.x;
+		}
+		if(inBounds) {
+			inBounds = x <= this.position.x + this.view.z - this.view.x;
+		}
+		if(inBounds) {
+			inBounds = y >= this.position.y - this.view.y;
+		}
+		if(inBounds) {
+			inBounds = y <= this.position.y + this.view.w - this.view.y;
+		}
+		return inBounds;
+	}
+	,__class__: khaEngine2D_graphics_Camera
+};
+var khaEngine2D_input_Input = $hxClasses["khaEngine2D.input.Input"] = function() {
+	khaEngine2D_input_Input.i = this;
+	this.keyDowns = new haxe_ds_IntMap();
+	kha_input_Keyboard.get().notify($bind(this,this.onKeyDown),$bind(this,this.onKeyUp));
+};
+khaEngine2D_input_Input.__name__ = "khaEngine2D.input.Input";
+khaEngine2D_input_Input.I = function() {
+	return khaEngine2D_input_Input.i;
+};
+khaEngine2D_input_Input.prototype = {
+	isKeyDown: function(keyCode) {
+		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
+			this.keyDowns.h[keyCode] = false;
+		}
+		return this.keyDowns.h[keyCode];
+	}
+	,onKeyDown: function(keyCode) {
+		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
+			this.keyDowns.h[keyCode] = false;
+		}
+		this.keyDowns.h[keyCode] = true;
+	}
+	,onKeyUp: function(keyCode) {
+		this.keyDowns.h[keyCode] = false;
+	}
+	,__class__: khaEngine2D_input_Input
+};
 var systems_ActorCameraSystem = $hxClasses["systems.ActorCameraSystem"] = function() {
-	entities_EntitySystem.call(this);
+	khaEngine2D_entities_EntitySystem.call(this);
 };
 systems_ActorCameraSystem.__name__ = "systems.ActorCameraSystem";
-systems_ActorCameraSystem.__super__ = entities_EntitySystem;
-systems_ActorCameraSystem.prototype = $extend(entities_EntitySystem.prototype,{
+systems_ActorCameraSystem.__super__ = khaEngine2D_entities_EntitySystem;
+systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
 	onCreate: function() {
 		this.entityGroup = [new components_Position2DComponent(),new components_ActorPlayerComponent()];
 	}
@@ -15404,19 +15445,23 @@ systems_ActorCameraSystem.prototype = $extend(entities_EntitySystem.prototype,{
 		if(this.entities.length == 0) {
 			return;
 		}
-		camera_Camera.I().x = this.positions[0].x;
-		camera_Camera.I().y = this.positions[0].y;
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
+		camera.position.x += (this.positions[0].x - camera.position.x) / 15;
+		camera.position.y += (this.positions[0].y - camera.position.y) / 15;
+		camera.bounds = new kha_math_FastVector4(0,0,2000,2000);
+		camera.view.x = camera.view.z * 0.5;
+		camera.view.y = camera.view.w * 0.5;
 	}
 	,render: function(graphics) {
 	}
 	,__class__: systems_ActorCameraSystem
 });
 var systems_ActorMoverSystem = $hxClasses["systems.ActorMoverSystem"] = function() {
-	entities_EntitySystem.call(this);
+	khaEngine2D_entities_EntitySystem.call(this);
 };
 systems_ActorMoverSystem.__name__ = "systems.ActorMoverSystem";
-systems_ActorMoverSystem.__super__ = entities_EntitySystem;
-systems_ActorMoverSystem.prototype = $extend(entities_EntitySystem.prototype,{
+systems_ActorMoverSystem.__super__ = khaEngine2D_entities_EntitySystem;
+systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
 	onCreate: function() {
 		this.entityGroup = [new components_Position2DComponent(),new components_ActorInputComponent()];
 	}
@@ -15439,8 +15484,8 @@ systems_ActorMoverSystem.prototype = $extend(entities_EntitySystem.prototype,{
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput;
-			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput;
+			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput * 3;
+			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput * 3;
 		}
 	}
 	,render: function(graphics) {
@@ -15448,13 +15493,13 @@ systems_ActorMoverSystem.prototype = $extend(entities_EntitySystem.prototype,{
 	,__class__: systems_ActorMoverSystem
 });
 var systems_ActorPlayerSystem = $hxClasses["systems.ActorPlayerSystem"] = function() {
-	entities_EntitySystem.call(this);
+	khaEngine2D_entities_EntitySystem.call(this);
 };
 systems_ActorPlayerSystem.__name__ = "systems.ActorPlayerSystem";
-systems_ActorPlayerSystem.__super__ = entities_EntitySystem;
-systems_ActorPlayerSystem.prototype = $extend(entities_EntitySystem.prototype,{
+systems_ActorPlayerSystem.__super__ = khaEngine2D_entities_EntitySystem;
+systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
 	onCreate: function() {
-		this.entityGroup = [new components_ActorInputComponent()];
+		this.entityGroup = [new components_ActorInputComponent(),new components_ActorPlayerComponent()];
 	}
 	,onChange: function() {
 		this.entities = this.entityManager.getEntitiesWithComponents(this.entityGroup);
@@ -15468,24 +15513,36 @@ systems_ActorPlayerSystem.prototype = $extend(entities_EntitySystem.prototype,{
 		}
 	}
 	,update: function() {
+		if(khaEngine2D_input_Input.I().isKeyDown(13)) {
+			var i = 1000;
+			while(i > 0) {
+				var entity = this.entityManager.createEntity();
+				var position2DComponent = new components_Position2DComponent();
+				position2DComponent.x = Math.floor(Math.random() * 2000 + 1);
+				position2DComponent.y = Math.floor(Math.random() * 2000 + 1);
+				this.entityManager.addComponent(entity,position2DComponent);
+				this.entityManager.addComponent(entity,new components_ActorInputComponent());
+				--i;
+			}
+		}
 		var _g = 0;
 		var _g1 = this.entities;
 		while(_g < _g1.length) {
-			var i = _g1[_g];
+			var i1 = _g1[_g];
 			++_g;
-			var actorInput = this.actorInputs[i.getIndex()];
+			var actorInput = this.actorInputs[i1.getIndex()];
 			actorInput.xInput = 0;
 			actorInput.yInput = 0;
-			if(input_Input.I().isKeyDown(65)) {
+			if(khaEngine2D_input_Input.I().isKeyDown(65)) {
 				actorInput.xInput = -1;
 			}
-			if(input_Input.I().isKeyDown(68)) {
+			if(khaEngine2D_input_Input.I().isKeyDown(68)) {
 				actorInput.xInput = 1;
 			}
-			if(input_Input.I().isKeyDown(87)) {
+			if(khaEngine2D_input_Input.I().isKeyDown(87)) {
 				actorInput.yInput = -1;
 			}
-			if(input_Input.I().isKeyDown(83)) {
+			if(khaEngine2D_input_Input.I().isKeyDown(83)) {
 				actorInput.yInput = 1;
 			}
 		}
@@ -15495,11 +15552,11 @@ systems_ActorPlayerSystem.prototype = $extend(entities_EntitySystem.prototype,{
 	,__class__: systems_ActorPlayerSystem
 });
 var systems_ActorRenderSystem = $hxClasses["systems.ActorRenderSystem"] = function() {
-	entities_EntitySystem.call(this);
+	khaEngine2D_entities_EntitySystem.call(this);
 };
 systems_ActorRenderSystem.__name__ = "systems.ActorRenderSystem";
-systems_ActorRenderSystem.__super__ = entities_EntitySystem;
-systems_ActorRenderSystem.prototype = $extend(entities_EntitySystem.prototype,{
+systems_ActorRenderSystem.__super__ = khaEngine2D_entities_EntitySystem;
+systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
 	onCreate: function() {
 		this.entityGroup = [new components_Position2DComponent()];
 	}
@@ -15517,12 +15574,19 @@ systems_ActorRenderSystem.prototype = $extend(entities_EntitySystem.prototype,{
 	,update: function() {
 	}
 	,render: function(graphics) {
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
+		graphics.set_color(-65536);
+		graphics.drawRect(0,0,2000,2000,5);
+		graphics.set_color(-1);
 		var _g = 0;
 		var _g1 = this.entities;
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			graphics.drawRect(this.positions[i.getIndex()].x,this.positions[i.getIndex()].y,20,20);
+			var p = this.positions[i.getIndex()];
+			if(camera.isInView(p.x,p.y)) {
+				graphics.drawRect(p.x - 10,p.y - 10,20,20);
+			}
 		}
 	}
 	,__class__: systems_ActorRenderSystem

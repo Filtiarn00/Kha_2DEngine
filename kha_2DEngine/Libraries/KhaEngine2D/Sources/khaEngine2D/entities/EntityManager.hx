@@ -1,127 +1,83 @@
 package khaEngine2D.entities;
 
 import kha.graphics2.Graphics;
-import khaEngine2D.entities.Entity;
-import khaEngine2D.entities.EntityComponent;
 
 class EntityManager
 {
-    public var systems:Array<EntitySystem>;
-    private var entities:Array<Entity>;
-    private var entityComponents:Map<Int,Array<EntityComponent>>;
-    private var activeEntity:Entity;
-    private  var isDirty:Bool;
+    private var worlds:Map<String,EntityWorld>;
+    private var worldToEdit:EntityWorld;
 
     public function new()
 	{		
-        systems = new Array<EntitySystem>();
-        entities = new Array<Entity>();
-        entityComponents = new Map<Int,Array<EntityComponent>>();
+        addWorld('Main');
 	}
 
     public function update():Void 
 	{   
-        for (i in systems)
-			i.update();
-    
-        if (isDirty)
-        {
-            for (i in systems)
-                i.onChange();
-            isDirty = false;
-        }
+        for (i in worlds)
+            i.update();
 	}
 
 	public function render(graphics:Graphics):Void 
-	{
-        for (i in systems)
+	{        
+        for (i in worlds)
             i.render(graphics);
 	}
 
+    public function addWorld(key:String):Void
+    {
+        if (worlds == null)
+            worlds = new Map<String,EntityWorld>();
+
+        if (!worlds.exists(key))
+        {
+            worlds.set(key,new EntityWorld());
+            worldToEdit = worlds[key];
+        }
+    }
+
     public function addSystem(system:EntitySystem):Void 
 	{
-		system.entityManager = this;
-        system.onCreate();
-        system.onChange();
-		systems.push(system);
+        worldToEdit.addSystem(system);
 	}
 
 	public function removeSystem(system:EntitySystem):Void
 	{
-		systems.remove(system);
+		worldToEdit.systems.remove(system);
 	}
 
     public function createEntity():Entity
 	{
-		//Create a new entity and set its index
-		var v:Entity = new Entity(entities.length);
-
-        //Add entity to entities list
-        entities.push(v);
-
-        //Create component array for this entity
-        entityComponents[v.getIndex()] = new Array<EntityComponent>();
-		
-        //Set to update our entity lists
-        isDirty = true;
-
-		//Return entity
-		return v;
+        return worldToEdit.createEntity();
 	}
 
     public function getEntitiesWithComponents(entityComponents:Array<EntityComponent>):Array<Entity>
     {
-		var entitiesWithComponents:Array<Entity> = new Array<Entity>();
-
-        for (i in entities)
-			if (hasComponents(i,entityComponents))
-				entitiesWithComponents.push(i);
-
-		return entitiesWithComponents;
+        return worldToEdit.getEntitiesWithComponents(entityComponents);
     }
 
     public function addComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
-        if (!hasComponent(entity,entityComponent))
-        {
-            entityComponents[entity.getIndex()].push(entityComponent);
-            isDirty = true;	
-        }
+        worldToEdit.addComponent(entity,entityComponent);
 	}
 
     public function removeComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
-        if (hasComponent(entity,entityComponent))
-        {
-            entityComponents[entity.getIndex()].remove(entityComponent);	
-            isDirty = true;
-        }
+        worldToEdit.removeComponent(entity,entityComponent);
 	}
 
     public function getComponent(entity:Entity,entityComponent:EntityComponent):EntityComponent
 	{
-        for (i in entityComponents[entity.getIndex()])
-            if (Type.getClassName(Type.getClass(i)) == Type.getClassName(Type.getClass(entityComponent)))
-                return i;
-
-        return null;
+        return worldToEdit.getComponent(entity,entityComponent);
 	}
 
     public function hasComponents(entity:Entity,entityComponentsToCheckFor:Array<EntityComponent>):Bool
 	{
-        for (i in entityComponentsToCheckFor)
-            if (!hasComponent(entity,i))
-                return false;
-
-		return true;
+        return worldToEdit.hasComponents(entity,entityComponentsToCheckFor);
 	}
 
     public function hasComponent(entity:Entity, entityComponent:EntityComponent):Bool
 	{	
-        for (i in entityComponents[entity.getIndex()])
-            if (Type.getClassName(Type.getClass(i)) == Type.getClassName(Type.getClass(entityComponent)))
-                return true;
-
-        return false;
+        return hasComponent(entity,entityComponent);
 	}
 }

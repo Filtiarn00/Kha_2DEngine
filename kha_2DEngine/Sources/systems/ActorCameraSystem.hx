@@ -23,14 +23,14 @@ class ActorCameraSystem extends EntitySystem
 
     public override function onChange():Void 
     {
-        entities = entityManager.getEntitiesWithComponents(entityGroup);
+        entities = world.getEntitiesWithComponents(entityGroup);
         positions = new Array<Position2DComponent>();
         actorPlayers = new Array<ActorPlayerComponent>();
 
         for (i in entities)
         {
-            positions.push(cast(entityManager.getComponent(i,new Position2DComponent()),Position2DComponent));
-            actorPlayers.push(cast(entityManager.getComponent(i,new ActorPlayerComponent()),ActorPlayerComponent));
+            positions.push(cast(world.getComponent(i,new Position2DComponent()),Position2DComponent));
+            actorPlayers.push(cast(world.getComponent(i,new ActorPlayerComponent()),ActorPlayerComponent));
         }
     }
 

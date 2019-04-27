@@ -21,14 +21,14 @@ class ActorMoverSystem extends EntitySystem
 
     public override function onChange():Void 
     {
-        entities = entityManager.getEntitiesWithComponents(entityGroup);
+        entities = world.getEntitiesWithComponents(entityGroup);
         positions = new Array<Position2DComponent>();
         actorInputs = new Array<ActorInputComponent>();
 
         for (i in entities)
         {
-            positions.push(cast(entityManager.getComponent(i,new Position2DComponent()),Position2DComponent));
-            actorInputs.push(cast(entityManager.getComponent(i,new ActorInputComponent()),ActorInputComponent));
+            positions.push(cast(world.getComponent(i,new Position2DComponent()),Position2DComponent));
+            actorInputs.push(cast(world.getComponent(i,new ActorInputComponent()),ActorInputComponent));
         }
     }
 
