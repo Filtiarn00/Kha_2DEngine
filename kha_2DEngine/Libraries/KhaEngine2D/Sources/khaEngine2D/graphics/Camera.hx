@@ -1,4 +1,4 @@
-package khaEngine2D.camera;
+package khaEngine2D.graphics;
 
 import kha.System;
 import kha.graphics2.Graphics;

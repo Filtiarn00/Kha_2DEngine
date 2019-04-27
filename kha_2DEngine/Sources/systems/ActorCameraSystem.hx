@@ -2,7 +2,7 @@ package systems;
 
 import kha.graphics2.Graphics;
 import kha.math.FastVector4;
-import khaEngine2D.camera.Camera;
+import khaEngine2D.graphics.Camera;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;

@@ -16,7 +16,7 @@ var Game = function() {
 	kha_System.notifyOnFrames(function(frames) {
 		_gthis.render(frames);
 	});
-	this.camera = new khaEngine2D_camera_Camera();
+	this.camera = new khaEngine2D_graphics_Camera();
 	this.input = new khaEngine2D_input_Input();
 	this.entityManager = new khaEngine2D_entities_EntityManager();
 	var entity = this.entityManager.createEntity();
@@ -18857,68 +18857,6 @@ kha_vr_TimeWarpParms.__name__ = "kha.vr.TimeWarpParms";
 kha_vr_TimeWarpParms.prototype = {
 	__class__: kha_vr_TimeWarpParms
 };
-var khaEngine2D_camera_Camera = function() {
-	this.position = new kha_math_FastVector2(0,0);
-	this.view = new kha_math_FastVector4(0,0,0,0);
-	this.bounds = new kha_math_FastVector4(0,0,0,0);
-	khaEngine2D_camera_Camera.i = this;
-	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
-};
-$hxClasses["khaEngine2D.camera.Camera"] = khaEngine2D_camera_Camera;
-khaEngine2D_camera_Camera.__name__ = "khaEngine2D.camera.Camera";
-khaEngine2D_camera_Camera.GetCamera = function() {
-	return khaEngine2D_camera_Camera.i;
-};
-khaEngine2D_camera_Camera.prototype = {
-	set: function(graphics) {
-		this.view.z = kha_System.windowWidth();
-		this.view.w = kha_System.windowHeight();
-		if(this.bounds.z > this.bounds.x) {
-			if(this.position.x < this.view.x) {
-				this.position.x = this.view.x;
-			}
-			if(this.position.x > this.bounds.z - this.view.x) {
-				this.position.x = this.bounds.z - this.view.x;
-			}
-		}
-		if(this.bounds.w > this.bounds.y) {
-			if(this.position.y < this.view.y) {
-				this.position.y = this.view.y;
-			}
-			if(this.position.y > this.bounds.w - this.view.y) {
-				this.position.y = this.bounds.w - this.view.y;
-			}
-		}
-		graphics.pushTransformation(this.transformation);
-		graphics.translate(-this.position.x + this.view.x,-this.position.y + this.view.y);
-	}
-	,GetViewWidth: function() {
-		return this.view.z;
-	}
-	,GetViewHeight: function() {
-		return this.view.w;
-	}
-	,unset: function(graphics) {
-		graphics.popTransformation();
-	}
-	,isInView: function(x,y) {
-		var inBounds = true;
-		if(inBounds) {
-			inBounds = x >= this.position.x - this.view.x;
-		}
-		if(inBounds) {
-			inBounds = x <= this.position.x + this.view.z - this.view.x;
-		}
-		if(inBounds) {
-			inBounds = y >= this.position.y - this.view.y;
-		}
-		if(inBounds) {
-			inBounds = y <= this.position.y + this.view.w - this.view.y;
-		}
-		return inBounds;
-	}
-	,__class__: khaEngine2D_camera_Camera
-};
 var khaEngine2D_entities_Entity = function(index) {
 	this.index = index;
 };
@@ -19077,6 +19015,68 @@ khaEngine2D_entities_EntitySystem.prototype = {
 	}
 	,__class__: khaEngine2D_entities_EntitySystem
 };
+var khaEngine2D_graphics_Camera = function() {
+	this.position = new kha_math_FastVector2(0,0);
+	this.view = new kha_math_FastVector4(0,0,0,0);
+	this.bounds = new kha_math_FastVector4(0,0,0,0);
+	khaEngine2D_graphics_Camera.i = this;
+	this.transformation = new kha_math_FastMatrix3(1,0,0,0,1,0,0,0,1);
+};
+$hxClasses["khaEngine2D.graphics.Camera"] = khaEngine2D_graphics_Camera;
+khaEngine2D_graphics_Camera.__name__ = "khaEngine2D.graphics.Camera";
+khaEngine2D_graphics_Camera.GetCamera = function() {
+	return khaEngine2D_graphics_Camera.i;
+};
+khaEngine2D_graphics_Camera.prototype = {
+	set: function(graphics) {
+		this.view.z = kha_System.windowWidth();
+		this.view.w = kha_System.windowHeight();
+		if(this.bounds.z > this.bounds.x) {
+			if(this.position.x < this.view.x) {
+				this.position.x = this.view.x;
+			}
+			if(this.position.x > this.bounds.z - this.view.x) {
+				this.position.x = this.bounds.z - this.view.x;
+			}
+		}
+		if(this.bounds.w > this.bounds.y) {
+			if(this.position.y < this.view.y) {
+				this.position.y = this.view.y;
+			}
+			if(this.position.y > this.bounds.w - this.view.y) {
+				this.position.y = this.bounds.w - this.view.y;
+			}
+		}
+		graphics.pushTransformation(this.transformation);
+		graphics.translate(-this.position.x + this.view.x,-this.position.y + this.view.y);
+	}
+	,GetViewWidth: function() {
+		return this.view.z;
+	}
+	,GetViewHeight: function() {
+		return this.view.w;
+	}
+	,unset: function(graphics) {
+		graphics.popTransformation();
+	}
+	,isInView: function(x,y) {
+		var inBounds = true;
+		if(inBounds) {
+			inBounds = x >= this.position.x - this.view.x;
+		}
+		if(inBounds) {
+			inBounds = x <= this.position.x + this.view.z - this.view.x;
+		}
+		if(inBounds) {
+			inBounds = y >= this.position.y - this.view.y;
+		}
+		if(inBounds) {
+			inBounds = y <= this.position.y + this.view.w - this.view.y;
+		}
+		return inBounds;
+	}
+	,__class__: khaEngine2D_graphics_Camera
+};
 var khaEngine2D_input_Input = function() {
 	khaEngine2D_input_Input.i = this;
 	this.keyDowns = new haxe_ds_IntMap();
@@ -19132,7 +19132,7 @@ systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 		if(this.entities.length == 0) {
 			return;
 		}
-		var camera = khaEngine2D_camera_Camera.GetCamera();
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
 		camera.position.x += (this.positions[0].x - camera.position.x) / 15;
 		camera.position.y += (this.positions[0].y - camera.position.y) / 15;
 		camera.bounds = new kha_math_FastVector4(0,0,2000,2000);
@@ -19264,7 +19264,7 @@ systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.
 	,update: function() {
 	}
 	,render: function(graphics) {
-		var camera = khaEngine2D_camera_Camera.GetCamera();
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
 		graphics.set_color(-65536);
 		graphics.drawRect(0,0,2000,2000,5);
 		graphics.set_color(-1);

@@ -4,7 +4,7 @@ import kha.input.KeyCode;
 import kha.System;
 import kha.Scheduler;
 import kha.Framebuffer;
-import khaEngine2D.camera.Camera;
+import khaEngine2D.graphics.Camera;
 import khaEngine2D.input.Input;
 import khaEngine2D.entities.EntityManager;
 import components.Position2DComponent;

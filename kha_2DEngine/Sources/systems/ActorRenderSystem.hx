@@ -2,7 +2,7 @@ package systems;
 
 import kha.Color;
 import kha.graphics2.Graphics;
-import khaEngine2D.camera.Camera;
+import khaEngine2D.graphics.Camera;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
@@ -45,7 +45,7 @@ class ActorRenderSystem extends EntitySystem
         for (i in entities)
         {
             var p = positions[i.getIndex()];
-               
+
             if (camera.isInView(p.x,p.y))
                 graphics.drawRect(p.x - 10,p.y - 10,20,20);
         }
