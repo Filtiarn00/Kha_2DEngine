@@ -1,12 +1,19 @@
 package;
 
+import kha.Color;
+import kha.Assets;
 import kha.input.KeyCode;
 import kha.System;
 import kha.Scheduler;
 import kha.Framebuffer;
+
+//Library
 import khaEngine2D.graphics.Camera;
+import khaEngine2D.graphics.SpriteBatch;
 import khaEngine2D.input.Input;
 import khaEngine2D.entities.EntityManager;
+
+//Game
 import components.Position2DComponent;
 import components.ActorInputComponent;
 import components.ActorPlayerComponent;
@@ -17,7 +24,6 @@ import systems.ActorRenderSystem;
 
 class Game
 {
-	private var camera:Camera;
 	private var input:Input;
     private var entityManager:EntityManager;
 
@@ -25,9 +31,7 @@ class Game
 	{
 		Scheduler.addTimeTask(update, 0, 1 / 60);
 		System.notifyOnFrames(function (frames) {render(frames); });
-
-		//Camera
-		camera = new Camera();
+		Assets.loadEverything(load);
 
 		//Input
 		input = new Input();
@@ -45,7 +49,11 @@ class Game
 		entityManager.addSystem(new ActorPlayerSystem());
 		entityManager.addSystem(new ActorMoverSystem());
 		entityManager.addSystem(new ActorRenderSystem());
-		entityManager.addSystem(new ActorCameraSystem()); 
+		entityManager.addSystem(new ActorCameraSystem());
+	}
+
+	public  function load():Void
+	{
 	}
 
     public function update():Void 
@@ -55,11 +63,8 @@ class Game
 
 	public function render(frames: Array<Framebuffer>):Void 
 	{
-		var graphics = frames[0].g2;
-		graphics.begin();
-		camera.set(graphics);
-		entityManager.render(graphics);
-		camera.unset(graphics);
-		graphics.end();
+		SpriteBatch.begin(frames[0].g2);
+		entityManager.render();
+		SpriteBatch.end();
 	}
 }

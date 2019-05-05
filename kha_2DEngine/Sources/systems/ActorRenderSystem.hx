@@ -1,8 +1,11 @@
 package systems;
 
+import kha.Image;
 import kha.Color;
 import kha.graphics2.Graphics;
-import khaEngine2D.graphics.Camera;
+import kha.Assets;
+
+import khaEngine2D.graphics.SpriteBatch;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
@@ -13,6 +16,8 @@ class ActorRenderSystem extends EntitySystem
     private var entityGroup:Array<EntityComponent>;
     private var entities:Array<Entity>;
     private var positions:Array<Position2DComponent>;
+
+    private var image:Image;
 
     public override function onCreate():Void 
     {
@@ -32,22 +37,14 @@ class ActorRenderSystem extends EntitySystem
     {
     }
 
-	public override function render(graphics:Graphics):Void 
+	public override function render():Void 
     {
-        var camera = Camera.GetCamera();
-
-        //Debug borders of level
-        graphics.color = Color.Red;
-        graphics.drawRect(0,0,2000,2000,5);
-        graphics.color = Color.White;
-
-        //Draw Entities
-        for (i in entities)
+        if (image == null)
         {
-            var p = positions[i.getIndex()];
-
-            if (camera.isInView(p.x,p.y))
-                graphics.drawRect(p.x - 10,p.y - 10,20,20);
+            image = Assets.images.Player_Sprite;
         }
+        
+        for (i in positions)
+            SpriteBatch.DrawSpriteSheet(image,i.x,i.y,0.5,0.5,0,0,48,48);
     }
 }

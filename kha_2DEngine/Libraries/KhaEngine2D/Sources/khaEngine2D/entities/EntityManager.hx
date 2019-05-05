@@ -1,7 +1,5 @@
 package khaEngine2D.entities;
 
-import kha.graphics2.Graphics;
-
 class EntityManager
 {
     private var worlds:Map<String,EntityWorld>;
@@ -18,10 +16,10 @@ class EntityManager
             i.update();
 	}
 
-	public function render(graphics:Graphics):Void 
+	public function render():Void 
 	{        
         for (i in worlds)
-            i.render(graphics);
+            i.render();
 	}
 
     public function addWorld(key:String):Void

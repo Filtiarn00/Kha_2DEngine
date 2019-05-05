@@ -53,7 +53,7 @@ class ActorCameraSystem extends EntitySystem
         camera.view.y = camera.view.w * 0.5;
     }
 
-	public override function render(graphics:Graphics):Void 
+	public override function render():Void 
     {
     }
 }

@@ -1,7 +1,5 @@
 package khaEngine2D.entities;
 
-import kha.graphics2.Graphics;
-
 class EntityWorld
 {
     public var systems:Array<EntitySystem> = new Array<EntitySystem>();
@@ -31,13 +29,13 @@ class EntityWorld
         }
 	}
 
-	public function render(graphics:Graphics):Void 
+	public function render():Void 
 	{
         if (!isActive)
             return;
 
         for (i in systems)
-            i.render(graphics);
+            i.render();
 	}
 
     public function addSystem(system:EntitySystem):Void 

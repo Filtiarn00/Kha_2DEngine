@@ -1,5 +1,6 @@
 package khaEngine2D.graphics;
 
+import kha.Color;
 import kha.System;
 import kha.graphics2.Graphics;
 import kha.math.FastMatrix3;
@@ -8,16 +9,20 @@ import kha.math.FastVector2;
 
 class Camera
 {
-	public static var i:Camera;
+	private static var i:Camera;
 
 	public var bounds:FastVector4 = new FastVector4(0,0,0,0);
 	public var view:FastVector4 = new FastVector4(0,0,0,0);
 	public var position:FastVector2 = new FastVector2(0,0);
+	public var clearColor:Color = Color.Black;
 
 	private var transformation:FastMatrix3;
 
 	public static function GetCamera():Camera
 	{
+		if (i == null)
+			i = new Camera();
+
 		return i;
 	}
 

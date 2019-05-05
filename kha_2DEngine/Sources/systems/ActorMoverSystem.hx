@@ -41,7 +41,7 @@ class ActorMoverSystem extends EntitySystem
         }
     }
 
-	public override function render(graphics:Graphics):Void 
+	public override function render():Void 
     {
     }
 }

@@ -1,7 +1,5 @@
 package khaEngine2D.entities;
 
-import kha.graphics2.Graphics;
-
 class EntitySystem
 {
 	public var world:EntityWorld;
@@ -17,5 +15,5 @@ class EntitySystem
 
 	public function update():Void {}
 
-	public function render(graphics:Graphics):Void {}
+	public function render():Void {}
 }

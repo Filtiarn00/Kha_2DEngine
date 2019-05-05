@@ -1,6 +1,15 @@
 {
 	"files": [
 		{
+			"name": "Player_Sprite",
+			"files": [
+				"Player_Sprite.png"
+			],
+			"type": "image",
+			"original_width": 512,
+			"original_height": 512
+		},
+		{
 			"name": "painter_colored_frag",
 			"files": [
 				"painter-colored.frag.essl",
