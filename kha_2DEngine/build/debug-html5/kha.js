@@ -21404,10 +21404,15 @@ khaEngine2D_graphics_Camera.prototype = {
 		graphics.pushTransformation(this.transformation);
 		graphics.translate(-this.position.x + this.view.x,-this.position.y + this.view.y);
 	}
-	,GetViewWidth: function() {
+	,screenToWorldSpace: function(x,y) {
+		x += this.position.x - this.view.z / 2;
+		y += this.position.y - this.view.w / 2;
+		return new kha_math_FastVector2(x,y);
+	}
+	,getViewWidth: function() {
 		return this.view.z;
 	}
-	,GetViewHeight: function() {
+	,getViewHeight: function() {
 		return this.view.w;
 	}
 	,unset: function(graphics) {
@@ -21631,8 +21636,8 @@ sandbox_sceneTools_EntitySceneTool.prototype = $extend(sandbox_sceneTools_SceneT
 		if(input.getIsMousePressed()) {
 			var entity = entityManager.createEntity();
 			var position2D = new game_components_Position2DComponent();
-			position2D.x = input.getMousePosition().x + camera.position.x - camera.view.z / 2;
-			position2D.y = input.getMousePosition().y + camera.position.y - camera.view.w / 2;
+			position2D.x = camera.screenToWorldSpace(input.getMousePosition().x,input.getMousePosition().y).x;
+			position2D.y = camera.screenToWorldSpace(input.getMousePosition().y,input.getMousePosition().y).y;
 			entityManager.addComponent(entity,position2D);
 			entityManager.addComponent(entity,new game_components_ActorInputComponent());
 			entityManager.addComponent(entity,new game_components_ActorPlayerComponent());

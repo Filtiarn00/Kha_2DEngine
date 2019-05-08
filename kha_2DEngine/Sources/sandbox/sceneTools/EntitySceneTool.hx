@@ -44,8 +44,8 @@ class EntitySceneTool extends SceneTool
             var entity = entityManager.createEntity();
 
             var position2D = new Position2DComponent();
-            position2D.x = input.getMousePosition().x + camera.position.x - camera.view.z / 2;
-            position2D.y = input.getMousePosition().y + camera.position.y - camera.view.w / 2;
+            position2D.x = camera.getScreenToWorldSpace(input.getMousePosition().x,input.getMousePosition().y).x;
+            position2D.y = camera.getScreenToWorldSpace(input.getMousePosition().y,input.getMousePosition().y).y;
 
 		    entityManager.addComponent(entity,position2D);
 		    entityManager.addComponent(entity,new ActorInputComponent());

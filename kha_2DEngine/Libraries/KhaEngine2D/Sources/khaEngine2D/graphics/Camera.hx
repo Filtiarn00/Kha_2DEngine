@@ -54,13 +54,20 @@ class Camera
 		graphics.pushTransformation(transformation);
 		graphics.translate(-position.x + view.x,-position.y + view.y);
 	}
+		
+	public function getScreenToWorldSpace(x:Float, y:Float): FastVector2
+	{
+		x +=  position.x - view.z / 2;
+        y +=  position.y - view.w / 2;
+		return new FastVector2(x,y);
+	}
 
-	public function GetViewWidth():Float 
+	public function getViewWidth():Float 
 	{
 		return view.z;
 	}
 
-	public function GetViewHeight():Float
+	public function getViewHeight():Float
 	{
 		return view.w;
 	}
