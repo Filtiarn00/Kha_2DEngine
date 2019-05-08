@@ -20,7 +20,8 @@ class SpriteBatch
 	{
 		internalGraphics = graphics;
 		internalCamera = Camera.GetCamera();
-
+		
+		internalGraphics.color = Color.White;
 		internalGraphics.begin(internalCamera.clearColor);
 		internalCamera.set(graphics);
 	}

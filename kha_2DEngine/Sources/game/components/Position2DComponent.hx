@@ -1,4 +1,4 @@
-package components;
+package game.components;
 
 import khaEngine2D.entities.EntityComponent;
 

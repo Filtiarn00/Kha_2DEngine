@@ -1,4 +1,4 @@
-package systems;
+package game.systems;
 
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
@@ -6,9 +6,9 @@ import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntityComponent;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.input.Input;
-import components.ActorInputComponent;
-import components.ActorPlayerComponent;
-import components.Position2DComponent;
+import game.components.ActorInputComponent;
+import game.components.ActorPlayerComponent;
+import game.components.Position2DComponent;
 
 class ActorPlayerSystem extends EntitySystem
 {
@@ -32,21 +32,6 @@ class ActorPlayerSystem extends EntitySystem
 
 	public override function update():Void 
     {
-        if (Input.I().isKeyDown(KeyCode.Return))
-		{
-			var i = 1000;
-				while (i > 0)
-				{
-					var entity = world.createEntity();
-					var position2DComponent = new Position2DComponent();
-					position2DComponent.x = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
-					position2DComponent.y = Math.floor(Math.random() * ( 1 + 2000 - 1) + 1);
-					world.addComponent(entity,position2DComponent);
-                    world.addComponent(entity,new ActorInputComponent());
-					i--;
-				}
-		}
-
          for (i in entities)
          {
              var actorInput = actorInputs[i.getIndex()];

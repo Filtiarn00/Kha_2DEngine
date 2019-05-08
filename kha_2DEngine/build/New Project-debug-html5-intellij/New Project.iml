@@ -18,11 +18,15 @@
       <sourceFolder url="file:///Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Sources" isTestSource="false" />
       <sourceFolder url="file:///Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Backends/HTML5" isTestSource="false" />
       <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Sources" isTestSource="false" />
-      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/KhaEngine2D/Sources" isTestSource="false" />
+      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D/Sources" isTestSource="false" />
+      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/zui/Sources" isTestSource="false" />
 
     </content>
-    <content url="file://Libraries/KhaEngine2D">
-      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/KhaEngine2D" isTestSource="false" />
+    <content url="file://Libraries/khaEngine2D">
+      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D" isTestSource="false" />
+    </content>
+    <content url="file://Libraries/zui">
+      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/zui" isTestSource="false" />
     </content>
     
     <orderEntry type="jdk" jdkName="Haxe 3.2.0" jdkType="Haxe toolkit" />

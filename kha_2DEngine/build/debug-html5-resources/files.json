@@ -10,6 +10,13 @@
 			"original_height": 512
 		},
 		{
+			"name": "Roboto",
+			"files": [
+				"Roboto.ttf"
+			],
+			"type": "font"
+		},
+		{
 			"name": "painter_colored_frag",
 			"files": [
 				"painter-colored.frag.essl",

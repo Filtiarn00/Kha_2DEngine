@@ -1,31 +1,36 @@
-package;
+package game;
 
-import kha.Color;
+//Core Kha
 import kha.Assets;
-import kha.input.KeyCode;
 import kha.System;
 import kha.Scheduler;
 import kha.Framebuffer;
 
 //Library
-import khaEngine2D.graphics.Camera;
 import khaEngine2D.graphics.SpriteBatch;
 import khaEngine2D.input.Input;
 import khaEngine2D.entities.EntityManager;
 
 //Game
-import components.Position2DComponent;
-import components.ActorInputComponent;
-import components.ActorPlayerComponent;
-import systems.ActorCameraSystem;
-import systems.ActorPlayerSystem;
-import systems.ActorMoverSystem;
-import systems.ActorRenderSystem;
+import game.components.Position2DComponent;
+import game.components.ActorInputComponent;
+import game.components.ActorPlayerComponent;
+import game.systems.ActorCameraSystem;
+import game.systems.ActorPlayerSystem;
+import game.systems.ActorMoverSystem;
+import game.systems.ActorRenderSystem;
 
 class Game
 {
-	private var input:Input;
-    private var entityManager:EntityManager;
+	private static var i:Game;
+
+	public var input:Input;
+    public var entityManager:EntityManager;
+
+	public static function getGame(): Game
+	{
+		return i;
+	}
 
 	public function new()
 	{
@@ -38,18 +43,14 @@ class Game
 
 		//Entities
         entityManager = new EntityManager();		
-   
+
 		//Crete Player entity
-		var entity = entityManager.createEntity();
-		entityManager.addComponent(entity,new Position2DComponent());
-		entityManager.addComponent(entity,new ActorInputComponent());
-		entityManager.addComponent(entity,new ActorPlayerComponent());
-
-
 		entityManager.addSystem(new ActorPlayerSystem());
 		entityManager.addSystem(new ActorMoverSystem());
 		entityManager.addSystem(new ActorRenderSystem());
 		entityManager.addSystem(new ActorCameraSystem());
+
+		i = this;
 	}
 
 	public  function load():Void

@@ -1,11 +1,11 @@
-package systems;
+package game.systems;
 
 import kha.graphics2.Graphics;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
-import components.Position2DComponent;
-import components.ActorInputComponent;
+import game.components.Position2DComponent;
+import game.components.ActorInputComponent;
 
 class ActorMoverSystem extends EntitySystem
 {

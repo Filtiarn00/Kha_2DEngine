@@ -1,4 +1,4 @@
-package systems;
+package game.systems;
 
 import kha.graphics2.Graphics;
 import kha.math.FastVector4;
@@ -6,8 +6,8 @@ import khaEngine2D.graphics.Camera;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
-import components.Position2DComponent;
-import components.ActorPlayerComponent;
+import game.components.Position2DComponent;
+import game.components.ActorPlayerComponent;
 
 class ActorCameraSystem extends EntitySystem
 {
@@ -46,7 +46,7 @@ class ActorCameraSystem extends EntitySystem
         camera.position.y += (positions[0].y - camera.position.y) / 15;
 
         //Set Camera bounds
-        camera.bounds = new FastVector4(0,0,2000,2000);
+        camera.bounds = new FastVector4(0,0,0,0);
 
         //Center camera
         camera.view.x = camera.view.z * 0.5;

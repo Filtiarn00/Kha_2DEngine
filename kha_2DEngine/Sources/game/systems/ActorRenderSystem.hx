@@ -1,4 +1,4 @@
-package systems;
+package game.systems;
 
 import kha.Image;
 import kha.Color;
@@ -9,7 +9,7 @@ import khaEngine2D.graphics.SpriteBatch;
 import khaEngine2D.entities.Entity;
 import khaEngine2D.entities.EntitySystem;
 import khaEngine2D.entities.EntityComponent;
-import components.Position2DComponent;
+import game.components.Position2DComponent;
 
 class ActorRenderSystem extends EntitySystem
 {

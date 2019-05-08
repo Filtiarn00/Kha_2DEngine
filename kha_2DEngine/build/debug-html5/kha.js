@@ -34,41 +34,6 @@ EReg.prototype = {
 	}
 	,__class__: EReg
 };
-var Game = function() {
-	var _gthis = this;
-	kha_Scheduler.addTimeTask($bind(this,this.update),0,0.0166666666666666664);
-	kha_System.notifyOnFrames(function(frames) {
-		_gthis.render(frames);
-	});
-	kha_Assets.loadEverything($bind(this,this.load));
-	this.input = new khaEngine2D_input_Input();
-	this.entityManager = new khaEngine2D_entities_EntityManager();
-	var entity = this.entityManager.createEntity();
-	this.entityManager.addComponent(entity,new components_Position2DComponent());
-	this.entityManager.addComponent(entity,new components_ActorInputComponent());
-	this.entityManager.addComponent(entity,new components_ActorPlayerComponent());
-	this.entityManager.addSystem(new systems_ActorPlayerSystem());
-	this.entityManager.addSystem(new systems_ActorMoverSystem());
-	this.entityManager.addSystem(new systems_ActorRenderSystem());
-	this.entityManager.addSystem(new systems_ActorCameraSystem());
-};
-$hxClasses["Game"] = Game;
-Game.__name__ = "Game";
-Game.prototype = {
-	input: null
-	,entityManager: null
-	,load: function() {
-	}
-	,update: function() {
-		this.entityManager.update();
-	}
-	,render: function(frames) {
-		khaEngine2D_graphics_SpriteBatch.begin(frames[0].get_g2());
-		this.entityManager.render();
-		khaEngine2D_graphics_SpriteBatch.end();
-	}
-	,__class__: Game
-};
 var HxOverrides = function() { };
 $hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = "HxOverrides";
@@ -144,10 +109,11 @@ var Main = function() { };
 $hxClasses["Main"] = Main;
 Main.__name__ = "Main";
 Main.main = function() {
-	kha_System.start(new kha_SystemOptions("Elements",800,600,null,null),Main.initialized);
+	kha_System.start(new kha_SystemOptions("Kha2D - Sandbox",800,600,null,null),Main.initialized);
 };
 Main.initialized = function($window) {
-	var game = new Game();
+	var game1 = new game_Game();
+	var editor = new sandbox_Editor();
 };
 Math.__name__ = "Math";
 var Reflect = function() { };
@@ -248,6 +214,41 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 		return int + 0.0;
 	}
 };
+var game_Game = function() {
+	var _gthis = this;
+	kha_Scheduler.addTimeTask($bind(this,this.update),0,0.0166666666666666664);
+	kha_System.notifyOnFrames(function(frames) {
+		_gthis.render(frames);
+	});
+	kha_Assets.loadEverything($bind(this,this.load));
+	this.input = new khaEngine2D_input_Input();
+	this.entityManager = new khaEngine2D_entities_EntityManager();
+	this.entityManager.addSystem(new game_systems_ActorPlayerSystem());
+	this.entityManager.addSystem(new game_systems_ActorMoverSystem());
+	this.entityManager.addSystem(new game_systems_ActorRenderSystem());
+	this.entityManager.addSystem(new game_systems_ActorCameraSystem());
+	game_Game.i = this;
+};
+$hxClasses["game.Game"] = game_Game;
+game_Game.__name__ = "game.Game";
+game_Game.getGame = function() {
+	return game_Game.i;
+};
+game_Game.prototype = {
+	input: null
+	,entityManager: null
+	,load: function() {
+	}
+	,update: function() {
+		this.entityManager.update();
+	}
+	,render: function(frames) {
+		khaEngine2D_graphics_SpriteBatch.begin(frames[0].get_g2());
+		this.entityManager.render();
+		khaEngine2D_graphics_SpriteBatch.end();
+	}
+	,__class__: game_Game
+};
 var khaEngine2D_entities_EntityComponent = function() {
 };
 $hxClasses["khaEngine2D.entities.EntityComponent"] = khaEngine2D_entities_EntityComponent;
@@ -255,40 +256,232 @@ khaEngine2D_entities_EntityComponent.__name__ = "khaEngine2D.entities.EntityComp
 khaEngine2D_entities_EntityComponent.prototype = {
 	__class__: khaEngine2D_entities_EntityComponent
 };
-var components_ActorInputComponent = function() {
+var game_components_ActorInputComponent = function() {
 	this.yInput = 0;
 	this.xInput = 0;
 	khaEngine2D_entities_EntityComponent.call(this);
 };
-$hxClasses["components.ActorInputComponent"] = components_ActorInputComponent;
-components_ActorInputComponent.__name__ = "components.ActorInputComponent";
-components_ActorInputComponent.__super__ = khaEngine2D_entities_EntityComponent;
-components_ActorInputComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
+$hxClasses["game.components.ActorInputComponent"] = game_components_ActorInputComponent;
+game_components_ActorInputComponent.__name__ = "game.components.ActorInputComponent";
+game_components_ActorInputComponent.__super__ = khaEngine2D_entities_EntityComponent;
+game_components_ActorInputComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
 	xInput: null
 	,yInput: null
-	,__class__: components_ActorInputComponent
+	,__class__: game_components_ActorInputComponent
 });
-var components_ActorPlayerComponent = function() {
+var game_components_ActorPlayerComponent = function() {
 	khaEngine2D_entities_EntityComponent.call(this);
 };
-$hxClasses["components.ActorPlayerComponent"] = components_ActorPlayerComponent;
-components_ActorPlayerComponent.__name__ = "components.ActorPlayerComponent";
-components_ActorPlayerComponent.__super__ = khaEngine2D_entities_EntityComponent;
-components_ActorPlayerComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
-	__class__: components_ActorPlayerComponent
+$hxClasses["game.components.ActorPlayerComponent"] = game_components_ActorPlayerComponent;
+game_components_ActorPlayerComponent.__name__ = "game.components.ActorPlayerComponent";
+game_components_ActorPlayerComponent.__super__ = khaEngine2D_entities_EntityComponent;
+game_components_ActorPlayerComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
+	__class__: game_components_ActorPlayerComponent
 });
-var components_Position2DComponent = function() {
+var game_components_Position2DComponent = function() {
 	this.y = 0;
 	this.x = 0;
 	khaEngine2D_entities_EntityComponent.call(this);
 };
-$hxClasses["components.Position2DComponent"] = components_Position2DComponent;
-components_Position2DComponent.__name__ = "components.Position2DComponent";
-components_Position2DComponent.__super__ = khaEngine2D_entities_EntityComponent;
-components_Position2DComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
+$hxClasses["game.components.Position2DComponent"] = game_components_Position2DComponent;
+game_components_Position2DComponent.__name__ = "game.components.Position2DComponent";
+game_components_Position2DComponent.__super__ = khaEngine2D_entities_EntityComponent;
+game_components_Position2DComponent.prototype = $extend(khaEngine2D_entities_EntityComponent.prototype,{
 	x: null
 	,y: null
-	,__class__: components_Position2DComponent
+	,__class__: game_components_Position2DComponent
+});
+var khaEngine2D_entities_EntitySystem = function() {
+	this.onCreate();
+};
+$hxClasses["khaEngine2D.entities.EntitySystem"] = khaEngine2D_entities_EntitySystem;
+khaEngine2D_entities_EntitySystem.__name__ = "khaEngine2D.entities.EntitySystem";
+khaEngine2D_entities_EntitySystem.prototype = {
+	world: null
+	,onCreate: function() {
+	}
+	,onChange: function() {
+	}
+	,update: function() {
+	}
+	,render: function() {
+	}
+	,__class__: khaEngine2D_entities_EntitySystem
+};
+var game_systems_ActorCameraSystem = function() {
+	khaEngine2D_entities_EntitySystem.call(this);
+};
+$hxClasses["game.systems.ActorCameraSystem"] = game_systems_ActorCameraSystem;
+game_systems_ActorCameraSystem.__name__ = "game.systems.ActorCameraSystem";
+game_systems_ActorCameraSystem.__super__ = khaEngine2D_entities_EntitySystem;
+game_systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
+	entityGroup: null
+	,entities: null
+	,positions: null
+	,actorPlayers: null
+	,onCreate: function() {
+		this.entityGroup = [new game_components_Position2DComponent(),new game_components_ActorPlayerComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
+		this.positions = [];
+		this.actorPlayers = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new game_components_Position2DComponent()) , game_components_Position2DComponent));
+			this.actorPlayers.push(js_Boot.__cast(this.world.getComponent(i,new game_components_ActorPlayerComponent()) , game_components_ActorPlayerComponent));
+		}
+	}
+	,update: function() {
+		if(this.entities.length == 0) {
+			return;
+		}
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
+		camera.position.x += (this.positions[0].x - camera.position.x) / 15;
+		camera.position.y += (this.positions[0].y - camera.position.y) / 15;
+		camera.bounds = new kha_math_FastVector4(0,0,0,0);
+		camera.view.x = camera.view.z * 0.5;
+		camera.view.y = camera.view.w * 0.5;
+	}
+	,render: function() {
+	}
+	,__class__: game_systems_ActorCameraSystem
+});
+var game_systems_ActorMoverSystem = function() {
+	khaEngine2D_entities_EntitySystem.call(this);
+};
+$hxClasses["game.systems.ActorMoverSystem"] = game_systems_ActorMoverSystem;
+game_systems_ActorMoverSystem.__name__ = "game.systems.ActorMoverSystem";
+game_systems_ActorMoverSystem.__super__ = khaEngine2D_entities_EntitySystem;
+game_systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
+	entityGroup: null
+	,entities: null
+	,positions: null
+	,actorInputs: null
+	,onCreate: function() {
+		this.entityGroup = [new game_components_Position2DComponent(),new game_components_ActorInputComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
+		this.positions = [];
+		this.actorInputs = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new game_components_Position2DComponent()) , game_components_Position2DComponent));
+			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new game_components_ActorInputComponent()) , game_components_ActorInputComponent));
+		}
+	}
+	,update: function() {
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput * 3;
+			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput * 3;
+		}
+	}
+	,render: function() {
+	}
+	,__class__: game_systems_ActorMoverSystem
+});
+var game_systems_ActorPlayerSystem = function() {
+	khaEngine2D_entities_EntitySystem.call(this);
+};
+$hxClasses["game.systems.ActorPlayerSystem"] = game_systems_ActorPlayerSystem;
+game_systems_ActorPlayerSystem.__name__ = "game.systems.ActorPlayerSystem";
+game_systems_ActorPlayerSystem.__super__ = khaEngine2D_entities_EntitySystem;
+game_systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
+	entityGroup: null
+	,entities: null
+	,actorInputs: null
+	,onCreate: function() {
+		this.entityGroup = [new game_components_ActorInputComponent(),new game_components_ActorPlayerComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
+		this.actorInputs = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new game_components_ActorInputComponent()) , game_components_ActorInputComponent));
+		}
+	}
+	,update: function() {
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			var actorInput = this.actorInputs[i.getIndex()];
+			actorInput.xInput = 0;
+			actorInput.yInput = 0;
+			if(khaEngine2D_input_Input.I().isKeyDown(65)) {
+				actorInput.xInput = -1;
+			}
+			if(khaEngine2D_input_Input.I().isKeyDown(68)) {
+				actorInput.xInput = 1;
+			}
+			if(khaEngine2D_input_Input.I().isKeyDown(87)) {
+				actorInput.yInput = -1;
+			}
+			if(khaEngine2D_input_Input.I().isKeyDown(83)) {
+				actorInput.yInput = 1;
+			}
+		}
+	}
+	,render: function() {
+	}
+	,__class__: game_systems_ActorPlayerSystem
+});
+var game_systems_ActorRenderSystem = function() {
+	khaEngine2D_entities_EntitySystem.call(this);
+};
+$hxClasses["game.systems.ActorRenderSystem"] = game_systems_ActorRenderSystem;
+game_systems_ActorRenderSystem.__name__ = "game.systems.ActorRenderSystem";
+game_systems_ActorRenderSystem.__super__ = khaEngine2D_entities_EntitySystem;
+game_systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
+	entityGroup: null
+	,entities: null
+	,positions: null
+	,image: null
+	,onCreate: function() {
+		this.entityGroup = [new game_components_Position2DComponent()];
+	}
+	,onChange: function() {
+		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
+		this.positions = [];
+		var _g = 0;
+		var _g1 = this.entities;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new game_components_Position2DComponent()) , game_components_Position2DComponent));
+		}
+	}
+	,update: function() {
+	}
+	,render: function() {
+		if(this.image == null) {
+			this.image = kha_Assets.images.Player_Sprite;
+		}
+		var _g = 0;
+		var _g1 = this.positions;
+		while(_g < _g1.length) {
+			var i = _g1[_g];
+			++_g;
+			khaEngine2D_graphics_SpriteBatch.DrawSpriteSheet(this.image,i.x,i.y,0.5,0.5,0,0,48,48);
+		}
+	}
+	,__class__: game_systems_ActorRenderSystem
 });
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
@@ -1632,13 +1825,38 @@ kha__$Assets_BlobList.prototype = {
 	,__class__: kha__$Assets_BlobList
 };
 var kha__$Assets_FontList = function() {
-	this.names = [];
+	this.names = ["Roboto"];
+	this.RobotoDescription = { name : "Roboto", files : ["Roboto.ttf"], type : "font"};
+	this.RobotoName = "Roboto";
+	this.Roboto = null;
 };
 $hxClasses["kha._Assets.FontList"] = kha__$Assets_FontList;
 kha__$Assets_FontList.__name__ = "kha._Assets.FontList";
 kha__$Assets_FontList.prototype = {
 	get: function(name) {
 		return Reflect.field(this,name);
+	}
+	,Roboto: null
+	,RobotoName: null
+	,RobotoDescription: null
+	,RobotoLoad: function(done,failure) {
+		var tmp;
+		if(failure != null) {
+			tmp = failure;
+		} else {
+			var f = haxe_Log.trace;
+			var infos = { fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.FontList", methodName : "RobotoLoad"};
+			tmp = function(v) {
+				f(v,infos);
+			};
+		}
+		kha_Assets.loadFont("Roboto",function(font) {
+			done();
+		},tmp,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.FontList", methodName : "RobotoLoad"});
+	}
+	,RobotoUnload: function() {
+		this.Roboto.unload();
+		this.Roboto = null;
 	}
 	,names: null
 	,__class__: kha__$Assets_FontList
@@ -20997,23 +21215,6 @@ khaEngine2D_entities_EntityManager.prototype = {
 	}
 	,__class__: khaEngine2D_entities_EntityManager
 };
-var khaEngine2D_entities_EntitySystem = function() {
-	this.onCreate();
-};
-$hxClasses["khaEngine2D.entities.EntitySystem"] = khaEngine2D_entities_EntitySystem;
-khaEngine2D_entities_EntitySystem.__name__ = "khaEngine2D.entities.EntitySystem";
-khaEngine2D_entities_EntitySystem.prototype = {
-	world: null
-	,onCreate: function() {
-	}
-	,onChange: function() {
-	}
-	,update: function() {
-	}
-	,render: function() {
-	}
-	,__class__: khaEngine2D_entities_EntitySystem
-};
 var khaEngine2D_entities_EntityWorld = function() {
 	this.isActive = true;
 	this.isDirty = true;
@@ -21236,6 +21437,7 @@ khaEngine2D_graphics_SpriteBatch.__name__ = "khaEngine2D.graphics.SpriteBatch";
 khaEngine2D_graphics_SpriteBatch.begin = function(graphics) {
 	khaEngine2D_graphics_SpriteBatch.internalGraphics = graphics;
 	khaEngine2D_graphics_SpriteBatch.internalCamera = khaEngine2D_graphics_Camera.GetCamera();
+	khaEngine2D_graphics_SpriteBatch.internalGraphics.set_color(-1);
 	khaEngine2D_graphics_SpriteBatch.internalGraphics.begin(null,khaEngine2D_graphics_SpriteBatch.internalCamera.clearColor);
 	khaEngine2D_graphics_SpriteBatch.internalCamera.set(graphics);
 };
@@ -21254,9 +21456,13 @@ khaEngine2D_graphics_SpriteBatch.end = function() {
 	khaEngine2D_graphics_SpriteBatch.internalGraphics.end();
 };
 var khaEngine2D_input_Input = function() {
+	this.isMousePressed = false;
+	this.isMouseDown = false;
+	this.mousePosition = new kha_math_FastVector2(0,0);
 	khaEngine2D_input_Input.i = this;
 	this.keyDowns = new haxe_ds_IntMap();
 	kha_input_Keyboard.get().notify($bind(this,this.onKeyDown),$bind(this,this.onKeyUp));
+	kha_input_Mouse.get().notify($bind(this,this.onMouseDown),$bind(this,this.onMouseUp),$bind(this,this.onMouseMove),null);
 };
 $hxClasses["khaEngine2D.input.Input"] = khaEngine2D_input_Input;
 khaEngine2D_input_Input.__name__ = "khaEngine2D.input.Input";
@@ -21265,6 +21471,12 @@ khaEngine2D_input_Input.I = function() {
 };
 khaEngine2D_input_Input.prototype = {
 	keyDowns: null
+	,mousePosition: null
+	,isMouseDown: null
+	,isMousePressed: null
+	,getMousePosition: function() {
+		return this.mousePosition;
+	}
 	,isKeyDown: function(keyCode) {
 		if(!this.keyDowns.h.hasOwnProperty(keyCode)) {
 			this.keyDowns.h[keyCode] = false;
@@ -21280,195 +21492,2194 @@ khaEngine2D_input_Input.prototype = {
 	,onKeyUp: function(keyCode) {
 		this.keyDowns.h[keyCode] = false;
 	}
+	,getIsMouseDown: function() {
+		return this.isMouseDown;
+	}
+	,getIsMousePressed: function() {
+		if(!this.isMousePressed && this.isMouseDown) {
+			this.isMousePressed = true;
+			return true;
+		}
+		return false;
+	}
+	,onMouseDown: function(x,y,cx) {
+		this.isMouseDown = true;
+	}
+	,onMouseUp: function(x,y,cx) {
+		this.isMouseDown = false;
+		this.isMousePressed = false;
+	}
+	,onMouseMove: function(x,y,cx,cy) {
+		this.mousePosition.x = x;
+		this.mousePosition.y = y;
+	}
 	,__class__: khaEngine2D_input_Input
 };
-var systems_ActorCameraSystem = function() {
-	khaEngine2D_entities_EntitySystem.call(this);
+var sandbox_Editor = function() {
+	this.uiElements = [];
+	kha_Assets.loadEverything($bind(this,this.loadingFinished));
+	sandbox_sceneTools_SceneTool.addTool(new sandbox_sceneTools_TileSceneTool());
+	sandbox_sceneTools_SceneTool.addTool(new sandbox_sceneTools_EntitySceneTool());
 };
-$hxClasses["systems.ActorCameraSystem"] = systems_ActorCameraSystem;
-systems_ActorCameraSystem.__name__ = "systems.ActorCameraSystem";
-systems_ActorCameraSystem.__super__ = khaEngine2D_entities_EntitySystem;
-systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
-	entityGroup: null
-	,entities: null
-	,positions: null
-	,actorPlayers: null
-	,onCreate: function() {
-		this.entityGroup = [new components_Position2DComponent(),new components_ActorPlayerComponent()];
+$hxClasses["sandbox.Editor"] = sandbox_Editor;
+sandbox_Editor.__name__ = "sandbox.Editor";
+sandbox_Editor.prototype = {
+	ui: null
+	,uiElements: null
+	,loadingFinished: function() {
+		this.ui = new zui_Zui({ font : kha_Assets.fonts.Roboto});
+		this.uiElements.push(new sandbox_uiElements_MainBar());
+		this.uiElements.push(new sandbox_uiElements_Panel());
+		kha_System.notifyOnFrames($bind(this,this.render));
 	}
-	,onChange: function() {
-		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
-		this.positions = [];
-		this.actorPlayers = [];
+	,render: function(framebuffers) {
+		var $window = kha_Window.get(0);
+		var graphics = framebuffers[0].get_g2();
+		graphics.begin(false);
 		var _g = 0;
-		var _g1 = this.entities;
+		var _g1 = this.uiElements;
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
-			this.actorPlayers.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorPlayerComponent()) , components_ActorPlayerComponent));
+			i.preGuiRenderer(this.ui,graphics);
+		}
+		graphics.end();
+		this.ui.begin(graphics);
+		var _g2 = 0;
+		var _g3 = this.uiElements;
+		while(_g2 < _g3.length) {
+			var i1 = _g3[_g2];
+			++_g2;
+			i1.guiRenderer(this.ui,graphics);
+		}
+		this.ui.end();
+		graphics.begin(false);
+		var _g4 = 0;
+		var _g5 = this.uiElements;
+		while(_g4 < _g5.length) {
+			var i2 = _g5[_g4];
+			++_g4;
+			i2.postGuiRenderer(this.ui,graphics);
+		}
+		graphics.end();
+		sandbox_sceneTools_SceneTool.getCurrentTool().OnSceneViewClick();
+	}
+	,__class__: sandbox_Editor
+};
+var sandbox_sceneTools_SceneTool = function() {
+};
+$hxClasses["sandbox.sceneTools.SceneTool"] = sandbox_sceneTools_SceneTool;
+sandbox_sceneTools_SceneTool.__name__ = "sandbox.sceneTools.SceneTool";
+sandbox_sceneTools_SceneTool.addTool = function(tool) {
+	var key = tool.name;
+	var _this = sandbox_sceneTools_SceneTool.tools;
+	if((__map_reserved[key] != null ? _this.getReserved(key) : _this.h[key]) == null) {
+		var key1 = tool.name;
+		var _this1 = sandbox_sceneTools_SceneTool.tools;
+		if(__map_reserved[key1] != null) {
+			_this1.setReserved(key1,tool);
+		} else {
+			_this1.h[key1] = tool;
+		}
+		sandbox_sceneTools_SceneTool.toolNames.push(tool.name);
+		if(sandbox_sceneTools_SceneTool.currentTool == null) {
+			sandbox_sceneTools_SceneTool.currentTool = tool;
 		}
 	}
-	,update: function() {
-		if(this.entities.length == 0) {
+};
+sandbox_sceneTools_SceneTool.setTool = function(name) {
+	var _this = sandbox_sceneTools_SceneTool.tools;
+	if((__map_reserved[name] != null ? _this.getReserved(name) : _this.h[name]) != null) {
+		var _this1 = sandbox_sceneTools_SceneTool.tools;
+		sandbox_sceneTools_SceneTool.currentTool = __map_reserved[name] != null ? _this1.getReserved(name) : _this1.h[name];
+	}
+};
+sandbox_sceneTools_SceneTool.getToolNames = function() {
+	return sandbox_sceneTools_SceneTool.toolNames;
+};
+sandbox_sceneTools_SceneTool.getCurrentTool = function() {
+	return sandbox_sceneTools_SceneTool.currentTool;
+};
+sandbox_sceneTools_SceneTool.prototype = {
+	name: null
+	,guiMainBarRenderer: function(ui,graphics) {
+	}
+	,guiPanelRenderer: function(ui,graphics) {
+	}
+	,OnSceneViewClick: function() {
+	}
+	,__class__: sandbox_sceneTools_SceneTool
+};
+var sandbox_sceneTools_EntitySceneTool = function() {
+	sandbox_sceneTools_SceneTool.call(this);
+	this.name = "Entity";
+};
+$hxClasses["sandbox.sceneTools.EntitySceneTool"] = sandbox_sceneTools_EntitySceneTool;
+sandbox_sceneTools_EntitySceneTool.__name__ = "sandbox.sceneTools.EntitySceneTool";
+sandbox_sceneTools_EntitySceneTool.__super__ = sandbox_sceneTools_SceneTool;
+sandbox_sceneTools_EntitySceneTool.prototype = $extend(sandbox_sceneTools_SceneTool.prototype,{
+	guiMainBarRenderer: function(ui,graphics) {
+	}
+	,guiPanelRenderer: function(ui,graphics) {
+		ui.image(kha_Assets.images.Player_Sprite);
+	}
+	,OnSceneViewClick: function() {
+		var game1 = game_Game.getGame();
+		var entityManager = game1.entityManager;
+		var input = game1.input;
+		var camera = khaEngine2D_graphics_Camera.GetCamera();
+		if(input.getIsMousePressed()) {
+			var entity = entityManager.createEntity();
+			var position2D = new game_components_Position2DComponent();
+			position2D.x = input.getMousePosition().x + camera.position.x - camera.view.z / 2;
+			position2D.y = input.getMousePosition().y + camera.position.y - camera.view.w / 2;
+			entityManager.addComponent(entity,position2D);
+			entityManager.addComponent(entity,new game_components_ActorInputComponent());
+			entityManager.addComponent(entity,new game_components_ActorPlayerComponent());
+		}
+	}
+	,__class__: sandbox_sceneTools_EntitySceneTool
+});
+var sandbox_sceneTools_TileSceneTool = function() {
+	sandbox_sceneTools_SceneTool.call(this);
+	this.name = "Tile";
+};
+$hxClasses["sandbox.sceneTools.TileSceneTool"] = sandbox_sceneTools_TileSceneTool;
+sandbox_sceneTools_TileSceneTool.__name__ = "sandbox.sceneTools.TileSceneTool";
+sandbox_sceneTools_TileSceneTool.__super__ = sandbox_sceneTools_SceneTool;
+sandbox_sceneTools_TileSceneTool.prototype = $extend(sandbox_sceneTools_SceneTool.prototype,{
+	guiMainBarRenderer: function(ui,graphics) {
+	}
+	,guiPanelRenderer: function(ui,graphics) {
+	}
+	,OnSceneViewClick: function() {
+	}
+	,__class__: sandbox_sceneTools_TileSceneTool
+});
+var sandbox_uiElements_UIElement = function() {
+};
+$hxClasses["sandbox.uiElements.UIElement"] = sandbox_uiElements_UIElement;
+sandbox_uiElements_UIElement.__name__ = "sandbox.uiElements.UIElement";
+sandbox_uiElements_UIElement.prototype = {
+	preGuiRenderer: function(ui,graphics) {
+	}
+	,postGuiRenderer: function(ui,graphics) {
+	}
+	,guiRenderer: function(ui,graphics) {
+	}
+	,__class__: sandbox_uiElements_UIElement
+};
+var sandbox_uiElements_MainBar = function() {
+	sandbox_uiElements_UIElement.call(this);
+};
+$hxClasses["sandbox.uiElements.MainBar"] = sandbox_uiElements_MainBar;
+sandbox_uiElements_MainBar.__name__ = "sandbox.uiElements.MainBar";
+sandbox_uiElements_MainBar.__super__ = sandbox_uiElements_UIElement;
+sandbox_uiElements_MainBar.prototype = $extend(sandbox_uiElements_UIElement.prototype,{
+	preGuiRenderer: function(ui,graphics) {
+		var $window = kha_Window.get(0);
+		graphics.set_color(ui.ops.theme.SEPARATOR_COL);
+		graphics.fillRect(0,0,100,26);
+		graphics.set_color(ui.ops.theme.PANEL_BG_COL);
+		graphics.fillRect(0,22,$window.get_width(),26);
+	}
+	,postGuiRenderer: function(ui,graphics) {
+		graphics.set_color(ui.ops.theme.ACCENT_COL);
+		graphics.fillRect(0,22,102,1);
+	}
+	,guiRenderer: function(ui,graphics) {
+		var $window = kha_Window.get(0);
+		if(ui.window(zui_Handle.global.nest(3,null),100,0,$window.get_width(),26)) {
+			var htab = zui_Handle.global.nest(4,{ position : 0});
+			var tmp = ui.tab(htab,"Scene");
+			var tmp1 = ui.tab(htab,"Entity");
+			var tmp2 = ui.tab(htab,"Code");
+		}
+	}
+	,__class__: sandbox_uiElements_MainBar
+});
+var sandbox_uiElements_Panel = function() {
+	sandbox_uiElements_UIElement.call(this);
+};
+$hxClasses["sandbox.uiElements.Panel"] = sandbox_uiElements_Panel;
+sandbox_uiElements_Panel.__name__ = "sandbox.uiElements.Panel";
+sandbox_uiElements_Panel.__super__ = sandbox_uiElements_UIElement;
+sandbox_uiElements_Panel.prototype = $extend(sandbox_uiElements_UIElement.prototype,{
+	preGuiRenderer: function(ui,graphics) {
+		var $window = kha_Window.get(0);
+		graphics.set_color(ui.ops.theme.WINDOW_BG_COL);
+		graphics.fillRect($window.get_width() - 300,0,300,$window.get_height());
+	}
+	,postGuiRenderer: function(ui,graphics) {
+		var $window = kha_Window.get(0);
+		graphics.set_color(ui.ops.theme.ACCENT_COL);
+		graphics.fillRect($window.get_width() - 300,22,3,1);
+	}
+	,guiRenderer: function(ui,graphics) {
+		var $window = kha_Window.get(0);
+		if(ui.window(zui_Handle.global.nest(0,null),$window.get_width() - 300,0,300,$window.get_height())) {
+			var htab = zui_Handle.global.nest(1,{ position : 0});
+			if(ui.tab(htab,"Editor")) {
+				var v = zui_Handle.global.nest(2,null);
+				ui.combo(v,sandbox_sceneTools_SceneTool.getToolNames(),"Tools",true);
+				sandbox_sceneTools_SceneTool.getCurrentTool().guiPanelRenderer(ui,graphics);
+				if(v.changed) {
+					sandbox_sceneTools_SceneTool.setTool(sandbox_sceneTools_SceneTool.getToolNames()[v.position]);
+				}
+			}
+			var tmp = ui.tab(htab,"Outline");
+			var tmp1 = ui.tab(htab,"Assets");
+		}
+	}
+	,__class__: sandbox_uiElements_Panel
+});
+var zui_Handle = function(ops) {
+	this.changed = false;
+	this.dragY = 0;
+	this.dragX = 0;
+	this.dragEnabled = false;
+	this.dragging = false;
+	this.lastMaxY = 0.0;
+	this.lastMaxX = 0.0;
+	this.layout = 0;
+	this.scrollEnabled = false;
+	this.scrollOffset = 0.0;
+	this.scrolling = false;
+	this.redraws = 2;
+	this.texture = null;
+	this.text = "";
+	this.value = 0.0;
+	this.color = -1;
+	this.position = 0;
+	this.selected = false;
+	if(ops != null) {
+		if(ops.selected != null) {
+			this.selected = ops.selected;
+		}
+		if(ops.position != null) {
+			this.position = ops.position;
+		}
+		if(ops.value != null) {
+			this.value = ops.value;
+		}
+		if(ops.text != null) {
+			this.text = ops.text;
+		}
+		if(ops.color != null) {
+			this.color = ops.color;
+		}
+		if(ops.layout != null) {
+			this.layout = ops.layout;
+		}
+	}
+};
+$hxClasses["zui.Handle"] = zui_Handle;
+zui_Handle.__name__ = "zui.Handle";
+zui_Handle.prototype = {
+	selected: null
+	,position: null
+	,color: null
+	,value: null
+	,text: null
+	,texture: null
+	,redraws: null
+	,scrolling: null
+	,scrollOffset: null
+	,scrollEnabled: null
+	,layout: null
+	,lastMaxX: null
+	,lastMaxY: null
+	,dragging: null
+	,dragEnabled: null
+	,dragX: null
+	,dragY: null
+	,changed: null
+	,children: null
+	,nest: function(i,ops) {
+		if(this.children == null) {
+			this.children = [];
+		}
+		while(this.children.length <= i) this.children.push(null);
+		if(this.children[i] == null) {
+			this.children[i] = new zui_Handle(ops);
+		}
+		return this.children[i];
+	}
+	,__class__: zui_Handle
+};
+var zui_Canvas = function() { };
+$hxClasses["zui.Canvas"] = zui_Canvas;
+zui_Canvas.__name__ = "zui.Canvas";
+zui_Canvas.draw = function(ui,canvas,g) {
+	if(zui_Canvas.screenW == -1) {
+		zui_Canvas.screenW = kha_System.windowWidth();
+		zui_Canvas.screenH = kha_System.windowHeight();
+	}
+	zui_Canvas.events = [];
+	zui_Canvas._ui = ui;
+	g.end();
+	ui.begin(g);
+	g.begin(false);
+	ui.g = g;
+	var _g = 0;
+	var _g1 = canvas.elements;
+	while(_g < _g1.length) {
+		var elem = _g1[_g];
+		++_g;
+		if(elem.parent == null) {
+			zui_Canvas.drawElement(ui,canvas,elem);
+		}
+	}
+	g.end();
+	ui.end();
+	g.begin(false);
+	return zui_Canvas.events;
+};
+zui_Canvas.drawElement = function(ui,canvas,element,px,py) {
+	if(py == null) {
+		py = 0.0;
+	}
+	if(px == null) {
+		px = 0.0;
+	}
+	if(element == null || element.visible == false) {
+		return;
+	}
+	var cw = canvas.width * zui_Canvas._ui.SCALE | 0;
+	var ch = canvas.height * zui_Canvas._ui.SCALE | 0;
+	switch(element.anchor) {
+	case 1:
+		px -= (cw - zui_Canvas.screenW) / 2;
+		break;
+	case 2:
+		px -= cw - zui_Canvas.screenW;
+		break;
+	case 3:
+		py -= (ch - zui_Canvas.screenH) / 2;
+		break;
+	case 4:
+		px -= (cw - zui_Canvas.screenW) / 2;
+		py -= (ch - zui_Canvas.screenH) / 2;
+		break;
+	case 5:
+		px -= cw - zui_Canvas.screenW;
+		py -= (ch - zui_Canvas.screenH) / 2;
+		break;
+	case 6:
+		py -= ch - zui_Canvas.screenH;
+		break;
+	case 7:
+		px -= (cw - zui_Canvas.screenW) / 2;
+		py -= ch - zui_Canvas.screenH;
+		break;
+	case 8:
+		px -= cw - zui_Canvas.screenW;
+		py -= ch - zui_Canvas.screenH;
+		break;
+	}
+	ui._x = canvas.x + (element.x * zui_Canvas._ui.SCALE | 0) + (px * zui_Canvas._ui.SCALE | 0);
+	ui._y = canvas.y + (element.y * zui_Canvas._ui.SCALE | 0) + (py * zui_Canvas._ui.SCALE | 0);
+	ui._w = element.width * zui_Canvas._ui.SCALE | 0;
+	var rotated = element.rotation != null && element.rotation != 0;
+	if(rotated) {
+		ui.g.pushRotation(element.rotation,ui._x + (element.width * zui_Canvas._ui.SCALE | 0) / 2,ui._y + (element.height * zui_Canvas._ui.SCALE | 0) / 2);
+	}
+	switch(element.type) {
+	case 0:
+		var font = ui.ops.font;
+		var size = ui.fontSize;
+		var tcol = ui.t.TEXT_COL;
+		var fontAsset = element.asset != null && StringTools.endsWith(element.asset,".ttf");
+		if(fontAsset) {
+			ui.ops.font = zui_Canvas.getAsset(canvas,element.asset);
+		}
+		ui.fontSize = element.height * zui_Canvas._ui.SCALE | 0;
+		ui.t.TEXT_COL = element.color;
+		ui.text(element.text);
+		ui.ops.font = font;
+		ui.fontSize = size;
+		ui.t.TEXT_COL = tcol;
+		break;
+	case 1:
+		var image = zui_Canvas.getAsset(canvas,element.asset);
+		var fontAsset1 = element.asset != null && StringTools.endsWith(element.asset,".ttf");
+		if(image != null && !fontAsset1) {
+			ui.imageScrollAlign = false;
+			var tint = element.color != null ? element.color : -1;
+			if(ui.image(image,tint,element.height * zui_Canvas._ui.SCALE | 0) == 3) {
+				var e = element.event;
+				if(e != null && e != "") {
+					zui_Canvas.events.push(e);
+				}
+			}
+			ui.imageScrollAlign = true;
+		}
+		break;
+	case 2:
+		var bh = ui.t.BUTTON_H;
+		ui.t.BUTTON_H = element.height * zui_Canvas._ui.SCALE | 0;
+		if(ui.button(element.text)) {
+			var e1 = element.event;
+			if(e1 != null && e1 != "") {
+				zui_Canvas.events.push(e1);
+			}
+		}
+		ui.t.BUTTON_H = bh;
+		break;
+	case 3:
+		break;
+	case 6:
+		ui.check(zui_Canvas.h.nest(element.id),element.text);
+		break;
+	case 7:
+		ui.inlineRadio(zui_Canvas.h.nest(element.id),element.text.split(";"));
+		break;
+	case 8:
+		ui.combo(zui_Canvas.h.nest(element.id),element.text.split(";"));
+		break;
+	case 9:
+		var col = ui.g.get_color();
+		ui.g.set_color(element.color);
+		ui.g.fillRect(ui._x,ui._y,ui._w,element.height * zui_Canvas._ui.SCALE | 0);
+		ui.g.set_color(col);
+		break;
+	case 10:
+		ui.slider(zui_Canvas.h.nest(element.id),element.text,0.0,1.0,true);
+		break;
+	case 11:
+		ui.textInput(zui_Canvas.h.nest(element.id),element.text);
+		break;
+	}
+	if(element.children != null) {
+		var _g2 = 0;
+		var _g3 = element.children;
+		while(_g2 < _g3.length) {
+			var id = _g3[_g2];
+			++_g2;
+			zui_Canvas.drawElement(ui,canvas,zui_Canvas.elemById(canvas,id),element.x + px,element.y + py);
+		}
+	}
+	if(rotated) {
+		ui.g.popTransformation();
+	}
+};
+zui_Canvas.getText = function(canvas,e) {
+	return e.text;
+};
+zui_Canvas.getAsset = function(canvas,asset) {
+	var _g = 0;
+	var _g1 = canvas.assets;
+	while(_g < _g1.length) {
+		var a = _g1[_g];
+		++_g;
+		if(a.name == asset) {
+			return zui_Canvas.assetMap.h[a.id];
+		}
+	}
+	return null;
+};
+zui_Canvas.getElementId = function(canvas) {
+	if(zui_Canvas.elemId == -1) {
+		var _g = 0;
+		var _g1 = canvas.elements;
+		while(_g < _g1.length) {
+			var e = _g1[_g];
+			++_g;
+			if(zui_Canvas.elemId < e.id) {
+				zui_Canvas.elemId = e.id;
+			}
+		}
+	}
+	return ++zui_Canvas.elemId;
+};
+zui_Canvas.getAssetId = function(canvas) {
+	if(zui_Canvas.assetId == -1) {
+		var _g = 0;
+		var _g1 = canvas.assets;
+		while(_g < _g1.length) {
+			var a = _g1[_g];
+			++_g;
+			if(zui_Canvas.assetId < a.id) {
+				zui_Canvas.assetId = a.id;
+			}
+		}
+	}
+	return ++zui_Canvas.assetId;
+};
+zui_Canvas.elemById = function(canvas,id) {
+	var _g = 0;
+	var _g1 = canvas.elements;
+	while(_g < _g1.length) {
+		var e = _g1[_g];
+		++_g;
+		if(e.id == id) {
+			return e;
+		}
+	}
+	return null;
+};
+zui_Canvas.scaled = function(f) {
+	return f * zui_Canvas._ui.SCALE | 0;
+};
+var zui_Id = function() { };
+$hxClasses["zui.Id"] = zui_Id;
+zui_Id.__name__ = "zui.Id";
+var zui_Themes = function() { };
+$hxClasses["zui.Themes"] = zui_Themes;
+zui_Themes.__name__ = "zui.Themes";
+var zui_Zui = function(ops) {
+	this.restoreY = -1.0;
+	this.restoreX = -1.0;
+	this.checkSelectImage = null;
+	this.elementsBaked = false;
+	this.tabScroll = 0.0;
+	this.tabHandle = null;
+	this.tabNames = null;
+	this.tooltipTime = 0.0;
+	this.tooltipShown = false;
+	this.tooltipY = 0.0;
+	this.tooltipX = 0.0;
+	this.tooltipInvertY = false;
+	this.tooltipImgMaxWidth = null;
+	this.tooltipImg = null;
+	this.tooltipText = "";
+	this.comboToSubmit = 0;
+	this.submitComboHandle = null;
+	this.comboSelectedWindow = null;
+	this.comboSelectedHandle = null;
+	this.tabPressedHandle = null;
+	this.tabPressed = false;
+	this.textToSubmit = "";
+	this.submitTextHandle = null;
+	this.textSelectedHandle = null;
+	this.windowHeader = 0.0;
+	this.scrollingHandle = null;
+	this.windowEnded = true;
+	this._windowY = 0.0;
+	this._windowX = 0.0;
+	this.imageScrollAlign = true;
+	this.scrollAlign = 0.0;
+	this.curRatio = -1;
+	this.highlightAnchor = 0;
+	this.cursorY = 0;
+	this.cursorX = 0;
+	this.key = null;
+	this.isEscapeDown = false;
+	this.isDeleteDown = false;
+	this.isBackspaceDown = false;
+	this.isAltDown = false;
+	this.isCtrlDown = false;
+	this.isShiftDown = false;
+	this.isKeyDown = false;
+	this.inputWheelDelta = 0;
+	this.inputEnabled = true;
+	this.inputRegistered = false;
+	this.scrollEnabled = true;
+	this.imageInvertY = false;
+	this.alwaysRedraw = false;
+	this.changed = false;
+	this.isReleased = false;
+	this.isHovered = false;
+	this.isPushed = false;
+	this.isStarted = false;
+	this.isTyping = false;
+	this.isScrolling = false;
+	if(ops.theme == null) {
+		ops.theme = zui_Themes.dark;
+	}
+	this.t = ops.theme;
+	if(ops.khaWindowId == null) {
+		ops.khaWindowId = 0;
+	}
+	if(ops.scaleFactor == null) {
+		ops.scaleFactor = 1.0;
+	}
+	if(ops.scaleTexture == null) {
+		ops.scaleTexture = 1.0;
+	}
+	if(ops.autoNotifyInput == null) {
+		ops.autoNotifyInput = true;
+	}
+	this.ops = ops;
+	this.setScale(ops.scaleFactor);
+	if(ops.autoNotifyInput) {
+		this.registerInput();
+	}
+	if(zui_Zui.copyReceiver == null) {
+		zui_Zui.copyReceiver = this;
+		kha_System.notifyOnCutCopyPaste($bind(this,this.onCut),$bind(this,this.onCopy),$bind(this,this.onPaste));
+		kha_System.notifyOnFrames(function(frames) {
+			if((zui_Zui.isCopy || zui_Zui.isPaste) && ++zui_Zui.copyFrame > 1) {
+				zui_Zui.isCopy = zui_Zui.isCut = zui_Zui.isPaste = false;
+				zui_Zui.copyFrame = 0;
+			}
+		});
+	}
+};
+$hxClasses["zui.Zui"] = zui_Zui;
+zui_Zui.__name__ = "zui.Zui";
+zui_Zui.prototype = {
+	isScrolling: null
+	,isTyping: null
+	,isStarted: null
+	,isPushed: null
+	,isHovered: null
+	,isReleased: null
+	,changed: null
+	,alwaysRedraw: null
+	,imageInvertY: null
+	,scrollEnabled: null
+	,inputRegistered: null
+	,inputEnabled: null
+	,inputX: null
+	,inputY: null
+	,inputInitialX: null
+	,inputInitialY: null
+	,inputDX: null
+	,inputDY: null
+	,inputWheelDelta: null
+	,inputStarted: null
+	,inputStartedR: null
+	,inputReleased: null
+	,inputReleasedR: null
+	,inputDown: null
+	,inputDownR: null
+	,isKeyDown: null
+	,isShiftDown: null
+	,isCtrlDown: null
+	,isAltDown: null
+	,isBackspaceDown: null
+	,isDeleteDown: null
+	,isEscapeDown: null
+	,key: null
+	,char: null
+	,cursorX: null
+	,cursorY: null
+	,highlightAnchor: null
+	,ratios: null
+	,curRatio: null
+	,xBeforeSplit: null
+	,wBeforeSplit: null
+	,g: null
+	,globalG: null
+	,t: null
+	,SCALE: null
+	,ops: null
+	,fontSize: null
+	,fontOffsetY: null
+	,arrowOffsetX: null
+	,arrowOffsetY: null
+	,titleOffsetX: null
+	,buttonOffsetY: null
+	,checkOffsetX: null
+	,checkOffsetY: null
+	,checkSelectOffsetX: null
+	,checkSelectOffsetY: null
+	,radioOffsetX: null
+	,radioOffsetY: null
+	,radioSelectOffsetX: null
+	,radioSelectOffsetY: null
+	,scrollAlign: null
+	,imageScrollAlign: null
+	,_x: null
+	,_y: null
+	,_w: null
+	,_h: null
+	,_windowX: null
+	,_windowY: null
+	,_windowW: null
+	,_windowH: null
+	,currentWindow: null
+	,windowEnded: null
+	,scrollingHandle: null
+	,windowHeader: null
+	,textSelectedHandle: null
+	,textSelectedCurrentText: null
+	,submitTextHandle: null
+	,textToSubmit: null
+	,tabPressed: null
+	,tabPressedHandle: null
+	,comboSelectedHandle: null
+	,comboSelectedWindow: null
+	,comboSelectedAlign: null
+	,comboSelectedTexts: null
+	,comboSelectedLabel: null
+	,comboSelectedX: null
+	,comboSelectedY: null
+	,comboSelectedW: null
+	,submitComboHandle: null
+	,comboToSubmit: null
+	,tooltipText: null
+	,tooltipImg: null
+	,tooltipImgMaxWidth: null
+	,tooltipInvertY: null
+	,tooltipX: null
+	,tooltipY: null
+	,tooltipShown: null
+	,tooltipTime: null
+	,tabNames: null
+	,tabHandle: null
+	,tabScroll: null
+	,elementsBaked: null
+	,checkSelectImage: null
+	,setScale: function(factor) {
+		this.ops.scaleFactor = factor;
+		this.SCALE = this.ops.scaleFactor * this.ops.scaleTexture;
+		this.fontSize = this.t.FONT_SIZE * this.ops.scaleFactor | 0;
+		var fontHeight = this.ops.font.height(this.fontSize);
+		this.fontOffsetY = (this.t.ELEMENT_H * this.SCALE - fontHeight) / 2;
+		this.arrowOffsetY = (this.t.ELEMENT_H * this.SCALE - this.t.ARROW_SIZE * this.SCALE) / 2;
+		this.arrowOffsetX = this.arrowOffsetY;
+		this.titleOffsetX = (this.arrowOffsetX * 2 + this.t.ARROW_SIZE * this.SCALE) / this.SCALE;
+		this.buttonOffsetY = (this.t.ELEMENT_H * this.SCALE - this.t.BUTTON_H * this.SCALE) / 2;
+		this.checkOffsetY = (this.t.ELEMENT_H * this.SCALE - this.t.CHECK_SIZE * this.SCALE) / 2;
+		this.checkOffsetX = this.checkOffsetY;
+		this.checkSelectOffsetY = (this.t.CHECK_SIZE * this.SCALE - this.t.CHECK_SELECT_SIZE * this.SCALE) / 2;
+		this.checkSelectOffsetX = this.checkSelectOffsetY;
+		this.radioOffsetY = (this.t.ELEMENT_H * this.SCALE - this.t.CHECK_SIZE * this.SCALE) / 2;
+		this.radioOffsetX = this.radioOffsetY;
+		this.radioSelectOffsetY = (this.t.CHECK_SIZE * this.SCALE - this.t.CHECK_SELECT_SIZE * this.SCALE) / 2;
+		this.radioSelectOffsetX = this.radioSelectOffsetY;
+		this.elementsBaked = false;
+	}
+	,bakeElements: function() {
+		if(this.checkSelectImage != null) {
+			this.checkSelectImage.unload();
+		}
+		this.checkSelectImage = kha_Image.createRenderTarget(this.t.CHECK_SELECT_SIZE * this.SCALE | 0,this.t.CHECK_SELECT_SIZE * this.SCALE | 0,null,0,1,this.ops.khaWindowId);
+		var g = this.checkSelectImage.get_g2();
+		g.begin(true,0);
+		g.set_color(this.t.ACCENT_SELECT_COL);
+		g.drawLine(0,0,this.checkSelectImage.get_width(),this.checkSelectImage.get_height(),2 * this.SCALE);
+		g.drawLine(this.checkSelectImage.get_width(),0,0,this.checkSelectImage.get_height(),2 * this.SCALE);
+		g.end();
+		this.elementsBaked = true;
+	}
+	,remove: function() {
+		if(this.ops.autoNotifyInput) {
+			this.unregisterInput();
+		}
+	}
+	,registerInput: function() {
+		kha_input_Mouse.get().notifyWindowed(this.ops.khaWindowId,$bind(this,this.onMouseDown),$bind(this,this.onMouseUp),$bind(this,this.onMouseMove),$bind(this,this.onMouseWheel));
+		kha_input_Keyboard.get().notify($bind(this,this.onKeyDown),$bind(this,this.onKeyUp),$bind(this,this.onKeyPress));
+		this.inputRegistered = true;
+	}
+	,unregisterInput: function() {
+		kha_input_Mouse.get().removeWindowed(this.ops.khaWindowId,$bind(this,this.onMouseDown),$bind(this,this.onMouseUp),$bind(this,this.onMouseMove),$bind(this,this.onMouseWheel));
+		kha_input_Keyboard.get().remove($bind(this,this.onKeyDown),$bind(this,this.onKeyUp),$bind(this,this.onKeyPress));
+		this.endInput();
+		this.inputX = this.inputY = 0;
+		this.inputRegistered = false;
+	}
+	,begin: function(g) {
+		if(!this.elementsBaked) {
+			this.bakeElements();
+		}
+		this.changed = false;
+		this.globalG = g;
+		this._x = 0;
+		this._y = 0;
+		this._w = 0;
+		this._h = 0;
+	}
+	,end: function(last) {
+		if(last == null) {
+			last = true;
+		}
+		if(!this.windowEnded) {
+			this.endWindow();
+		}
+		if(this.comboSelectedHandle != null) {
+			this.drawCombo();
+		}
+		if(this.tooltipText != "" || this.tooltipImg != null) {
+			if(!this.tooltipShown) {
+				this.tooltipShown = true;
+				this.tooltipX = this.inputX;
+				this.tooltipTime = kha_Scheduler.time();
+			}
+			if(kha_Scheduler.time() - this.tooltipTime > 1.0) {
+				if(this.tooltipText != "") {
+					this.drawTooltip();
+				} else {
+					this.drawTooltipImage();
+				}
+			}
+		} else {
+			this.tooltipShown = false;
+		}
+		if(last) {
+			this.endInput();
+		}
+		if(this.tabPressedHandle != null) {
+			this.tabPressedHandle = null;
+		}
+	}
+	,endInput: function() {
+		this.isKeyDown = false;
+		this.inputStarted = false;
+		this.inputStartedR = false;
+		this.inputReleased = false;
+		this.inputReleasedR = false;
+		this.inputDX = 0;
+		this.inputDY = 0;
+		this.inputWheelDelta = 0;
+		zui_Zui.textToPaste = "";
+	}
+	,beginLayout: function(g,x,y,w) {
+		if(!this.elementsBaked) {
+			this.bakeElements();
+		}
+		this.currentWindow = null;
+		this.g = g;
+		this._windowX = 0;
+		this._windowY = 0;
+		this._windowW = w;
+		this._x = x;
+		this._y = y;
+		this._w = w;
+	}
+	,endLayout: function(last) {
+		if(last == null) {
+			last = true;
+		}
+		if(last) {
+			this.endInput();
+		}
+	}
+	,inputChanged: function() {
+		if(!(this.inputDX != 0 || this.inputDY != 0 || this.inputWheelDelta != 0 || this.inputStarted || this.inputStartedR || this.inputReleased || this.inputReleasedR || this.inputDown || this.inputDownR)) {
+			return this.isKeyDown;
+		} else {
+			return true;
+		}
+	}
+	,windowDirty: function(handle,x,y,w,h) {
+		var wx = x + handle.dragX;
+		var wy = y + handle.dragY;
+		var inputChanged = this.getInputInRect(wx,wy,w,h) && this.inputChanged();
+		if(!(this.alwaysRedraw || this.isScrolling || this.isTyping)) {
+			return inputChanged;
+		} else {
+			return true;
+		}
+	}
+	,window: function(handle,x,y,w,h,drag) {
+		if(drag == null) {
+			drag = false;
+		}
+		if(handle.texture == null || w != handle.texture.get_width() || h != handle.texture.get_height()) {
+			this.resize(handle,w,h,this.ops.khaWindowId);
+		}
+		if(!this.windowEnded) {
+			this.endWindow();
+		}
+		this.windowEnded = false;
+		this.g = handle.texture.get_g2();
+		this.currentWindow = handle;
+		this._windowX = x + handle.dragX;
+		this._windowY = y + handle.dragY;
+		this._windowW = w;
+		this._windowH = h;
+		this.windowHeader = 0;
+		if(this.windowDirty(handle,x,y,w,h)) {
+			handle.redraws = 2;
+		}
+		if(handle.redraws == 0) {
+			return false;
+		}
+		this._x = 0;
+		this._y = handle.scrollOffset;
+		if(handle.layout == 1) {
+			w = this.t.ELEMENT_W * this.SCALE | 0;
+		}
+		this._w = !handle.scrollEnabled ? w : w - (this.t.SCROLL_W * this.SCALE | 0);
+		this._h = h;
+		this.tooltipText = "";
+		this.tooltipImg = null;
+		this.tabNames = null;
+		if(this.t.FILL_WINDOW_BG) {
+			this.g.begin(true,this.t.WINDOW_BG_COL);
+		} else {
+			this.g.begin(true,0);
+			this.g.set_color(this.t.WINDOW_BG_COL);
+			this.g.fillRect(this._x,this._y - handle.scrollOffset,handle.lastMaxX,handle.lastMaxY);
+		}
+		handle.dragEnabled = drag;
+		if(drag) {
+			if(this.inputStarted && this.getInputInRect(this._windowX,this._windowY,this._windowW,15)) {
+				handle.dragging = true;
+			} else if(this.inputReleased) {
+				handle.dragging = false;
+			}
+			if(handle.dragging) {
+				handle.redraws = 2;
+				handle.dragX += this.inputDX | 0;
+				handle.dragY += this.inputDY | 0;
+			}
+			this._y += 15;
+			this.windowHeader += 15;
+		}
+		return true;
+	}
+	,endWindow: function(bindGlobalG) {
+		if(bindGlobalG == null) {
+			bindGlobalG = true;
+		}
+		var handle = this.currentWindow;
+		if(handle == null) {
 			return;
 		}
-		var camera = khaEngine2D_graphics_Camera.GetCamera();
-		camera.position.x += (this.positions[0].x - camera.position.x) / 15;
-		camera.position.y += (this.positions[0].y - camera.position.y) / 15;
-		camera.bounds = new kha_math_FastVector4(0,0,2000,2000);
-		camera.view.x = camera.view.z * 0.5;
-		camera.view.y = camera.view.w * 0.5;
+		if(handle.redraws > 0 || this.isScrolling || this.isTyping) {
+			if(this.tabNames != null) {
+				this.drawTabs();
+			}
+			if(handle.dragEnabled) {
+				this.g.set_color(this.t.SEPARATOR_COL);
+				this.g.fillRect(0,0,this._windowW,15);
+			}
+			var fullHeight = this._y - handle.scrollOffset;
+			if(fullHeight < this._windowH || handle.layout == 1 || !this.scrollEnabled) {
+				handle.scrollEnabled = false;
+				handle.scrollOffset = 0;
+			} else {
+				handle.scrollEnabled = true;
+				if(this.tabScroll < 0) {
+					handle.scrollOffset = this.tabScroll;
+					this.tabScroll = 0;
+				}
+				var amountToScroll = fullHeight - this._windowH;
+				var amountScrolled = -handle.scrollOffset;
+				var ratio = amountScrolled / amountToScroll;
+				var barH = this._windowH * Math.abs(this._windowH / fullHeight);
+				barH = Math.max(barH,this.t.ELEMENT_H * this.SCALE);
+				var totalScrollableArea = this._windowH - barH;
+				var e = amountToScroll / totalScrollableArea;
+				var barY = totalScrollableArea * ratio;
+				if(this.inputStarted && this.getInputInRect(this._windowX + this._windowW - (this.t.SCROLL_W * this.SCALE | 0),barY + this._windowY,this.t.SCROLL_W * this.SCALE | 0,barH)) {
+					handle.scrolling = true;
+					this.scrollingHandle = handle;
+					this.isScrolling = true;
+				}
+				if(handle.scrolling) {
+					this.scroll(this.inputDY * e,fullHeight);
+				} else if(this.inputWheelDelta != 0) {
+					this.scroll(this.inputWheelDelta * (this.t.ELEMENT_H * this.SCALE),fullHeight);
+				}
+				if(handle.scrollOffset > 0) {
+					handle.scrollOffset = 0;
+				} else if(fullHeight + handle.scrollOffset < this._windowH) {
+					handle.scrollOffset = this._windowH - fullHeight;
+				}
+				this.g.set_color(this.t.WINDOW_BG_COL);
+				this.g.fillRect(this._windowW - (this.t.SCROLL_W * this.SCALE | 0),this._windowY,this.t.SCROLL_W * this.SCALE | 0,this._windowH);
+				this.g.set_color(this.t.ACCENT_COL);
+				this.g.fillRect(this._windowW - (this.t.SCROLL_W * this.SCALE | 0) - this.scrollAlign,barY,this.t.SCROLL_W * this.SCALE | 0,barH);
+			}
+			handle.lastMaxX = this._x;
+			handle.lastMaxY = this._y;
+			if(handle.layout == 0) {
+				handle.lastMaxX += this._windowW;
+			} else {
+				handle.lastMaxY += this._windowH;
+			}
+			handle.redraws--;
+			this.g.end();
+		}
+		this.windowEnded = true;
+		if(bindGlobalG) {
+			this.globalG.begin(false);
+		}
+		this.globalG.set_color(this.t.WINDOW_TINT_COL);
+		this.globalG.drawScaledImage(handle.texture,this._windowX,this._windowY,handle.texture.get_width() / this.ops.scaleTexture,handle.texture.get_height() / this.ops.scaleTexture);
+		if(bindGlobalG) {
+			this.globalG.end();
+		}
 	}
-	,render: function() {
+	,scroll: function(delta,fullHeight) {
+		this.currentWindow.scrollOffset -= delta;
 	}
-	,__class__: systems_ActorCameraSystem
-});
-var systems_ActorMoverSystem = function() {
-	khaEngine2D_entities_EntitySystem.call(this);
+	,restoreX: null
+	,restoreY: null
+	,tab: function(handle,text) {
+		if(this.tabNames == null) {
+			this.tabNames = [];
+			this.tabHandle = handle;
+			this.windowHeader += this.buttonOffsetY + this.t.BUTTON_H * this.SCALE;
+			this.restoreX = this.inputX;
+			this.restoreY = this.inputY;
+			if(this.getInputInRect(this._windowX,this._windowY,this._windowW,this.windowHeader)) {
+				this.inputX = this.inputY = -1;
+			}
+		}
+		this.tabNames.push(text);
+		var selected = handle.position == this.tabNames.length - 1;
+		if(selected) {
+			this.endElement();
+		}
+		return selected;
+	}
+	,drawTabs: function() {
+		this.inputX = this.restoreX;
+		this.inputY = this.restoreY;
+		if(this.currentWindow == null) {
+			return;
+		}
+		var tabX = 0.0;
+		var tabH = this.t.BUTTON_H * this.SCALE * 1.1 | 0;
+		var origy = this._y;
+		this._y = this.currentWindow.dragEnabled ? 15 : 0;
+		this.tabHandle.changed = false;
+		this.g.set_color(this.t.SEPARATOR_COL);
+		this.g.fillRect(0,this._y,this._windowW,this.buttonOffsetY + tabH + 2);
+		this.g.set_color(this.t.ACCENT_COL);
+		this.g.fillRect(this.buttonOffsetY,this._y + this.buttonOffsetY + tabH + 2,this._windowW - this.buttonOffsetY * 2,this.t.LINE_STRENGTH * this.SCALE);
+		this._y += 2;
+		var _g = 0;
+		var _g1 = this.tabNames.length;
+		while(_g < _g1) {
+			var i = _g++;
+			this._x = tabX;
+			this._w = this.ops.font.width(this.fontSize,this.tabNames[i]) + this.buttonOffsetY * 2 + 14 * this.SCALE | 0;
+			var released = this.getReleased();
+			var pushed = this.getPushed();
+			var hover = this.getHover();
+			if(released) {
+				var h = this.tabHandle.nest(this.tabHandle.position);
+				h.scrollOffset = this.currentWindow.scrollOffset;
+				h = this.tabHandle.nest(i);
+				this.tabScroll = h.scrollOffset;
+				this.tabHandle.position = i;
+				this.currentWindow.redraws = 3;
+				this.tabHandle.changed = true;
+			}
+			var selected = this.tabHandle.position == i;
+			this.g.set_color(selected ? this.t.WINDOW_BG_COL : pushed || hover ? this.t.BUTTON_HOVER_COL : this.t.SEPARATOR_COL);
+			tabX += this._w + 1;
+			var g = this.g;
+			var x = this._x + this.buttonOffsetY;
+			var y = this._y + this.buttonOffsetY;
+			var w = this._w;
+			var strength = 0.0;
+			if(strength == 0.0) {
+				strength = this.t.LINE_STRENGTH * this.SCALE;
+			}
+			g.fillRect(x,y,w,tabH);
+			this.g.set_color(selected ? this.t.BUTTON_TEXT_COL : this.t.LABEL_COL);
+			this.drawString(this.g,this.tabNames[i],this.t.TEXT_OFFSET,0,0);
+			if(selected) {
+				this.g.set_color(this.t.WINDOW_BG_COL);
+				this.g.fillRect(this._x + this.buttonOffsetY + 1,this._y + this.buttonOffsetY + tabH,this._w - 1,this.t.LINE_STRENGTH * this.SCALE);
+			}
+		}
+		this._x = 0;
+		this._y = origy;
+		this._w = (!this.currentWindow.scrollEnabled ? this._windowW : this._windowW - (this.t.SCROLL_W * this.SCALE | 0)) | 0;
+	}
+	,panel: function(handle,text,accent,isTree) {
+		if(isTree == null) {
+			isTree = false;
+		}
+		if(accent == null) {
+			accent = 0;
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.selected;
+		}
+		if(this.getReleased()) {
+			handle.selected = !handle.selected;
+		}
+		if(accent > 0) {
+			this.g.set_color(this.t.PANEL_BG_COL);
+			this.g.fillRect(this._x,this._y,this._w,this.t.ELEMENT_H * this.SCALE);
+		}
+		if(isTree) {
+			this.drawTree(handle.selected);
+		} else {
+			this.drawArrow(handle.selected);
+		}
+		this.g.set_color(this.t.PANEL_TEXT_COL);
+		this.g.set_opacity(1.0);
+		this.drawString(this.g,text,this.titleOffsetX,0);
+		this.endElement();
+		return handle.selected;
+	}
+	,image: function(image,tint,h) {
+		if(tint == null) {
+			tint = -1;
+		}
+		var iw = image.get_width() * this.SCALE;
+		var ih = image.get_height() * this.SCALE;
+		var w = Math.min(iw,this._w);
+		var x = this._x;
+		if(this.imageScrollAlign) {
+			w = Math.min(iw,this._w - this.buttonOffsetY * 2);
+			x += this.buttonOffsetY;
+			var scroll = this.currentWindow != null && this.currentWindow.scrollEnabled;
+			if(!scroll) {
+				var r = this.curRatio == -1 ? 1.0 : this.ratios[this.curRatio];
+				w -= (this.t.SCROLL_W * this.SCALE | 0) * r;
+				x += (this.t.SCROLL_W * this.SCALE | 0) * r / 2;
+			}
+		}
+		var ratio = h == null ? w / iw : h / ih;
+		if(h == null) {
+			h = ih * ratio;
+		} else {
+			w = iw * ratio;
+		}
+		if(!this.isVisible(h)) {
+			this.endElement(h);
+			return 0;
+		}
+		var started = this.getStarted(h);
+		var down = this.getPushed(h);
+		var released = this.getReleased(h);
+		var hover = this.getHover(h);
+		this.g.set_color(tint);
+		var h_float = h;
+		if(this.imageInvertY) {
+			this.g.drawScaledImage(image,x,this._y + h_float,w,-h_float);
+		} else {
+			this.g.drawScaledImage(image,x,this._y,w,h_float);
+		}
+		this.endElement(h);
+		if(started) {
+			return 1;
+		} else if(released) {
+			return 3;
+		} else if(down) {
+			return 2;
+		} else {
+			return 0;
+		}
+	}
+	,text: function(text,align,bg) {
+		if(bg == null) {
+			bg = 0;
+		}
+		if(align == null) {
+			align = 0;
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return;
+		}
+		this.getReleased();
+		this.getHover();
+		if(bg != 0) {
+			this.g.set_color(bg);
+			this.g.fillRect(this._x + this.buttonOffsetY,this._y + this.buttonOffsetY,this._w - this.buttonOffsetY * 2,this.t.BUTTON_H * this.SCALE);
+		}
+		this.g.set_color(this.t.TEXT_COL);
+		this.drawString(this.g,text,this.t.TEXT_OFFSET,0,align);
+		this.endElement();
+	}
+	,startTextEdit: function(handle) {
+		this.isTyping = true;
+		this.submitTextHandle = this.textSelectedHandle;
+		this.textToSubmit = this.textSelectedCurrentText;
+		this.textSelectedHandle = handle;
+		this.textSelectedCurrentText = handle.text;
+		if(this.tabPressed) {
+			this.tabPressed = false;
+			this.isKeyDown = false;
+		}
+		this.tabPressedHandle = handle;
+		this.cursorX = handle.text.length;
+		this.cursorY = 0;
+		this.highlightAnchor = 0;
+		if(kha_input_Keyboard.get() != null) {
+			kha_input_Keyboard.get().show();
+		}
+	}
+	,submitTextEdit: function() {
+		this.submitTextHandle.text = this.textToSubmit;
+		this.submitTextHandle.changed = this.changed = true;
+		this.submitTextHandle = null;
+		this.textToSubmit = "";
+		this.textSelectedCurrentText = "";
+	}
+	,updateTextEdit: function(align) {
+		if(align == null) {
+			align = 0;
+		}
+		var text = this.textSelectedCurrentText;
+		if(this.isKeyDown) {
+			if(this.key == 37) {
+				if(this.cursorX > 0) {
+					this.cursorX--;
+				}
+			} else if(this.key == 39) {
+				if(this.cursorX < text.length) {
+					this.cursorX++;
+				}
+			} else if(this.key == 8) {
+				if(this.cursorX > 0 && this.highlightAnchor == this.cursorX) {
+					text = HxOverrides.substr(text,0,this.cursorX - 1) + HxOverrides.substr(text,this.cursorX,text.length);
+					this.cursorX--;
+				} else if(this.highlightAnchor < this.cursorX) {
+					text = HxOverrides.substr(text,0,this.highlightAnchor) + HxOverrides.substr(text,this.cursorX,text.length);
+					this.cursorX = this.highlightAnchor;
+				} else {
+					text = HxOverrides.substr(text,0,this.cursorX) + HxOverrides.substr(text,this.highlightAnchor,text.length);
+				}
+			} else if(this.key == 46) {
+				if(this.highlightAnchor == this.cursorX) {
+					text = HxOverrides.substr(text,0,this.cursorX) + HxOverrides.substr(text,this.cursorX + 1,null);
+				} else if(this.highlightAnchor < this.cursorX) {
+					text = HxOverrides.substr(text,0,this.highlightAnchor) + HxOverrides.substr(text,this.cursorX,text.length);
+					this.cursorX = this.highlightAnchor;
+				} else {
+					text = HxOverrides.substr(text,0,this.cursorX) + HxOverrides.substr(text,this.highlightAnchor,text.length);
+				}
+			} else if(this.key == 13) {
+				this.deselectText();
+			} else if(this.key == 27) {
+				this.textSelectedCurrentText = this.textSelectedHandle.text;
+				this.deselectText();
+			} else if(this.key == 9) {
+				this.tabPressed = true;
+				this.deselectText();
+				this.key = null;
+			} else if(this.key == 36) {
+				this.cursorX = 0;
+			} else if(this.key == 35) {
+				this.cursorX = text.length;
+			} else if(this.key != 16 && this.key != 20 && this.key != 17 && this.key != 18) {
+				if(this.char != null && this.char != "" && HxOverrides.cca(this.char,0) >= 32 && HxOverrides.cca(this.char,0) != 127) {
+					text = HxOverrides.substr(text,0,this.highlightAnchor) + this.char + HxOverrides.substr(text,this.cursorX,null);
+					this.cursorX++;
+				}
+			}
+			var selecting = this.isShiftDown && (this.key == 37 || this.key == 39 || this.key == 16);
+			if(!selecting && !this.isCtrlDown) {
+				this.highlightAnchor = this.cursorX;
+			}
+		}
+		if(zui_Zui.textToPaste != "") {
+			text = HxOverrides.substr(text,0,this.highlightAnchor) + zui_Zui.textToPaste + HxOverrides.substr(text,this.cursorX,null);
+			this.cursorX += zui_Zui.textToPaste.length;
+			this.highlightAnchor = this.cursorX;
+			zui_Zui.textToPaste = "";
+		}
+		if(this.highlightAnchor == this.cursorX) {
+			zui_Zui.textToCopy = text;
+		} else if(this.highlightAnchor < this.cursorX) {
+			zui_Zui.textToCopy = text.substring(this.highlightAnchor,this.cursorX);
+		} else {
+			zui_Zui.textToCopy = text.substring(this.cursorX,this.highlightAnchor);
+		}
+		if(zui_Zui.isCut) {
+			if(this.highlightAnchor == this.cursorX) {
+				text = "";
+			} else if(this.highlightAnchor < this.cursorX) {
+				text = HxOverrides.substr(text,0,this.highlightAnchor) + HxOverrides.substr(text,this.cursorX,text.length);
+				this.cursorX = this.highlightAnchor;
+			} else {
+				text = HxOverrides.substr(text,0,this.cursorX) + HxOverrides.substr(text,this.highlightAnchor,text.length);
+			}
+		}
+		var off = this.t.TEXT_OFFSET;
+		var lineHeight = this.t.ELEMENT_H * this.SCALE;
+		var cursorHeight = lineHeight - this.buttonOffsetY * 3.0;
+		if(this.highlightAnchor != this.cursorX) {
+			var istart = this.cursorX;
+			var iend = this.highlightAnchor;
+			if(this.highlightAnchor < this.cursorX) {
+				istart = this.highlightAnchor;
+				iend = this.cursorX;
+			}
+			var hlstr = HxOverrides.substr(text,istart,iend - istart);
+			var hlstrw = this.g.get_font().width(this.g.get_fontSize(),hlstr);
+			var startoff = this.g.get_font().width(this.g.get_fontSize(),HxOverrides.substr(text,0,istart));
+			var hlStart = align == 0 ? this._x + startoff + off : this._x + this._w - hlstrw - off;
+			if(align == 2) {
+				hlStart -= this.g.get_font().width(this.g.get_fontSize(),HxOverrides.substr(text,iend,text.length));
+			}
+			this.g.set_color(this.t.ACCENT_SELECT_COL);
+			this.g.fillRect(hlStart,this._y + this.cursorY * lineHeight + this.buttonOffsetY * 1.5,hlstrw * this.SCALE,cursorHeight);
+		}
+		var time = kha_Scheduler.time();
+		if(time % 1. < 0.5) {
+			var str = align == 0 ? HxOverrides.substr(text,0,this.cursorX) : text.substring(this.cursorX,text.length);
+			var strw = this.g.get_font().width(this.g.get_fontSize(),str);
+			var cursorX = align == 0 ? this._x + strw + off : this._x + this._w - strw - off;
+			this.g.set_color(this.t.TEXT_COL);
+			this.g.fillRect(cursorX,this._y + this.cursorY * lineHeight + this.buttonOffsetY * 1.5,this.SCALE,cursorHeight);
+		}
+		this.textSelectedCurrentText = text;
+	}
+	,textInput: function(handle,label,align) {
+		if(align == null) {
+			align = 0;
+		}
+		if(label == null) {
+			label = "";
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.text;
+		}
+		var hover = this.getHover();
+		this.g.set_color(hover ? this.t.ACCENT_HOVER_COL : this.t.ACCENT_COL);
+		var g = this.g;
+		var x = this._x + this.buttonOffsetY;
+		var y = this._y + this.buttonOffsetY;
+		var w = this._w - this.buttonOffsetY * 2;
+		var h = this.t.BUTTON_H * this.SCALE;
+		var strength = 0.0;
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(this.t.FILL_ACCENT_BG) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+		var startEdit = this.getReleased() || this.tabPressed;
+		if(this.textSelectedHandle != handle && startEdit) {
+			this.startTextEdit(handle);
+		}
+		if(this.textSelectedHandle == handle) {
+			this.updateTextEdit(align);
+		}
+		if(this.submitTextHandle == handle) {
+			this.submitTextEdit();
+		} else {
+			handle.changed = false;
+		}
+		if(label != "") {
+			this.g.set_color(this.t.LABEL_COL);
+			var labelAlign = align == 2 ? 0 : 2;
+			var xOffset = labelAlign == 0 ? 7 : 0;
+			this.drawString(this.g,label,xOffset,0,labelAlign);
+		}
+		this.g.set_color(this.t.TEXT_COL);
+		if(this.textSelectedHandle != handle) {
+			this.drawString(this.g,handle.text,null,0,align);
+		} else {
+			this.drawString(this.g,this.textSelectedCurrentText,null,0,align);
+		}
+		this.endElement();
+		return handle.text;
+	}
+	,deselectText: function() {
+		this.submitTextHandle = this.textSelectedHandle;
+		this.textToSubmit = this.textSelectedCurrentText;
+		this.textSelectedHandle = null;
+		this.isTyping = false;
+		if(this.currentWindow != null) {
+			this.currentWindow.redraws = 2;
+		}
+		if(kha_input_Keyboard.get() != null) {
+			kha_input_Keyboard.get().hide();
+		}
+		this.highlightAnchor = this.cursorX;
+	}
+	,button: function(text,align,label) {
+		if(label == null) {
+			label = "";
+		}
+		if(align == null) {
+			align = 1;
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return false;
+		}
+		var released = this.getReleased();
+		var pushed = this.getPushed();
+		var hover = this.getHover();
+		if(released) {
+			this.changed = true;
+		}
+		this.g.set_color(pushed ? this.t.BUTTON_PRESSED_COL : hover ? this.t.BUTTON_HOVER_COL : this.t.BUTTON_COL);
+		var g = this.g;
+		var x = this._x + this.buttonOffsetY;
+		var y = this._y + this.buttonOffsetY;
+		var w = this._w - this.buttonOffsetY * 2;
+		var h = this.t.BUTTON_H * this.SCALE;
+		var strength = 0.0;
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(this.t.FILL_BUTTON_BG) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+		this.g.set_color(this.t.BUTTON_TEXT_COL);
+		this.drawString(this.g,text,this.t.TEXT_OFFSET,0,align);
+		if(label != "") {
+			this.drawString(this.g,label,this.t.TEXT_OFFSET,0,align == 2 ? 0 : 2);
+		}
+		this.endElement();
+		return released;
+	}
+	,check: function(handle,text) {
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.selected;
+		}
+		if(this.getReleased()) {
+			handle.selected = !handle.selected;
+			handle.changed = this.changed = true;
+		} else {
+			handle.changed = false;
+		}
+		var hover = this.getHover();
+		this.drawCheck(handle.selected,hover);
+		this.g.set_color(this.t.TEXT_COL);
+		this.drawString(this.g,text,this.titleOffsetX,0,0);
+		this.endElement();
+		return handle.selected;
+	}
+	,radio: function(handle,position,text) {
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.position == position;
+		}
+		if(this.getReleased()) {
+			handle.position = position;
+			handle.changed = this.changed = true;
+		} else {
+			handle.changed = false;
+		}
+		var hover = this.getHover();
+		this.drawRadio(handle.position == position,hover);
+		this.g.set_color(this.t.TEXT_COL);
+		this.drawString(this.g,text,this.titleOffsetX,0);
+		this.endElement();
+		return handle.position == position;
+	}
+	,inlineRadio: function(handle,texts) {
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.position;
+		}
+		if(this.getReleased()) {
+			if(++handle.position >= texts.length) {
+				handle.position = 0;
+			}
+			handle.changed = this.changed = true;
+		} else {
+			handle.changed = false;
+		}
+		var hover = this.getHover();
+		this.drawInlineRadio(texts[handle.position],hover);
+		this.endElement();
+		return handle.position;
+	}
+	,combo: function(handle,texts,label,showLabel,align) {
+		if(align == null) {
+			align = 0;
+		}
+		if(showLabel == null) {
+			showLabel = false;
+		}
+		if(label == null) {
+			label = "";
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.position;
+		}
+		if(this.getReleased()) {
+			if(this.comboSelectedHandle == null) {
+				this.inputEnabled = false;
+				this.comboSelectedHandle = handle;
+				this.comboSelectedWindow = this.currentWindow;
+				this.comboSelectedAlign = align;
+				this.comboSelectedTexts = texts;
+				this.comboSelectedLabel = label;
+				this.comboSelectedX = this._x + this._windowX | 0;
+				this.comboSelectedY = this._y + this._windowY + this.t.ELEMENT_H * this.SCALE + this.t.ELEMENT_OFFSET * this.SCALE | 0;
+				this.comboSelectedW = this._w | 0;
+			}
+		}
+		if(handle == this.submitComboHandle) {
+			handle.position = this.comboToSubmit;
+			this.submitComboHandle = null;
+			handle.changed = this.changed = true;
+		} else {
+			handle.changed = false;
+		}
+		var hover = this.getHover();
+		if(hover) {
+			this.g.set_color(this.t.ACCENT_HOVER_COL);
+			var g = this.g;
+			var x = this._x + this.buttonOffsetY;
+			var y = this._y + this.buttonOffsetY;
+			var w = this._w - this.buttonOffsetY * 2;
+			var h = this.t.BUTTON_H * this.SCALE;
+			var strength = 0.0;
+			if(strength == 0.0) {
+				strength = this.t.LINE_STRENGTH * this.SCALE;
+			}
+			if(this.t.FILL_ACCENT_BG) {
+				g.fillRect(x,y,w,h);
+			} else {
+				g.drawRect(x,y,w,h,strength);
+			}
+		} else {
+			this.g.set_color(this.t.ACCENT_COL);
+			var g1 = this.g;
+			var x1 = this._x + this.buttonOffsetY;
+			var y1 = this._y + this.buttonOffsetY;
+			var w1 = this._w - this.buttonOffsetY * 2;
+			var h1 = this.t.BUTTON_H * this.SCALE;
+			var strength1 = 0.0;
+			if(strength1 == 0.0) {
+				strength1 = this.t.LINE_STRENGTH * this.SCALE;
+			}
+			if(this.t.FILL_ACCENT_BG) {
+				g1.fillRect(x1,y1,w1,h1);
+			} else {
+				g1.drawRect(x1,y1,w1,h1,strength1);
+			}
+		}
+		var x2 = this._x + this._w - this.arrowOffsetX - 8;
+		var y2 = this._y + this.arrowOffsetY + 3;
+		this.g.fillTriangle(x2,y2,x2 + this.t.ARROW_SIZE * this.SCALE,y2,x2 + this.t.ARROW_SIZE * this.SCALE / 2,y2 + this.t.ARROW_SIZE * this.SCALE / 2);
+		if(showLabel && label != "") {
+			if(align == 0) {
+				this._x -= 15;
+			}
+			this.g.set_color(this.t.LABEL_COL);
+			this.drawString(this.g,label,null,0,align == 0 ? 2 : 0);
+			if(align == 0) {
+				this._x += 15;
+			}
+		}
+		if(align == 2) {
+			this._x -= 15;
+		}
+		this.g.set_color(this.t.TEXT_COL);
+		this.drawString(this.g,texts[handle.position],null,0,align);
+		if(align == 2) {
+			this._x += 15;
+		}
+		this.endElement();
+		return handle.position;
+	}
+	,slider: function(handle,text,from,to,filled,precision,displayValue,align,textEdit) {
+		if(textEdit == null) {
+			textEdit = true;
+		}
+		if(align == null) {
+			align = 2;
+		}
+		if(displayValue == null) {
+			displayValue = true;
+		}
+		if(precision == null) {
+			precision = 100;
+		}
+		if(filled == null) {
+			filled = false;
+		}
+		if(to == null) {
+			to = 1.0;
+		}
+		if(from == null) {
+			from = 0.0;
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this.endElement();
+			return handle.value;
+		}
+		if(this.getStarted()) {
+			handle.scrolling = true;
+			this.scrollingHandle = handle;
+			this.isScrolling = true;
+		}
+		handle.changed = false;
+		if(handle.scrolling) {
+			var range = to - from;
+			var sliderX = this._x + this._windowX + this.buttonOffsetY;
+			var sliderW = this._w - this.buttonOffsetY * 2;
+			var step = range / sliderW;
+			var value = from + (this.inputX - sliderX) * step;
+			handle.value = Math.round(value * precision) / precision;
+			if(handle.value < from) {
+				handle.value = from;
+			} else if(handle.value > to) {
+				handle.value = to;
+			}
+			handle.changed = this.changed = true;
+		}
+		var hover = this.getHover();
+		this.drawSlider(handle.value,from,to,filled,hover);
+		var startEdit = (this.getReleased() || this.tabPressed) && textEdit;
+		if(startEdit) {
+			handle.text = handle.value + "";
+			this.startTextEdit(handle);
+		}
+		var lalign = align == 0 ? 2 : 0;
+		if(this.textSelectedHandle == handle) {
+			this.updateTextEdit(lalign);
+		}
+		if(this.submitTextHandle == handle) {
+			this.submitTextEdit();
+			handle.value = parseFloat(handle.text);
+		}
+		this.g.set_color(this.t.LABEL_COL);
+		this.drawString(this.g,text,null,0,align);
+		if(displayValue) {
+			this.g.set_color(this.t.TEXT_COL);
+			if(this.textSelectedHandle != handle) {
+				this.drawString(this.g,handle.value + "",null,0,lalign);
+			} else {
+				this.drawString(this.g,this.textSelectedCurrentText,null,0,lalign);
+			}
+		}
+		this.endElement();
+		return handle.value;
+	}
+	,separator: function(h,fill) {
+		if(fill == null) {
+			fill = true;
+		}
+		if(h == null) {
+			h = 4;
+		}
+		if(!this.isVisible(this.t.ELEMENT_H * this.SCALE)) {
+			this._y += h * this.SCALE;
+			return;
+		}
+		if(fill) {
+			this.g.set_color(this.t.SEPARATOR_COL);
+			this.g.fillRect(this._x,this._y,this._w,h * this.SCALE);
+		}
+		this._y += h * this.SCALE;
+	}
+	,tooltip: function(text) {
+		this.tooltipText = text;
+		this.tooltipY = this._y + this._windowY;
+	}
+	,tooltipImage: function(image,maxWidth) {
+		this.tooltipImg = image;
+		this.tooltipImgMaxWidth = maxWidth;
+		this.tooltipInvertY = this.imageInvertY;
+		this.tooltipY = this._y + this._windowY;
+	}
+	,drawArrow: function(selected) {
+		var x = this._x + this.arrowOffsetX;
+		var y = this._y + this.arrowOffsetY;
+		this.g.set_color(this.t.ARROW_COL);
+		if(selected) {
+			this.g.fillTriangle(x,y,x + this.t.ARROW_SIZE * this.SCALE,y,x + this.t.ARROW_SIZE * this.SCALE / 2,y + this.t.ARROW_SIZE * this.SCALE);
+		} else {
+			this.g.fillTriangle(x,y,x,y + this.t.ARROW_SIZE * this.SCALE,x + this.t.ARROW_SIZE * this.SCALE,y + this.t.ARROW_SIZE * this.SCALE / 2);
+		}
+	}
+	,drawTree: function(selected) {
+		var SIGN_W = 7 * this.SCALE;
+		var x = this._x + this.arrowOffsetX + 1;
+		var y = this._y + this.arrowOffsetY + 1;
+		this.g.set_color(this.t.ARROW_COL);
+		if(selected) {
+			this.g.fillRect(x,y + SIGN_W / 2 - 1,SIGN_W,SIGN_W / 8);
+		} else {
+			this.g.fillRect(x,y + SIGN_W / 2 - 1,SIGN_W,SIGN_W / 8);
+			this.g.fillRect(x + SIGN_W / 2 - 1,y,SIGN_W / 8,SIGN_W);
+		}
+	}
+	,drawCheck: function(selected,hover) {
+		var x = this._x + this.checkOffsetX;
+		var y = this._y + this.checkOffsetY;
+		this.g.set_color(hover ? this.t.ACCENT_HOVER_COL : this.t.ACCENT_COL);
+		var g = this.g;
+		var w = this.t.CHECK_SIZE * this.SCALE;
+		var h = this.t.CHECK_SIZE * this.SCALE;
+		var strength = 0.0;
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(this.t.FILL_ACCENT_BG) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+		if(selected) {
+			this.g.set_color(-1);
+			this.g.drawImage(this.checkSelectImage,x + this.checkSelectOffsetX,y + this.checkSelectOffsetY);
+		}
+	}
+	,drawRadio: function(selected,hover) {
+		var x = this._x + this.radioOffsetX;
+		var y = this._y + this.radioOffsetY;
+		this.g.set_color(hover ? this.t.ACCENT_HOVER_COL : this.t.ACCENT_COL);
+		var g = this.g;
+		var w = this.t.CHECK_SIZE * this.SCALE;
+		var h = this.t.CHECK_SIZE * this.SCALE;
+		var strength = 0.0;
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(this.t.FILL_ACCENT_BG) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+		if(selected) {
+			this.g.set_color(this.t.ACCENT_SELECT_COL);
+			this.g.fillRect(x + this.radioSelectOffsetX,y + this.radioSelectOffsetY,this.t.CHECK_SELECT_SIZE * this.SCALE,this.t.CHECK_SELECT_SIZE * this.SCALE);
+		}
+	}
+	,drawInlineRadio: function(text,hover) {
+		if(hover) {
+			this.g.set_color(this.t.ACCENT_HOVER_COL);
+			this.g.fillRect(this._x + this.buttonOffsetY,this._y + this.buttonOffsetY,this._w - this.buttonOffsetY * 2,this.t.BUTTON_H * this.SCALE);
+		} else {
+			this.g.set_color(this.t.ACCENT_COL);
+			this.g.drawRect(this._x + this.buttonOffsetY,this._y + this.buttonOffsetY,this._w - this.buttonOffsetY * 2,this.t.BUTTON_H * this.SCALE);
+		}
+		this.g.set_color(this.t.TEXT_COL);
+		this.drawString(this.g,text,this.titleOffsetX,0,1);
+	}
+	,drawSlider: function(value,from,to,filled,hover) {
+		var x = this._x + this.buttonOffsetY;
+		var y = this._y + this.buttonOffsetY;
+		var w = this._w - this.buttonOffsetY * 2;
+		this.g.set_color(hover ? this.t.ACCENT_HOVER_COL : this.t.ACCENT_COL);
+		var g = this.g;
+		var h = this.t.BUTTON_H * this.SCALE;
+		var strength = 0.0;
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(this.t.FILL_ACCENT_BG) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+		this.g.set_color(hover ? this.t.ACCENT_HOVER_COL : this.t.ACCENT_COL);
+		var offset = (value - from) / (to - from);
+		var barW = 8 * this.SCALE;
+		var sliderX = filled ? x : x + (w - barW) * offset;
+		var sliderW = filled ? w * offset : barW;
+		sliderW = Math.max(Math.min(sliderW,w),0);
+		this.g.fillRect(sliderX,y,sliderW,this.t.BUTTON_H * this.SCALE);
+	}
+	,drawCombo: function() {
+		var _g = this.g;
+		this.globalG.set_color(this.t.SEPARATOR_COL);
+		var elementSize = this.t.ELEMENT_H * this.SCALE + this.t.ELEMENT_OFFSET * this.SCALE | 0;
+		var comboH = (this.comboSelectedTexts.length + 1) * elementSize;
+		this.globalG.begin(false);
+		var outOfScreen = this.comboSelectedY + comboH > kha_System.windowHeight();
+		var comboY = outOfScreen ? this.comboSelectedY - comboH - elementSize : this.comboSelectedY;
+		this.globalG.fillRect(this.comboSelectedX,comboY,this.comboSelectedW,comboH);
+		this.beginLayout(this.globalG,this.comboSelectedX,comboY,this.comboSelectedW);
+		this.inputEnabled = true;
+		var _g1 = 0;
+		var _g11 = this.comboSelectedTexts.length;
+		while(_g1 < _g11) {
+			var i = _g1++;
+			if(this.button(this.comboSelectedTexts[i],this.comboSelectedAlign)) {
+				this.comboToSubmit = i;
+				this.submitComboHandle = this.comboSelectedHandle;
+				if(this.comboSelectedWindow != null) {
+					this.comboSelectedWindow.redraws = 2;
+				}
+				break;
+			}
+		}
+		this.text(this.comboSelectedLabel);
+		if(this.inputReleased && !zui_Zui.comboFirst) {
+			this.comboSelectedHandle = null;
+			zui_Zui.comboFirst = true;
+		} else {
+			zui_Zui.comboFirst = false;
+		}
+		this.inputEnabled = this.comboSelectedHandle == null;
+		this.endLayout(false);
+		this.globalG.end();
+		this.g = _g;
+	}
+	,drawTooltip: function() {
+		this.globalG.set_color(this.t.TEXT_COL);
+		var lines = this.tooltipText.split("\n");
+		var tooltipW = 0.0;
+		var _g = 0;
+		while(_g < lines.length) {
+			var line = lines[_g];
+			++_g;
+			var lineTooltipW = this.ops.font.width(this.fontSize,line);
+			if(lineTooltipW > tooltipW) {
+				tooltipW = lineTooltipW;
+			}
+		}
+		this.tooltipX = Math.min(this.tooltipX,kha_System.windowWidth() - tooltipW - 20);
+		this.globalG.begin(false);
+		this.globalG.fillRect(this.tooltipX,this.tooltipY,tooltipW + 20,this.t.ELEMENT_H * this.SCALE * lines.length * 0.6);
+		this.globalG.set_font(this.ops.font);
+		this.globalG.set_fontSize(this.fontSize);
+		this.globalG.set_color(this.t.ACCENT_COL);
+		var _g1 = 0;
+		var _g2 = lines.length;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			this.globalG.drawString(lines[i],this.tooltipX + 5,this.tooltipY + i * this.fontSize);
+		}
+		this.globalG.end();
+	}
+	,drawTooltipImage: function() {
+		var w = this.tooltipImg.get_width();
+		if(this.tooltipImgMaxWidth != null && w > this.tooltipImgMaxWidth) {
+			w = this.tooltipImgMaxWidth;
+		}
+		var h = this.tooltipImg.get_height() * (w / this.tooltipImg.get_width());
+		this.tooltipX = Math.min(this.tooltipX,kha_System.windowWidth() - w - 20);
+		this.tooltipY = Math.min(this.tooltipY,kha_System.windowHeight() - h - 20);
+		this.globalG.set_color(-16777216);
+		this.globalG.begin(false);
+		this.globalG.fillRect(this.tooltipX,this.tooltipY,w,h);
+		this.globalG.set_color(-1);
+		if(this.tooltipInvertY) {
+			this.globalG.drawScaledImage(this.tooltipImg,this.tooltipX,this.tooltipY + h,w,-h);
+		} else {
+			this.globalG.drawScaledImage(this.tooltipImg,this.tooltipX,this.tooltipY,w,h);
+		}
+		this.globalG.end();
+	}
+	,drawString: function(g,text,xOffset,yOffset,align) {
+		if(align == null) {
+			align = 0;
+		}
+		if(yOffset == null) {
+			yOffset = 0;
+		}
+		var maxChars = this._w / (this.fontSize / 2 | 0) | 0;
+		if(text.length > maxChars) {
+			text = text.substring(0,maxChars) + "..";
+		}
+		if(xOffset == null) {
+			xOffset = this.t.TEXT_OFFSET;
+		}
+		xOffset *= this.SCALE;
+		g.set_font(this.ops.font);
+		g.set_fontSize(this.fontSize);
+		if(align == 1) {
+			xOffset = this._w / 2 - this.ops.font.width(this.fontSize,text) / 2;
+		} else if(align == 2) {
+			xOffset = this._w - this.ops.font.width(this.fontSize,text) - this.t.TEXT_OFFSET;
+		}
+		g.drawString(text,this._x + xOffset,this._y + this.fontOffsetY + yOffset);
+	}
+	,endElement: function(elementSize) {
+		if(this.currentWindow == null) {
+			this._y += this.t.ELEMENT_H * this.SCALE + this.t.ELEMENT_OFFSET * this.SCALE;
+			return;
+		}
+		if(this.currentWindow.layout == 0) {
+			if(this.curRatio == -1 || this.ratios != null && this.curRatio == this.ratios.length - 1) {
+				if(elementSize == null) {
+					elementSize = this.t.ELEMENT_H * this.SCALE + this.t.ELEMENT_OFFSET * this.SCALE;
+				}
+				this._y += elementSize;
+				if(this.ratios != null && this.curRatio == this.ratios.length - 1) {
+					this.curRatio = -1;
+					this.ratios = null;
+					this._x = this.xBeforeSplit;
+					this._w = this.wBeforeSplit;
+				}
+			} else {
+				this.curRatio++;
+				this._x += this._w;
+				this._w = this.wBeforeSplit * this.ratios[this.curRatio] | 0;
+			}
+		} else {
+			this._x += this._w + this.t.ELEMENT_OFFSET * this.SCALE;
+		}
+	}
+	,row: function(ratios) {
+		this.ratios = ratios;
+		this.curRatio = 0;
+		this.xBeforeSplit = this._x;
+		this.wBeforeSplit = this._w;
+		this._w = this._w * ratios[this.curRatio] | 0;
+	}
+	,indent: function() {
+		this._x += this.t.TAB_W * this.SCALE | 0;
+		this._w -= this.t.TAB_W * this.SCALE | 0;
+	}
+	,unindent: function() {
+		this._x -= this.t.TAB_W * this.SCALE | 0;
+		this._w += this.t.TAB_W * this.SCALE | 0;
+	}
+	,fill: function(x,y,w,h,color) {
+		this.g.set_color(color);
+		this.g.fillRect(this._x + x * this.SCALE,this._y + y * this.SCALE,w * this.SCALE,h * this.SCALE);
+		this.g.set_color(-1);
+	}
+	,rect: function(x,y,w,h,color,strength) {
+		if(strength == null) {
+			strength = 1.0;
+		}
+		this.g.set_color(color);
+		this.g.drawRect(this._x + x * this.SCALE,this._y + y * this.SCALE,w * this.SCALE,h * this.SCALE,strength);
+		this.g.set_color(-1);
+	}
+	,drawRect: function(g,fill,x,y,w,h,strength) {
+		if(strength == null) {
+			strength = 0.0;
+		}
+		if(strength == 0.0) {
+			strength = this.t.LINE_STRENGTH * this.SCALE;
+		}
+		if(fill) {
+			g.fillRect(x,y,w,h);
+		} else {
+			g.drawRect(x,y,w,h,strength);
+		}
+	}
+	,isVisible: function(elemH) {
+		if(this.currentWindow == null) {
+			return true;
+		}
+		if(this._y + elemH > 0) {
+			return this._y < this.currentWindow.texture.get_height();
+		} else {
+			return false;
+		}
+	}
+	,getReleased: function(elemH) {
+		if(elemH == null) {
+			elemH = -1.0;
+		}
+		this.isReleased = this.inputEnabled && this.inputReleased && this.getHover(elemH) && this.getInitialHover(elemH);
+		return this.isReleased;
+	}
+	,getPushed: function(elemH) {
+		if(elemH == null) {
+			elemH = -1.0;
+		}
+		this.isPushed = this.inputEnabled && this.inputDown && this.getHover(elemH) && this.getInitialHover(elemH);
+		return this.isPushed;
+	}
+	,getStarted: function(elemH) {
+		if(elemH == null) {
+			elemH = -1.0;
+		}
+		this.isStarted = this.inputEnabled && this.inputStarted && this.getHover(elemH);
+		return this.isStarted;
+	}
+	,getInitialHover: function(elemH) {
+		if(elemH == null) {
+			elemH = -1.0;
+		}
+		if(elemH == -1.0) {
+			elemH = this.t.ELEMENT_H * this.SCALE;
+		}
+		if(this.inputEnabled && this.inputInitialX >= this._windowX + this._x && this.inputInitialX < this._windowX + this._x + this._w && this.inputInitialY >= this._windowY + this._y) {
+			return this.inputInitialY < this._windowY + this._y + elemH;
+		} else {
+			return false;
+		}
+	}
+	,getHover: function(elemH) {
+		if(elemH == null) {
+			elemH = -1.0;
+		}
+		if(elemH == -1.0) {
+			elemH = this.t.ELEMENT_H * this.SCALE;
+		}
+		this.isHovered = this.inputEnabled && this.inputX >= this._windowX + this._x && this.inputX < this._windowX + this._x + this._w && this.inputY >= this._windowY + this._y && this.inputY < this._windowY + this._y + elemH;
+		return this.isHovered;
+	}
+	,getInputInRect: function(x,y,w,h,scale) {
+		if(scale == null) {
+			scale = 1.0;
+		}
+		if(this.inputEnabled && this.inputX >= x * scale && this.inputX < (x + w) * scale && this.inputY >= y * scale) {
+			return this.inputY < (y + h) * scale;
+		} else {
+			return false;
+		}
+	}
+	,onMouseDown: function(button,x,y) {
+		if(button == 0) {
+			this.inputStarted = true;
+		} else {
+			this.inputStartedR = true;
+		}
+		if(button == 0) {
+			this.inputDown = true;
+		} else {
+			this.inputDownR = true;
+		}
+		var sx = x * this.ops.scaleTexture | 0;
+		var sy = y * this.ops.scaleTexture | 0;
+		this.setInputPosition(sx,sy);
+		this.inputInitialX = sx;
+		this.inputInitialY = sy;
+	}
+	,onMouseUp: function(button,x,y) {
+		if(button == 0) {
+			if(this.isScrolling) {
+				this.isScrolling = false;
+				if(this.scrollingHandle != null) {
+					this.scrollingHandle.scrolling = false;
+				}
+				if(x == this.inputInitialX && y == this.inputInitialY) {
+					this.inputReleased = true;
+				}
+			} else {
+				this.inputReleased = true;
+			}
+		} else if(button == 1) {
+			this.inputReleasedR = true;
+		}
+		if(button == 0) {
+			this.inputDown = false;
+		} else {
+			this.inputDownR = false;
+		}
+		this.setInputPosition(x * this.ops.scaleTexture | 0,y * this.ops.scaleTexture | 0);
+		this.deselectText();
+	}
+	,onMouseMove: function(x,y,movementX,movementY) {
+		this.setInputPosition(x * this.ops.scaleTexture | 0,y * this.ops.scaleTexture | 0);
+	}
+	,onMouseWheel: function(delta) {
+		this.inputWheelDelta = delta;
+	}
+	,setInputPosition: function(x,y) {
+		this.inputDX += x - this.inputX;
+		this.inputDY += y - this.inputY;
+		this.inputX = x;
+		this.inputY = y;
+	}
+	,onKeyDown: function(code) {
+		this.key = code;
+		this.isKeyDown = true;
+		switch(code) {
+		case 8:
+			this.isBackspaceDown = true;
+			break;
+		case 16:
+			this.isShiftDown = true;
+			break;
+		case 17:
+			this.isCtrlDown = true;
+			break;
+		case 18:
+			this.isAltDown = true;
+			break;
+		case 27:
+			this.isEscapeDown = true;
+			break;
+		case 32:
+			this.char = " ";
+			break;
+		case 46:
+			this.isDeleteDown = true;
+			break;
+		default:
+		}
+	}
+	,onKeyUp: function(code) {
+		switch(code) {
+		case 8:
+			this.isBackspaceDown = false;
+			break;
+		case 16:
+			this.isShiftDown = false;
+			break;
+		case 17:
+			this.isCtrlDown = false;
+			break;
+		case 18:
+			this.isAltDown = false;
+			break;
+		case 27:
+			this.isEscapeDown = false;
+			break;
+		case 46:
+			this.isDeleteDown = false;
+			break;
+		default:
+		}
+	}
+	,onKeyPress: function(char) {
+		this.char = char;
+		this.isKeyDown = true;
+	}
+	,onCut: function() {
+		zui_Zui.isCut = true;
+		return this.onCopy();
+	}
+	,onCopy: function() {
+		zui_Zui.isCopy = true;
+		return zui_Zui.textToCopy;
+	}
+	,onPaste: function(s) {
+		zui_Zui.isPaste = true;
+		zui_Zui.textToPaste = s;
+	}
+	,ELEMENT_W: function() {
+		return this.t.ELEMENT_W * this.SCALE;
+	}
+	,ELEMENT_H: function() {
+		return this.t.ELEMENT_H * this.SCALE;
+	}
+	,ELEMENT_OFFSET: function() {
+		return this.t.ELEMENT_OFFSET * this.SCALE;
+	}
+	,ARROW_SIZE: function() {
+		return this.t.ARROW_SIZE * this.SCALE;
+	}
+	,BUTTON_H: function() {
+		return this.t.BUTTON_H * this.SCALE;
+	}
+	,CHECK_SIZE: function() {
+		return this.t.CHECK_SIZE * this.SCALE;
+	}
+	,CHECK_SELECT_SIZE: function() {
+		return this.t.CHECK_SELECT_SIZE * this.SCALE;
+	}
+	,SCROLL_W: function() {
+		return this.t.SCROLL_W * this.SCALE | 0;
+	}
+	,TEXT_OFFSET: function() {
+		return this.t.TEXT_OFFSET;
+	}
+	,TAB_W: function() {
+		return this.t.TAB_W * this.SCALE | 0;
+	}
+	,LINE_STRENGTH: function() {
+		return this.t.LINE_STRENGTH * this.SCALE;
+	}
+	,FLASH_SPEED: function() {
+		return 0.5;
+	}
+	,TOOLTIP_DELAY: function() {
+		return 1.0;
+	}
+	,resize: function(handle,w,h,khaWindowId) {
+		if(khaWindowId == null) {
+			khaWindowId = 0;
+		}
+		handle.redraws = 2;
+		if(handle.texture != null) {
+			handle.texture.unload();
+		}
+		if(w < 1) {
+			w = 1;
+		}
+		if(h < 1) {
+			h = 1;
+		}
+		handle.texture = kha_Image.createRenderTarget(w,h,0,0,1,khaWindowId);
+		handle.texture.get_g2().set_imageScaleQuality(kha_graphics2_ImageScaleQuality.High);
+	}
+	,__class__: zui_Zui
 };
-$hxClasses["systems.ActorMoverSystem"] = systems_ActorMoverSystem;
-systems_ActorMoverSystem.__name__ = "systems.ActorMoverSystem";
-systems_ActorMoverSystem.__super__ = khaEngine2D_entities_EntitySystem;
-systems_ActorMoverSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
-	entityGroup: null
-	,entities: null
-	,positions: null
-	,actorInputs: null
-	,onCreate: function() {
-		this.entityGroup = [new components_Position2DComponent(),new components_ActorInputComponent()];
-	}
-	,onChange: function() {
-		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
-		this.positions = [];
-		this.actorInputs = [];
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
-			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
-		}
-	}
-	,update: function() {
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			this.positions[i.getIndex()].x += this.actorInputs[i.getIndex()].xInput * 3;
-			this.positions[i.getIndex()].y += this.actorInputs[i.getIndex()].yInput * 3;
-		}
-	}
-	,render: function() {
-	}
-	,__class__: systems_ActorMoverSystem
-});
-var systems_ActorPlayerSystem = function() {
-	khaEngine2D_entities_EntitySystem.call(this);
-};
-$hxClasses["systems.ActorPlayerSystem"] = systems_ActorPlayerSystem;
-systems_ActorPlayerSystem.__name__ = "systems.ActorPlayerSystem";
-systems_ActorPlayerSystem.__super__ = khaEngine2D_entities_EntitySystem;
-systems_ActorPlayerSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
-	entityGroup: null
-	,entities: null
-	,actorInputs: null
-	,onCreate: function() {
-		this.entityGroup = [new components_ActorInputComponent(),new components_ActorPlayerComponent()];
-	}
-	,onChange: function() {
-		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
-		this.actorInputs = [];
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			this.actorInputs.push(js_Boot.__cast(this.world.getComponent(i,new components_ActorInputComponent()) , components_ActorInputComponent));
-		}
-	}
-	,update: function() {
-		if(khaEngine2D_input_Input.I().isKeyDown(13)) {
-			var i = 1000;
-			while(i > 0) {
-				var entity = this.world.createEntity();
-				var position2DComponent = new components_Position2DComponent();
-				position2DComponent.x = Math.floor(Math.random() * 2000 + 1);
-				position2DComponent.y = Math.floor(Math.random() * 2000 + 1);
-				this.world.addComponent(entity,position2DComponent);
-				this.world.addComponent(entity,new components_ActorInputComponent());
-				--i;
-			}
-		}
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i1 = _g1[_g];
-			++_g;
-			var actorInput = this.actorInputs[i1.getIndex()];
-			actorInput.xInput = 0;
-			actorInput.yInput = 0;
-			if(khaEngine2D_input_Input.I().isKeyDown(65)) {
-				actorInput.xInput = -1;
-			}
-			if(khaEngine2D_input_Input.I().isKeyDown(68)) {
-				actorInput.xInput = 1;
-			}
-			if(khaEngine2D_input_Input.I().isKeyDown(87)) {
-				actorInput.yInput = -1;
-			}
-			if(khaEngine2D_input_Input.I().isKeyDown(83)) {
-				actorInput.yInput = 1;
-			}
-		}
-	}
-	,render: function() {
-	}
-	,__class__: systems_ActorPlayerSystem
-});
-var systems_ActorRenderSystem = function() {
-	khaEngine2D_entities_EntitySystem.call(this);
-};
-$hxClasses["systems.ActorRenderSystem"] = systems_ActorRenderSystem;
-systems_ActorRenderSystem.__name__ = "systems.ActorRenderSystem";
-systems_ActorRenderSystem.__super__ = khaEngine2D_entities_EntitySystem;
-systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySystem.prototype,{
-	entityGroup: null
-	,entities: null
-	,positions: null
-	,image: null
-	,onCreate: function() {
-		this.entityGroup = [new components_Position2DComponent()];
-	}
-	,onChange: function() {
-		this.entities = this.world.getEntitiesWithComponents(this.entityGroup);
-		this.positions = [];
-		var _g = 0;
-		var _g1 = this.entities;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			this.positions.push(js_Boot.__cast(this.world.getComponent(i,new components_Position2DComponent()) , components_Position2DComponent));
-		}
-	}
-	,update: function() {
-	}
-	,render: function() {
-		if(this.image == null) {
-			this.image = kha_Assets.images.Player_Sprite;
-		}
-		var _g = 0;
-		var _g1 = this.positions;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			khaEngine2D_graphics_SpriteBatch.DrawSpriteSheet(this.image,i.x,i.y,0.5,0.5,0,0,48,48);
-		}
-	}
-	,__class__: systems_ActorRenderSystem
-});
 function $getIterator(o) { if( o instanceof Array ) return HxOverrides.iter(o); else return o.iterator(); }
 var $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
@@ -21724,6 +23935,27 @@ kha_netsync_Session.RPC_ALL = 1;
 kha_netsync_SyncBuilder.nextId = 0;
 kha_netsync_SyncBuilder.objects = [];
 khaEngine2D_graphics_SpriteBatch.images = [];
+sandbox_sceneTools_SceneTool.tools = new haxe_ds_StringMap();
+sandbox_sceneTools_SceneTool.toolNames = [];
+zui_Handle.global = new zui_Handle();
+zui_Canvas.assetMap = new haxe_ds_IntMap();
+zui_Canvas.events = [];
+zui_Canvas.screenW = -1;
+zui_Canvas.screenH = -1;
+zui_Canvas.locale = "en";
+zui_Canvas.h = new zui_Handle();
+zui_Canvas.elemId = -1;
+zui_Canvas.assetId = -1;
+zui_Id.i = 0;
+zui_Themes.dark = { FONT_SIZE : 13, ELEMENT_W : 100, ELEMENT_H : 22, ELEMENT_OFFSET : 4, ARROW_SIZE : 5, BUTTON_H : 17, CHECK_SIZE : 15, CHECK_SELECT_SIZE : 8, SCROLL_W : 8, TEXT_OFFSET : 8, TAB_W : 12, LINE_STRENGTH : 1, FILL_WINDOW_BG : false, FILL_BUTTON_BG : true, FILL_ACCENT_BG : false, WINDOW_BG_COL : -13421773, WINDOW_TINT_COL : -1, ACCENT_COL : -12303292, ACCENT_HOVER_COL : -12040120, ACCENT_SELECT_COL : -10461088, PANEL_BG_COL : -13421773, PANEL_TEXT_COL : -3487289, BUTTON_COL : -12040120, BUTTON_TEXT_COL : -3487289, BUTTON_HOVER_COL : -12895429, BUTTON_PRESSED_COL : -15000805, TEXT_COL : -3487289, LABEL_COL : -5592406, ARROW_COL : -3487289, SEPARATOR_COL : -14211289, HIGHLIGHT_COL : -14656100};
+zui_Themes.light = { FONT_SIZE : 26, ELEMENT_W : 200, ELEMENT_H : 44, ELEMENT_OFFSET : 4, ARROW_SIZE : 10, BUTTON_H : 34, CHECK_SIZE : 30, CHECK_SELECT_SIZE : 16, SCROLL_W : 16, TEXT_OFFSET : 16, TAB_W : 24, LINE_STRENGTH : 2, FILL_WINDOW_BG : false, FILL_BUTTON_BG : true, FILL_ACCENT_BG : false, WINDOW_BG_COL : -1052689, WINDOW_TINT_COL : -14540254, ACCENT_COL : -1118482, ACCENT_HOVER_COL : -4473925, ACCENT_SELECT_COL : -5592406, PANEL_BG_COL : -1, PANEL_TEXT_COL : -14540254, BUTTON_COL : -3355444, BUTTON_TEXT_COL : -14540254, BUTTON_HOVER_COL : -5000269, BUTTON_PRESSED_COL : -5131855, TEXT_COL : -6710887, LABEL_COL : -5592406, ARROW_COL : -3487289, SEPARATOR_COL : -6710887, HIGHLIGHT_COL : -14656100};
+zui_Zui.textToPaste = "";
+zui_Zui.textToCopy = "";
+zui_Zui.isCut = false;
+zui_Zui.isCopy = false;
+zui_Zui.isPaste = false;
+zui_Zui.copyFrame = 0;
+zui_Zui.comboFirst = true;
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 
