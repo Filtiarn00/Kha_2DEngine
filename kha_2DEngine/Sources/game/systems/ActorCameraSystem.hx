@@ -1,6 +1,5 @@
 package game.systems;
 
-import kha.graphics2.Graphics;
 import kha.math.FastVector4;
 import khaEngine2D.graphics.Camera;
 import khaEngine2D.entities.Entity;
@@ -47,10 +46,6 @@ class ActorCameraSystem extends EntitySystem
 
         //Set Camera bounds
         camera.bounds = new FastVector4(0,0,0,0);
-
-        //Center camera
-        camera.view.x = camera.view.z * 0.5;
-        camera.view.y = camera.view.w * 0.5;
     }
 
 	public override function render():Void 

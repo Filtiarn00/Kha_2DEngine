@@ -15,19 +15,20 @@ class EntityWorld
 
     public function update():Void 
 	{   
-        if (!isActive)
-            return;
-
-        for (i in systems)
-			i.update();
+        if (isActive)
+            for (i in systems)
+			    i.update();
+	}
     
+    public function checkForChanges() 
+    {
         if (isDirty)
         {
             for (i in systems)
                 i.onChange();
             isDirty = false;
         }
-	}
+    }
 
 	public function render():Void 
 	{

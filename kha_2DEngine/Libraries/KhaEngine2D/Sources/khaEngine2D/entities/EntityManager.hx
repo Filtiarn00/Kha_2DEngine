@@ -13,8 +13,17 @@ class EntityManager
     public function update():Void 
 	{   
         for (i in worlds)
+        {
             i.update();
+            i.checkForChanges();
+        }
 	}
+
+    public function forceCheckForChanges() 
+    {
+        for (i in worlds)
+            i.checkForChanges();
+    }
 
 	public function render():Void 
 	{        

@@ -16,6 +16,11 @@ class SpriteBatch
 	private static var internalGraphics:Graphics;
 	private static var internalCamera:Camera;
 
+	public static function getGraphics(): Graphics
+	{
+		return internalGraphics;
+	}
+
 	public static function begin(graphics:Graphics):Void
 	{
 		internalGraphics = graphics;

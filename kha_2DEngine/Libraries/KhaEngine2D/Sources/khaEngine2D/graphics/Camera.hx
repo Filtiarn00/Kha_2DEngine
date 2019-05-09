@@ -51,6 +51,10 @@ class Camera
         	if (position.y > bounds.w - view.y) position.y =  bounds.w - view.y;
 		 }
 
+		//Set View X and Y to center of view Z and W
+		view.x = view.z * 0.5;
+		view.y = view.w * 0.5;
+		
 		graphics.pushTransformation(transformation);
 		graphics.translate(-position.x + view.x,-position.y + view.y);
 	}
