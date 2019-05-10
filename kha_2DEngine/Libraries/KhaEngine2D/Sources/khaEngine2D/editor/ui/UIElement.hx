@@ -22,7 +22,6 @@ class UIElement
 
     public function render(graphics:Graphics)
     {
-        graphics.drawRect(0,0,0,0,1);
 	}
 
     public function onMouseMove(x:Int, y:Int,z:Int,w:Int):Void

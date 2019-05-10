@@ -2,6 +2,7 @@ package;
 
 import kha.System;
 import game.GameOne;
+import editor.EditorOne;
 
 class Main 
 {
@@ -13,5 +14,6 @@ class Main
 	private static function initialized(window:kha.Window):Void 
 	{
 		var game = new GameOne();
+		var editor = new EditorOne();
 	}
 }

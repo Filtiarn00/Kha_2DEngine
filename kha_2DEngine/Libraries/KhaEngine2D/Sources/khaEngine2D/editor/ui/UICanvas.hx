@@ -18,6 +18,11 @@ class UICanvas
             i.render(graphics);
 	}
 
+    public function addUIElement(uiElement:UIElement) 
+    {
+        uiElements.push(uiElement);    
+    }
+
     public function onMouseMove(x:Int, y:Int,z:Int,w:Int):Void
     {
         for (i in uiElements)
