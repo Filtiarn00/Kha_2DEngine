@@ -7,20 +7,19 @@ import kha.Color;
 class UIElement
 {
     public var rect:FastVector4;
+    public var String:text;
 	public var isPressed:Bool;
     public var isHovred:Bool;
 
     public var onClick:Void -> Void;
-	public var colorFrame:Color = Color.White;
-	public var colorOn:Color = Color.Green;
-	public var colorOff:Color = Color.Black;
 
-    public function new(rect:FastVector4)
+    public function new(rect:FastVector4, text:String)
 	{
         this.rect = rect;
+        this.text = text;
 	}
 
-    public function render(graphics:Graphics)
+    public function render(graphics:Graphics, editor:Editor)
     {
 	}
 

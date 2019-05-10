@@ -19,7 +19,7 @@ class EditorOne extends Editor
 		super();
 
         panelCanvas = addCanvas('Panel');
-        panelCanvas.addUIElement(new UIButton(new FastVector4(0,0,50,50)));
+        panelCanvas.addUIElement(new UIButton(new FastVector4(0,0,50,50),'Test'));
 	}
 
 	public override function load():Void

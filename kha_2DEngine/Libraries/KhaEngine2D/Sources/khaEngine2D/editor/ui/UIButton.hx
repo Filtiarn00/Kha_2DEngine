@@ -8,16 +8,25 @@ import khaEngine2D.editor.ui.UIElement;
 
 class UIButton extends UIElement
 {
-    public function new(rect:FastVector4)
+    public function new(rect:FastVector4, text:String)
 	{			
         super(rect);
 	}
 
-    public override function render(graphics:Graphics)
+    public override function render(graphics:Graphics, editor:Editor)
     {
-        super.render(graphics);
+        super.render(graphics,editor);
 
-        graphics.color = Color.Red;
+        var color = editor.getTheme().BUTTON_NORMAL_COLOR;
+
+        if (isHovred)
+            color = editor.getTheme().BUTTON_HOVER_COLOR;
+        if (isPressed)
+            color = editor.getTheme().BUTTON_PRESSED_COLOR;
+
+        graphics.color = color;
         graphics.fillRect(rect.x,rect.y,rect.z,rect.w);
+
+        graphics.color = editor.getTheme().BUTTON_TEXT_COLOR;
 	}
 }

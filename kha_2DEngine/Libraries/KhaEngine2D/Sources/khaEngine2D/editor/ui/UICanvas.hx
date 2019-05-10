@@ -12,10 +12,10 @@ class UICanvas
         Mouse.get().notify(onMouseDown, onMouseUp, onMouseMove, null);	
 	}
 
-    public function render(graphics:Graphics)
+    public function render(graphics:Graphics, editor:Editor)
     {
         for (i in uiElements)
-            i.render(graphics);
+            i.render(graphics,editor);
 	}
 
     public function addUIElement(uiElement:UIElement) 

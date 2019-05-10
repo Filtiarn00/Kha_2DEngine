@@ -7,6 +7,8 @@ import kha.Scheduler;
 import kha.Framebuffer;
 import kha.math.FastVector4;
 
+import khaEngine2D.editor.ui.UIThemes.TUITheme;
+import khaEngine2D.editor.ui.UIThemes;
 import khaEngine2D.editor.ui.UIElement;
 import khaEngine2D.editor.ui.UICanvas;
 
@@ -15,8 +17,8 @@ class Editor
 	private static var i:Editor;
 
 	private var uiCanvases:Map<String,UICanvas> = new Map<String,UICanvas>();
+	private var theme:TUITheme = UIThemes.dark;
     private var isPlaying:Bool;
-
 
 	public static function getEditor(): Editor
 	{
@@ -47,7 +49,7 @@ class Editor
 
 		graphics.begin(false);
 		for (i in uiCanvases)
-			i.render(frames[0].g2);
+			i.render(frames[0].g2,this);
 		graphics.end();
 	}
 
@@ -65,5 +67,15 @@ class Editor
 	public function getCanvas(key:String):UICanvas
 	{
 		return (uiCanvases.get(key));
+	}
+
+	public function setTheme(theme:TUITheme) 
+	{
+		this.theme = theme;
+	}
+
+	public function getTheme():TUITheme
+	{
+		return theme;
 	}
 }

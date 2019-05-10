@@ -15,14 +15,14 @@
     <output url="file://$MODULE_DIR$/../debug-html5" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../..">
-      <sourceFolder url="file:///Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Sources" isTestSource="false" />
-      <sourceFolder url="file:///Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Backends/HTML5" isTestSource="false" />
-      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Sources" isTestSource="false" />
-      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D/Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\nicho\.vscode\extensions\kodetech.kha-19.2.0\Kha\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\nicho\.vscode\extensions\kodetech.kha-19.2.0\Kha\Backends\HTML5" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Libraries\khaEngine2D\Sources" isTestSource="false" />
 
     </content>
     <content url="file://Libraries/khaEngine2D">
-      <sourceFolder url="file:///Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Libraries\khaEngine2D" isTestSource="false" />
     </content>
     
     <orderEntry type="jdk" jdkName="Haxe 3.2.0" jdkType="Haxe toolkit" />
