@@ -1,6 +1,6 @@
-package khaEngine2D.editor.ui;
+package khaEngine2D.imgui;
 
-class UIThemes
+class ImguiThemes
 {
 	public static var dark: TUITheme = 
     {

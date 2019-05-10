@@ -1,12 +1,7 @@
 package khaEngine2D.graphics;
 
-import kha.System;
 import kha.graphics2.Graphics;
-import kha.graphics2.GraphicsExtension;
 import kha.Color;
-import kha.System;
-import kha.Scheduler;
-import kha.Framebuffer;
 import kha.Image;
 import khaEngine2D.graphics.Camera;
 

@@ -112,6 +112,7 @@ Main.main = function() {
 	kha_System.start(new kha_SystemOptions("Kha2D - Sandbox",800,600,null,null),Main.initialized);
 };
 Main.initialized = function($window) {
+	var game1 = new game_GameOne();
 	var editor1 = new editor_EditorOne();
 };
 Math.__name__ = "Math";
@@ -214,8 +215,6 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	}
 };
 var khaEngine2D_editor_Editor = function() {
-	this.theme = khaEngine2D_editor_ui_UIThemes.dark;
-	this.uiCanvases = new haxe_ds_StringMap();
 	var _gthis = this;
 	khaEngine2D_editor_Editor.i = this;
 	kha_Scheduler.addTimeTask($bind(this,this.update),0,0.016666666666666666);
@@ -230,71 +229,39 @@ khaEngine2D_editor_Editor.getEditor = function() {
 	return khaEngine2D_editor_Editor.i;
 };
 khaEngine2D_editor_Editor.prototype = {
-	uiCanvases: null
-	,theme: null
-	,isPlaying: null
+	isGamePlaying: null
 	,load: function() {
 	}
 	,update: function() {
 	}
 	,render: function(frames) {
-		var graphics = frames[0].get_g2();
-		graphics.begin(false);
-		var _this = this.uiCanvases;
-		var i = new haxe_ds__$StringMap_StringMapIterator(_this,_this.arrayKeys());
-		while(i.hasNext()) {
-			var i1 = i.next();
-			i1.render(frames[0].get_g2(),this);
-		}
-		graphics.end();
-	}
-	,addCanvas: function(key) {
-		var _this = this.uiCanvases;
-		if((__map_reserved[key] != null ? _this.getReserved(key) : _this.h[key]) == null) {
-			var uiCanvas = new khaEngine2D_editor_ui_UICanvas();
-			var _this1 = this.uiCanvases;
-			if(__map_reserved[key] != null) {
-				_this1.setReserved(key,uiCanvas);
-			} else {
-				_this1.h[key] = uiCanvas;
-			}
-			return uiCanvas;
-		}
-		return null;
-	}
-	,getCanvas: function(key) {
-		var _this = this.uiCanvases;
-		if(__map_reserved[key] != null) {
-			return _this.getReserved(key);
-		} else {
-			return _this.h[key];
-		}
-	}
-	,setTheme: function(theme) {
-		this.theme = theme;
-	}
-	,getTheme: function() {
-		return this.theme;
 	}
 	,__class__: khaEngine2D_editor_Editor
 };
 var editor_EditorOne = function() {
+	this.imgui = new khaEngine2D_imgui_Imgui();
 	khaEngine2D_editor_Editor.call(this);
-	this.panelCanvas = this.addCanvas("Panel");
-	this.panelCanvas.addUIElement(new khaEngine2D_editor_ui_UIButton(new kha_math_FastVector4(0,0,50,50)));
 };
 $hxClasses["editor.EditorOne"] = editor_EditorOne;
 editor_EditorOne.__name__ = "editor.EditorOne";
 editor_EditorOne.__super__ = khaEngine2D_editor_Editor;
 editor_EditorOne.prototype = $extend(khaEngine2D_editor_Editor.prototype,{
-	panelCanvas: null
+	imgui: null
 	,load: function() {
+		khaEngine2D_editor_Editor.prototype.load.call(this);
 	}
 	,update: function() {
 		khaEngine2D_editor_Editor.prototype.update.call(this);
 	}
 	,render: function(frames) {
 		khaEngine2D_editor_Editor.prototype.render.call(this,frames);
+		var graphics = frames[0].get_g2();
+		this.imgui.setFont(kha_Assets.fonts.Roboto);
+		this.imgui.begin(graphics,false);
+		this.imgui.beginLayout(graphics,new kha_math_FastVector4(100,100,300,300));
+		this.imgui.button(graphics,new kha_math_FastVector4(0,0,125,50));
+		this.imgui.endLayout(graphics);
+		this.imgui.end(graphics);
 	}
 	,__class__: editor_EditorOne
 });
@@ -12484,306 +12451,9 @@ kha_graphics2_Graphics1.prototype = {
 	}
 	,__class__: kha_graphics2_Graphics1
 };
-var kha_graphics2_GraphicsExtension = function() { };
-$hxClasses["kha.graphics2.GraphicsExtension"] = kha_graphics2_GraphicsExtension;
-kha_graphics2_GraphicsExtension.__name__ = "kha.graphics2.GraphicsExtension";
-kha_graphics2_GraphicsExtension.drawArc = function(g2,cx,cy,radius,sAngle,eAngle,strength,ccw,segments) {
-	if(segments == null) {
-		segments = 0;
-	}
-	if(ccw == null) {
-		ccw = false;
-	}
-	if(strength == null) {
-		strength = 1;
-	}
-	if(kha_SystemImpl.gl == null) {
-		var g = g2;
-		radius -= strength / 2;
-		g.drawArc(cx,cy,radius,sAngle,eAngle,strength,ccw);
-		return;
-	}
-	sAngle %= Math.PI * 2;
-	eAngle %= Math.PI * 2;
-	if(ccw) {
-		if(eAngle > sAngle) {
-			eAngle -= Math.PI * 2;
-		}
-	} else if(eAngle < sAngle) {
-		eAngle += Math.PI * 2;
-	}
-	if(segments <= 0) {
-		segments = Math.floor(10 * Math.sqrt(radius));
-	}
-	var theta = (eAngle - sAngle) / segments;
-	var c = Math.cos(theta);
-	var s = Math.sin(theta);
-	var x = Math.cos(sAngle) * radius;
-	var y = Math.sin(sAngle) * radius;
-	var _g = 0;
-	var _g1 = segments;
-	while(_g < _g1) {
-		var n = _g++;
-		var px = x + cx;
-		var py = y + cy;
-		var t = x;
-		x = c * x - s * y;
-		y = c * y + s * t;
-		g2.drawLine(px,py,x + cx,y + cy,strength);
-	}
-};
-kha_graphics2_GraphicsExtension.fillArc = function(g2,cx,cy,radius,sAngle,eAngle,ccw,segments) {
-	if(segments == null) {
-		segments = 0;
-	}
-	if(ccw == null) {
-		ccw = false;
-	}
-	if(kha_SystemImpl.gl == null) {
-		var g = g2;
-		g.fillArc(cx,cy,radius,sAngle,eAngle,ccw);
-		return;
-	}
-	sAngle %= Math.PI * 2;
-	eAngle %= Math.PI * 2;
-	if(ccw) {
-		if(eAngle > sAngle) {
-			eAngle -= Math.PI * 2;
-		}
-	} else if(eAngle < sAngle) {
-		eAngle += Math.PI * 2;
-	}
-	if(segments <= 0) {
-		segments = Math.floor(10 * Math.sqrt(radius));
-	}
-	var theta = (eAngle - sAngle) / segments;
-	var c = Math.cos(theta);
-	var s = Math.sin(theta);
-	var x = Math.cos(sAngle) * radius;
-	var y = Math.sin(sAngle) * radius;
-	var sx = x + cx;
-	var sy = y + cy;
-	var _g = 0;
-	var _g1 = segments;
-	while(_g < _g1) {
-		var n = _g++;
-		var px = x + cx;
-		var py = y + cy;
-		var t = x;
-		x = c * x - s * y;
-		y = c * y + s * t;
-		g2.fillTriangle(px,py,x + cx,y + cy,sx,sy);
-	}
-};
-kha_graphics2_GraphicsExtension.drawCircle = function(g2,cx,cy,radius,strength,segments) {
-	if(segments == null) {
-		segments = 0;
-	}
-	if(strength == null) {
-		strength = 1;
-	}
-	if(kha_SystemImpl.gl == null) {
-		var g = g2;
-		radius -= strength / 2;
-		g.drawCircle(cx,cy,radius,strength);
-		return;
-	}
-	if(segments <= 0) {
-		segments = Math.floor(10 * Math.sqrt(radius));
-	}
-	var theta = 2 * Math.PI / segments;
-	var c = Math.cos(theta);
-	var s = Math.sin(theta);
-	var x = radius;
-	var y = 0.0;
-	var _g = 0;
-	var _g1 = segments;
-	while(_g < _g1) {
-		var n = _g++;
-		var px = x + cx;
-		var py = y + cy;
-		var t = x;
-		x = c * x - s * y;
-		y = c * y + s * t;
-		g2.drawLine(px,py,x + cx,y + cy,strength);
-	}
-};
-kha_graphics2_GraphicsExtension.fillCircle = function(g2,cx,cy,radius,segments) {
-	if(segments == null) {
-		segments = 0;
-	}
-	if(kha_SystemImpl.gl == null) {
-		var g = g2;
-		g.fillCircle(cx,cy,radius);
-		return;
-	}
-	if(segments <= 0) {
-		segments = Math.floor(10 * Math.sqrt(radius));
-	}
-	var theta = 2 * Math.PI / segments;
-	var c = Math.cos(theta);
-	var s = Math.sin(theta);
-	var x = radius;
-	var y = 0.0;
-	var _g = 0;
-	var _g1 = segments;
-	while(_g < _g1) {
-		var n = _g++;
-		var px = x + cx;
-		var py = y + cy;
-		var t = x;
-		x = c * x - s * y;
-		y = c * y + s * t;
-		g2.fillTriangle(px,py,x + cx,y + cy,cx,cy);
-	}
-};
-kha_graphics2_GraphicsExtension.drawPolygon = function(g2,x,y,vertices,strength) {
-	if(strength == null) {
-		strength = 1;
-	}
-	var iterator = HxOverrides.iter(vertices);
-	var v0 = iterator.next();
-	var v1 = v0;
-	while(iterator.hasNext()) {
-		var v2 = iterator.next();
-		g2.drawLine(v1.x + x,v1.y + y,v2.x + x,v2.y + y,strength);
-		v1 = v2;
-	}
-	g2.drawLine(v1.x + x,v1.y + y,v0.x + x,v0.y + y,strength);
-};
-kha_graphics2_GraphicsExtension.fillPolygon = function(g2,x,y,vertices) {
-	var iterator = HxOverrides.iter(vertices);
-	if(!iterator.hasNext()) {
-		return;
-	}
-	var v0 = iterator.next();
-	if(!iterator.hasNext()) {
-		return;
-	}
-	var v1 = iterator.next();
-	while(iterator.hasNext()) {
-		var v2 = iterator.next();
-		g2.fillTriangle(v0.x + x,v0.y + y,v1.x + x,v1.y + y,v2.x + x,v2.y + y);
-		v1 = v2;
-	}
-};
-kha_graphics2_GraphicsExtension.drawCubicBezier = function(g2,x,y,segments,strength) {
-	if(strength == null) {
-		strength = 1.0;
-	}
-	if(segments == null) {
-		segments = 20;
-	}
-	var t;
-	var q0 = kha_graphics2_GraphicsExtension.calculateCubicBezierPoint(0,x,y);
-	var q1;
-	var _g = 1;
-	var _g1 = segments + 1;
-	while(_g < _g1) {
-		var i = _g++;
-		t = i / segments;
-		q1 = kha_graphics2_GraphicsExtension.calculateCubicBezierPoint(t,x,y);
-		g2.drawLine(q0[0],q0[1],q1[0],q1[1],strength);
-		q0 = q1;
-	}
-};
-kha_graphics2_GraphicsExtension.drawCubicBezierPath = function(g2,x,y,segments,strength) {
-	if(strength == null) {
-		strength = 1.0;
-	}
-	if(segments == null) {
-		segments = 20;
-	}
-	var i = 0;
-	var t;
-	var q0 = null;
-	var q1 = null;
-	while(i < x.length - 3) {
-		if(i == 0) {
-			q0 = kha_graphics2_GraphicsExtension.calculateCubicBezierPoint(0,[x[i],x[i + 1],x[i + 2],x[i + 3]],[y[i],y[i + 1],y[i + 2],y[i + 3]]);
-		}
-		var _g = 1;
-		var _g1 = segments + 1;
-		while(_g < _g1) {
-			var j = _g++;
-			t = j / segments;
-			q1 = kha_graphics2_GraphicsExtension.calculateCubicBezierPoint(t,[x[i],x[i + 1],x[i + 2],x[i + 3]],[y[i],y[i + 1],y[i + 2],y[i + 3]]);
-			g2.drawLine(q0[0],q0[1],q1[0],q1[1],strength);
-			q0 = q1;
-		}
-		i += 3;
-	}
-};
-kha_graphics2_GraphicsExtension.calculateCubicBezierPoint = function(t,x,y) {
-	var u = 1 - t;
-	var tt = t * t;
-	var uu = u * u;
-	var uuu = uu * u;
-	var ttt = tt * t;
-	var p = [uuu * x[0],uuu * y[0]];
-	p[0] += 3 * uu * t * x[1];
-	p[1] += 3 * uu * t * y[1];
-	p[0] += 3 * u * tt * x[2];
-	p[1] += 3 * u * tt * y[2];
-	p[0] += ttt * x[3];
-	p[1] += ttt * y[3];
-	return p;
-};
-kha_graphics2_GraphicsExtension.drawAlignedString = function(g2,text,x,y,horAlign,verAlign) {
-	var xoffset = 0.0;
-	if(horAlign == kha_graphics2_HorTextAlignment.TextCenter || horAlign == kha_graphics2_HorTextAlignment.TextRight) {
-		var width = g2.get_font().width(g2.get_fontSize(),text);
-		if(horAlign == kha_graphics2_HorTextAlignment.TextCenter) {
-			xoffset = -width * 0.5;
-		} else {
-			xoffset = -width;
-		}
-	}
-	var yoffset = 0.0;
-	if(verAlign == kha_graphics2_VerTextAlignment.TextMiddle || verAlign == kha_graphics2_VerTextAlignment.TextBottom) {
-		var height = g2.get_font().height(g2.get_fontSize());
-		if(verAlign == kha_graphics2_VerTextAlignment.TextMiddle) {
-			yoffset = -height * 0.5;
-		} else {
-			yoffset = -height;
-		}
-	}
-	g2.drawString(text,x + xoffset,y + yoffset);
-};
-kha_graphics2_GraphicsExtension.drawAlignedCharacters = function(g2,text,start,length,x,y,horAlign,verAlign) {
-	var xoffset = 0.0;
-	if(horAlign == kha_graphics2_HorTextAlignment.TextCenter || horAlign == kha_graphics2_HorTextAlignment.TextRight) {
-		var width = g2.get_font().widthOfCharacters(g2.get_fontSize(),text,start,length);
-		if(horAlign == kha_graphics2_HorTextAlignment.TextCenter) {
-			xoffset = -width * 0.5;
-		} else {
-			xoffset = -width;
-		}
-	}
-	var yoffset = 0.0;
-	if(verAlign == kha_graphics2_VerTextAlignment.TextMiddle || verAlign == kha_graphics2_VerTextAlignment.TextBottom) {
-		var height = g2.get_font().height(g2.get_fontSize());
-		if(verAlign == kha_graphics2_VerTextAlignment.TextMiddle) {
-			yoffset = -height * 0.5;
-		} else {
-			yoffset = -height;
-		}
-	}
-	g2.drawCharacters(text,start,length,x + xoffset,y + yoffset);
-};
-var kha_graphics2_HorTextAlignment = $hxEnums["kha.graphics2.HorTextAlignment"] = { __ename__ : true, __constructs__ : ["TextLeft","TextCenter","TextRight"]
-	,TextLeft: {_hx_index:0,__enum__:"kha.graphics2.HorTextAlignment",toString:$estr}
-	,TextCenter: {_hx_index:1,__enum__:"kha.graphics2.HorTextAlignment",toString:$estr}
-	,TextRight: {_hx_index:2,__enum__:"kha.graphics2.HorTextAlignment",toString:$estr}
-};
 var kha_graphics2_ImageScaleQuality = $hxEnums["kha.graphics2.ImageScaleQuality"] = { __ename__ : true, __constructs__ : ["Low","High"]
 	,Low: {_hx_index:0,__enum__:"kha.graphics2.ImageScaleQuality",toString:$estr}
 	,High: {_hx_index:1,__enum__:"kha.graphics2.ImageScaleQuality",toString:$estr}
-};
-var kha_graphics2_VerTextAlignment = $hxEnums["kha.graphics2.VerTextAlignment"] = { __ename__ : true, __constructs__ : ["TextTop","TextMiddle","TextBottom"]
-	,TextTop: {_hx_index:0,__enum__:"kha.graphics2.VerTextAlignment",toString:$estr}
-	,TextMiddle: {_hx_index:1,__enum__:"kha.graphics2.VerTextAlignment",toString:$estr}
-	,TextBottom: {_hx_index:2,__enum__:"kha.graphics2.VerTextAlignment",toString:$estr}
 };
 var kha_graphics2_truetype_VectorOfIntPointer = function() {
 };
@@ -21238,104 +20908,6 @@ kha_vr_TimeWarpParms.prototype = {
 	,RightOverlay: null
 	,__class__: kha_vr_TimeWarpParms
 };
-var khaEngine2D_editor_ui_UIElement = function(rect) {
-	this.rect = rect;
-};
-$hxClasses["khaEngine2D.editor.ui.UIElement"] = khaEngine2D_editor_ui_UIElement;
-khaEngine2D_editor_ui_UIElement.__name__ = "khaEngine2D.editor.ui.UIElement";
-khaEngine2D_editor_ui_UIElement.prototype = {
-	rect: null
-	,isPressed: null
-	,isHovred: null
-	,onClick: null
-	,render: function(graphics,editor) {
-	}
-	,onMouseMove: function(x,y,z,w) {
-		this.isHovred = x >= this.rect.x && x <= this.rect.x + this.rect.z && y >= this.rect.y && y <= this.rect.y + this.rect.w;
-	}
-	,onMouseDown: function(button,x,y) {
-		if(x >= this.rect.x && x <= this.rect.x + this.rect.z && y >= this.rect.y && y <= this.rect.y + this.rect.w) {
-			this.isPressed = true;
-		}
-	}
-	,onMouseUp: function(button,x,y) {
-		this.isPressed = false;
-	}
-	,__class__: khaEngine2D_editor_ui_UIElement
-};
-var khaEngine2D_editor_ui_UIButton = function(rect) {
-	khaEngine2D_editor_ui_UIElement.call(this,rect);
-};
-$hxClasses["khaEngine2D.editor.ui.UIButton"] = khaEngine2D_editor_ui_UIButton;
-khaEngine2D_editor_ui_UIButton.__name__ = "khaEngine2D.editor.ui.UIButton";
-khaEngine2D_editor_ui_UIButton.__super__ = khaEngine2D_editor_ui_UIElement;
-khaEngine2D_editor_ui_UIButton.prototype = $extend(khaEngine2D_editor_ui_UIElement.prototype,{
-	render: function(graphics,editor) {
-		khaEngine2D_editor_ui_UIElement.prototype.render.call(this,graphics,editor);
-		var color = editor.getTheme().BUTTON_NORMAL_COLOR;
-		if(this.isHovred) {
-			color = editor.getTheme().BUTTON_HOVER_COLOR;
-		}
-		if(this.isPressed) {
-			color = editor.getTheme().BUTTON_PRESSED_COLOR;
-		}
-		graphics.set_color(color);
-		graphics.fillRect(this.rect.x,this.rect.y,this.rect.z,this.rect.w);
-	}
-	,__class__: khaEngine2D_editor_ui_UIButton
-});
-var khaEngine2D_editor_ui_UICanvas = function() {
-	this.uiElements = [];
-	kha_input_Mouse.get().notify($bind(this,this.onMouseDown),$bind(this,this.onMouseUp),$bind(this,this.onMouseMove),null);
-};
-$hxClasses["khaEngine2D.editor.ui.UICanvas"] = khaEngine2D_editor_ui_UICanvas;
-khaEngine2D_editor_ui_UICanvas.__name__ = "khaEngine2D.editor.ui.UICanvas";
-khaEngine2D_editor_ui_UICanvas.prototype = {
-	uiElements: null
-	,render: function(graphics,editor) {
-		var _g = 0;
-		var _g1 = this.uiElements;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			i.render(graphics,editor);
-		}
-	}
-	,addUIElement: function(uiElement) {
-		this.uiElements.push(uiElement);
-	}
-	,onMouseMove: function(x,y,z,w) {
-		var _g = 0;
-		var _g1 = this.uiElements;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			i.onMouseMove(x,y,z,w);
-		}
-	}
-	,onMouseDown: function(button,x,y) {
-		var _g = 0;
-		var _g1 = this.uiElements;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			i.onMouseDown(button,x,y);
-		}
-	}
-	,onMouseUp: function(button,x,y) {
-		var _g = 0;
-		var _g1 = this.uiElements;
-		while(_g < _g1.length) {
-			var i = _g1[_g];
-			++_g;
-			i.onMouseUp(button,x,y);
-		}
-	}
-	,__class__: khaEngine2D_editor_ui_UICanvas
-};
-var khaEngine2D_editor_ui_UIThemes = function() { };
-$hxClasses["khaEngine2D.editor.ui.UIThemes"] = khaEngine2D_editor_ui_UIThemes;
-khaEngine2D_editor_ui_UIThemes.__name__ = "khaEngine2D.editor.ui.UIThemes";
 var khaEngine2D_entities_Entity = function(index) {
 	this.index = index;
 };
@@ -21714,6 +21286,80 @@ khaEngine2D_graphics_SpriteBatch.end = function() {
 	khaEngine2D_graphics_SpriteBatch.internalCamera.unset(khaEngine2D_graphics_SpriteBatch.internalGraphics);
 	khaEngine2D_graphics_SpriteBatch.internalGraphics.end();
 };
+var khaEngine2D_imgui_Imgui = function() {
+	this.theme = khaEngine2D_imgui_ImguiThemes.dark;
+	this.isMouseDown = false;
+	this.mousePosition = new kha_math_FastVector2(-1,-1);
+	this.layoutRect = new kha_math_FastVector4(0,0);
+	kha_input_Mouse.get().notify($bind(this,this.onMouseDown),$bind(this,this.onMouseUp),$bind(this,this.onMouseMove),null);
+};
+$hxClasses["khaEngine2D.imgui.Imgui"] = khaEngine2D_imgui_Imgui;
+khaEngine2D_imgui_Imgui.__name__ = "khaEngine2D.imgui.Imgui";
+khaEngine2D_imgui_Imgui.prototype = {
+	font: null
+	,layoutRect: null
+	,mousePosition: null
+	,isMouseDown: null
+	,theme: null
+	,beginLayout: function(graphics,rect) {
+		graphics.scissor(js_Boot.__cast(rect.x , Int),js_Boot.__cast(rect.y , Int),js_Boot.__cast(rect.z , Int),js_Boot.__cast(rect.w , Int));
+		this.layoutRect = rect;
+	}
+	,endLayout: function(graphics) {
+		this.layoutRect = new kha_math_FastVector4(0,0,0,0);
+		graphics.scissor(0,0,kha_Window.get(0).get_width(),kha_Window.get(0).get_height());
+	}
+	,begin: function(graphics,clear) {
+		graphics.begin(clear);
+	}
+	,end: function(graphics) {
+		graphics.end();
+	}
+	,button: function(graphics,rect) {
+		var color = this.theme.BUTTON_NORMAL_COLOR;
+		if(this.isMouseInRect(this.getWorlRect(rect))) {
+			color = this.theme.BUTTON_HOVER_COLOR;
+			if(this.isMouseDown) {
+				color = this.theme.BUTTON_PRESSED_COLOR;
+			}
+		}
+		graphics.set_color(color);
+		graphics.fillRect(rect.x + this.layoutRect.x,rect.y + this.layoutRect.y,rect.z,rect.w);
+		graphics.set_color(-1);
+		if(this.font != null) {
+			graphics.set_font(this.font);
+			graphics.set_fontSize(16);
+			graphics.drawString("test",rect.x,rect.y);
+		}
+	}
+	,setFont: function(font) {
+		this.font = font;
+	}
+	,getWorlRect: function(rect) {
+		return new kha_math_FastVector4(rect.x + this.layoutRect.x,rect.y + this.layoutRect.y,rect.z,rect.w);
+	}
+	,onMouseDown: function(x,y,cx) {
+		this.isMouseDown = true;
+	}
+	,onMouseUp: function(x,y,cx) {
+		this.isMouseDown = false;
+	}
+	,onMouseMove: function(x,y,cx,cy) {
+		this.mousePosition.x = x;
+		this.mousePosition.y = y;
+	}
+	,isMouseInRect: function(rect) {
+		if(this.mousePosition.x >= rect.x && this.mousePosition.x <= rect.x + rect.z && this.mousePosition.y >= rect.y) {
+			return this.mousePosition.y <= rect.y + rect.w;
+		} else {
+			return false;
+		}
+	}
+	,__class__: khaEngine2D_imgui_Imgui
+};
+var khaEngine2D_imgui_ImguiThemes = function() { };
+$hxClasses["khaEngine2D.imgui.ImguiThemes"] = khaEngine2D_imgui_ImguiThemes;
+khaEngine2D_imgui_ImguiThemes.__name__ = "khaEngine2D.imgui.ImguiThemes";
 var khaEngine2D_input_Input = function() {
 	this.isMousePressed = false;
 	this.isMouseDown = false;
@@ -22028,8 +21674,8 @@ kha_netsync_Session.RPC_SERVER = 0;
 kha_netsync_Session.RPC_ALL = 1;
 kha_netsync_SyncBuilder.nextId = 0;
 kha_netsync_SyncBuilder.objects = [];
-khaEngine2D_editor_ui_UIThemes.dark = { BUTTON_TEXT_COLOR : -3487289, BUTTON_NORMAL_COLOR : -12040120, BUTTON_HOVER_COLOR : -12895429, BUTTON_PRESSED_COLOR : -15000805};
 khaEngine2D_graphics_SpriteBatch.images = [];
+khaEngine2D_imgui_ImguiThemes.dark = { BUTTON_TEXT_COLOR : -3487289, BUTTON_NORMAL_COLOR : -12040120, BUTTON_HOVER_COLOR : -12895429, BUTTON_PRESSED_COLOR : -15000805};
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 
