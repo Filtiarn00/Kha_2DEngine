@@ -1,8 +1,8 @@
--cp C:\Users\nicho\.vscode\extensions\kodetech.kha-19.2.0\Kha\Sources
--cp C:\Users\nicho\.vscode\extensions\kodetech.kha-19.2.0\Kha\Backends\HTML5
--cp C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Sources
--cp C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Libraries\khaEngine2D\Sources
--cp C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\Libraries\khaEngine2D
+-cp /Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Sources
+-cp /Users/nickkorta/.vscode/extensions/kodetech.kha-19.2.0/Kha/Backends/HTML5
+-cp /Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Sources
+-cp /Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D/Sources
+-cp /Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/Libraries/khaEngine2D
 -D khaEngine2D
 -D sys_g1
 -D sys_g2
@@ -29,6 +29,6 @@
 -D kha
 -D kha_version=1810
 -D kha_project_name=New Project
--js debug-html5\kha.js
+-js debug-html5/kha.js
 -debug
 -main Main

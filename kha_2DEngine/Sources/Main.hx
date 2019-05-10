@@ -13,7 +13,7 @@ class Main
 
 	private static function initialized(window:kha.Window):Void 
 	{
-		var game = new GameOne();
+		//var game = new GameOne();
 		var editor = new EditorOne();
 	}
 }

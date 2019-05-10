@@ -17,6 +17,7 @@ class UIButton extends UIElement
     {
         super.render(graphics);
 
-        graphics.drawRect(rect.x,rect.y,rect.z,rect.w,1);
+        graphics.color = Color.Red;
+        graphics.fillRect(rect.x,rect.y,rect.z,rect.w);
 	}
 }

@@ -43,8 +43,12 @@ class Editor
 
 	public function render(frames: Array<Framebuffer>):Void 
 	{
+		var graphics = frames[0].g2;
+
+		graphics.begin(false);
 		for (i in uiCanvases)
 			i.render(frames[0].g2);
+		graphics.end();
 	}
 
 	public function addCanvas(key:String):UICanvas
