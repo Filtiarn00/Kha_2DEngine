@@ -1,5 +1,6 @@
 package khaEngine2D.game;
 
+import kha.Window;
 //Core Kha
 import kha.Assets;
 import kha.System;
@@ -15,12 +16,9 @@ class Game
 {
 	private static var i:Game;
 
-    private var scene:Scene;
-	public var input:Input;
-    public var entityManager:EntityManager;
-	public var doUpdate = false;
+	public var doUpdate = true;
 
-	public static function getGame(): Game
+	public static function get(): Game
 	{
 		return i;
 	}
@@ -32,10 +30,6 @@ class Game
 		Scheduler.addTimeTask(update, 0, 1 / 60);
 		System.notifyOnFrames(function (frames) {render(frames); });
 		Assets.loadEverything(load);
-
-        scene = new Scene();
-		input = new Input();
-        entityManager = new EntityManager();
 	}
 
 	public  function load():Void
@@ -44,15 +38,9 @@ class Game
 
     public function update():Void 
 	{
-		if (doUpdate)
-			entityManager.update();
 	}
 
 	public function render(frames: Array<Framebuffer>):Void 
 	{
-		SpriteBatch.begin(frames[0].g2);
-		scene.render();
-		entityManager.render();
-		SpriteBatch.end();
 	}
 }

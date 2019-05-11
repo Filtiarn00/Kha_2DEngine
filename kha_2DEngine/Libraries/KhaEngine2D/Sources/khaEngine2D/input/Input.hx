@@ -7,33 +7,23 @@ import kha.input.Keyboard;
 
 class Input 
 {
-    private static var i:Input;
+    private static var keyDowns:Map<KeyCode,Bool> = new Map<KeyCode,Bool>();
+    private static var mousePosition = new FastVector2(0,0);
+    private static var isMouseDown = false;
+    private static var isMousePressed = false;
 
-    private var keyDowns:Map<KeyCode,Bool>;
-    private var mousePosition = new FastVector2(0,0);
-    private var isMouseDown = false;
-    private var isMousePressed = false;
-
-    public static function I():Input
+	public static function Init() 
     {
-        return i;    
-    }
-
-	public function new() 
-    {
-        i = this;
-
-        keyDowns = new Map<KeyCode,Bool>();
 		Keyboard.get().notify(onKeyDown, onKeyUp);
         Mouse.get().notify(onMouseDown, onMouseUp, onMouseMove, null);
 	}
 
-    public function getMousePosition() : FastVector2
+    public static function getMousePosition() : FastVector2
     {
         return mousePosition;
     }
 
-    public function isKeyDown(?keyCode:KeyCode):Bool
+    public static function isKeyDown(?keyCode:KeyCode):Bool
     {
         //Create keysDown in memory if we don't already have it
         if (!keyDowns.exists(keyCode))
@@ -42,7 +32,7 @@ class Input
         return keyDowns[keyCode];
     }
 
-	private function onKeyDown(keyCode:KeyCode):Void 
+	private static function onKeyDown(keyCode:KeyCode):Void 
     {
         //Create keysDown in memory if we don't already have it
         if (!keyDowns.exists(keyCode))
@@ -51,17 +41,17 @@ class Input
         keyDowns[keyCode] = true;
     }
 
-    private function onKeyUp(keyCode:KeyCode):Void 
+    private static function onKeyUp(keyCode:KeyCode):Void 
     {
         keyDowns[keyCode] = false;
     }   
 
-    public function getIsMouseDown(): Bool 
+    public static function getIsMouseDown(): Bool 
     {
         return isMouseDown;
     }
 
-    public function getIsMousePressed(): Bool 
+    public static function getIsMousePressed(): Bool 
     {
         if (!isMousePressed && isMouseDown)
         {
@@ -71,18 +61,18 @@ class Input
         return false;
     }
 
-    private function onMouseDown(x:Int, y:Int, cx:Int):Void 
+    private static function onMouseDown(x:Int, y:Int, cx:Int):Void 
     {
         isMouseDown = true;	
 	}
 
-    private function onMouseUp(x:Int, y:Int, cx:Int):Void 
+    private static function onMouseUp(x:Int, y:Int, cx:Int):Void 
     {
         isMouseDown = false;	
         isMousePressed = false;
 	}
 
-    private function onMouseMove(x:Int, y:Int, cx:Int, cy:Int):Void 
+    private static function onMouseMove(x:Int, y:Int, cx:Int, cy:Int):Void 
     {
         mousePosition.x = x;
         mousePosition.y = y;	

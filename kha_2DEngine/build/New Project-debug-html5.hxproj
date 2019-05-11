@@ -4,7 +4,7 @@
 	<output>
 		<movie outputType="Application" />
 		<movie input="" />
-		<movie path="debug-html5\kha.js" />
+		<movie path="debug-html5/kha.js" />
 		<movie fps="30" />
 		<movie width="800" />
 		<movie height="600" />
@@ -12,15 +12,15 @@
 		<movie minorVersion="0" />
 		<movie platform="JavaScript" />
 		<movie background="#ffffff" />
-		<movie preferredSDK="..\..\..\..\..\..\.vscode\extensions\kodetech.kha-19.2.0\Kha\Tools\haxe" />
+		<movie preferredSDK="../../../../../.vscode/extensions/kodetech.kha-19.2.0/Kha/Tools/haxe" />
 	</output>
 	<!-- Other classes to be compiled into your SWF -->
 	<classpaths>
-		<class path="..\..\..\..\..\..\.vscode\extensions\kodetech.kha-19.2.0\Kha\Sources" />
-		<class path="..\..\..\..\..\..\.vscode\extensions\kodetech.kha-19.2.0\Kha\Backends\HTML5" />
-		<class path="..\Sources" />
-		<class path="..\Libraries\khaEngine2D\Sources" />
-		<class path="..\Libraries\khaEngine2D" />
+		<class path="../../../../../.vscode/extensions/kodetech.kha-19.2.0/Kha/Sources" />
+		<class path="../../../../../.vscode/extensions/kodetech.kha-19.2.0/Kha/Backends/HTML5" />
+		<class path="../Sources" />
+		<class path="../Libraries/khaEngine2D/Sources" />
+		<class path="../Libraries/khaEngine2D" />
 	</classpaths>
 	<!-- Build options -->
 	<build>
@@ -29,7 +29,7 @@
 		<option noInlineOnDebug="False" />
 		<option mainClass="Main" />
 		<option enabledebug="False" />
-		<option additional="-D khaEngine2D&#xA;-D sys_g1&#xA;-D sys_g2&#xA;-D sys_g3&#xA;-D sys_a1&#xA;-D sys_a2&#xA;-D kha_js&#xA;-D kha_g1&#xA;-D kha_g2&#xA;-D kha_g3&#xA;-D kha_a1&#xA;-D kha_a2&#xA;-D canvas_id=khanvas&#xA;-D script_name=kha&#xA;-D sys_g4&#xA;-D kha_g4&#xA;-D kha_webgl&#xA;-D sys_debug-html5&#xA;-D kha_debug-html5&#xA;-D kha_debug-html5_js&#xA;-D sys_debug_html5&#xA;-D kha_debug_html5&#xA;-D kha_html5&#xA;-D kha&#xA;-D kha_version=1810&#xA;-D kha_project_name=New Project&#xA;-D kha_output=&quot;C:\Users\nicho\OneDrive\Documents\GitHub\Kha_2DEngine\kha_2DEngine\build\debug-html5\kha.js&quot;&#xA;-debug&#xA;" />
+		<option additional="-D khaEngine2D&#xA;-D sys_g1&#xA;-D sys_g2&#xA;-D sys_g3&#xA;-D sys_a1&#xA;-D sys_a2&#xA;-D kha_js&#xA;-D kha_g1&#xA;-D kha_g2&#xA;-D kha_g3&#xA;-D kha_a1&#xA;-D kha_a2&#xA;-D canvas_id=khanvas&#xA;-D script_name=kha&#xA;-D sys_g4&#xA;-D kha_g4&#xA;-D kha_webgl&#xA;-D sys_debug-html5&#xA;-D kha_debug-html5&#xA;-D kha_debug-html5_js&#xA;-D sys_debug_html5&#xA;-D kha_debug_html5&#xA;-D kha_html5&#xA;-D kha&#xA;-D kha_version=1810&#xA;-D kha_project_name=New Project&#xA;-D kha_output=&quot;/Users/nickkorta/Documents/GitHub/Kha_2DEngine/kha_2DEngine/build/debug-html5/kha.js&quot;&#xA;-debug&#xA;" />
 	</build>
 	<!-- haxelib libraries -->
 	<haxelib>
@@ -51,7 +51,7 @@
 	<options>
 		<option showHiddenPaths="False" />
 		<option testMovie="Webserver" />
-		<option testMovieCommand="debug-html5\index.html" />
+		<option testMovieCommand="debug-html5/index.html" />
 	</options>
 	<!-- Plugin storage -->
 	<storage />

@@ -39,13 +39,13 @@ class ActorPlayerSystem extends EntitySystem
              actorInput.xInput = 0;
              actorInput.yInput = 0;
 
-            if (Input.I().isKeyDown(KeyCode.A))
+            if (Input.isKeyDown(KeyCode.A))
                 actorInput.xInput = -1;
-            if (Input.I().isKeyDown(KeyCode.D))
+            if (Input.isKeyDown(KeyCode.D))
                 actorInput.xInput = 1;
-            if (Input.I().isKeyDown(KeyCode.W))
+            if (Input.isKeyDown(KeyCode.W))
                 actorInput.yInput = -1;
-            if (Input.I().isKeyDown(KeyCode.S))
+            if (Input.isKeyDown(KeyCode.S))
                 actorInput.yInput = 1;
          }
     }

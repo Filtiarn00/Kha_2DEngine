@@ -1,5 +1,7 @@
 package game.systems;
 
+import khaEngine2D.graphics.SpriteBatch;
+import khaEngine2D.game.Scene;
 import kha.math.FastVector4;
 import khaEngine2D.graphics.Camera;
 import khaEngine2D.entities.Entity;
@@ -38,14 +40,12 @@ class ActorCameraSystem extends EntitySystem
         if (entities.length == 0)
             return;
 
-        var camera = Camera.GetCamera();
-
         //Update position to target
-        camera.position.x += (positions[0].x - camera.position.x) / 15;
-        camera.position.y += (positions[0].y - camera.position.y) / 15;
+        Camera.position.x += (positions[0].x - Camera.position.x) / 15;
+        Camera.position.y += (positions[0].y - Camera.position.y) / 15;
 
         //Set Camera bounds
-        camera.bounds = new FastVector4(0,0,0,0);
+        Camera.bounds = new FastVector4(Scene.getBounds().x,Scene.getBounds().y,Scene.getBounds().z,Scene.getBounds().w);
     }
 
 	public override function render():Void 

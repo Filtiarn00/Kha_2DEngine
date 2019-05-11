@@ -9,30 +9,14 @@ import kha.math.FastVector2;
 
 class Camera
 {
-	private static var i:Camera;
+	public static var bounds:FastVector4 = new FastVector4(0,0,0,0);
+	public static var view:FastVector4 = new FastVector4(0,0,0,0);
+	public static var position:FastVector2 = new FastVector2(0,0);
+	public static var clearColor:Color = Color.Black;
 
-	public var bounds:FastVector4 = new FastVector4(0,0,0,0);
-	public var view:FastVector4 = new FastVector4(0,0,0,0);
-	public var position:FastVector2 = new FastVector2(0,0);
-	public var clearColor:Color = Color.Black;
+	private static var transformation:FastMatrix3 = FastMatrix3.identity();
 
-	private var transformation:FastMatrix3;
-
-	public static function GetCamera():Camera
-	{
-		if (i == null)
-			i = new Camera();
-
-		return i;
-	}
-
-	public function new() 
-	{
-		i = this;
-		transformation = FastMatrix3.identity();
-	}
-
-	public function set(graphics:Graphics):Void 
+	public static function set(graphics:Graphics):Void 
 	{
 		view.z = System.windowWidth();
 		view.w = System.windowHeight();
@@ -59,29 +43,29 @@ class Camera
 		graphics.translate(-position.x + view.x,-position.y + view.y);
 	}
 		
-	public function getScreenToWorldSpace(x:Float, y:Float): FastVector2
+	public static function getScreenToWorldSpace(x:Float, y:Float): FastVector2
 	{
 		x +=  position.x - view.z / 2;
         y +=  position.y - view.w / 2;
 		return new FastVector2(x,y);
 	}
 
-	public function getViewWidth():Float 
+	public static function getViewWidth():Float 
 	{
 		return view.z;
 	}
 
-	public function getViewHeight():Float
+	public static function getViewHeight():Float
 	{
 		return view.w;
 	}
 
-	public function unset(graphics:Graphics):Void 
+	public static function unset(graphics:Graphics):Void 
 	{
   		graphics.popTransformation();
 	}
 
-	public function isInView(x:Float, y:Float):Bool
+	public static function isInView(x:Float, y:Float):Bool
 	{
 		var inBounds = true;
 
@@ -96,5 +80,4 @@ class Camera
 
 		return inBounds;
 	}
-
 }

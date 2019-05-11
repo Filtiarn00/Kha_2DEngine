@@ -2,15 +2,15 @@ package khaEngine2D.entities;
 
 class EntityManager
 {
-    private var worlds:Map<String,EntityWorld>;
-    private var worldToEdit:EntityWorld;
-
+    private static var worlds:Map<String,EntityWorld> = new Map<String,EntityWorld>();
+    private static var worldToEdit:EntityWorld;
+    
     public function new()
 	{		
         addWorld('Main');
 	}
 
-    public function update():Void 
+    public static function update():Void 
 	{   
         for (i in worlds)
         {
@@ -19,22 +19,21 @@ class EntityManager
         }
 	}
 
-    public function forceCheckForChanges() 
+    public static function forceCheckForChanges() 
     {
         for (i in worlds)
             i.checkForChanges();
     }
 
-	public function render():Void 
+	public static function render():Void 
 	{        
         for (i in worlds)
             i.render();
 	}
 
-    public function addWorld(key:String):Void
+    public static function addWorld(key:String):Void
     {
-        if (worlds == null)
-            worlds = new Map<String,EntityWorld>();
+         worlds = new Map<String,EntityWorld>();
 
         if (!worlds.exists(key))
         {
@@ -43,47 +42,56 @@ class EntityManager
         }
     }
 
-    public function addSystem(system:EntitySystem):Void 
+    public static function addSystem(system:EntitySystem):Void 
 	{
+        if (worldToEdit == null)
+            addWorld('main');
+
         worldToEdit.addSystem(system);
 	}
 
-	public function removeSystem(system:EntitySystem):Void
+	public static function removeSystem(system:EntitySystem):Void
 	{
+        if (worldToEdit == null)
+            addWorld('main');
+
 		worldToEdit.systems.remove(system);
 	}
 
-    public function createEntity():Entity
+    public static function createEntity():Entity
 	{
+        if (worldToEdit == null)
+            addWorld('main');
+
         return worldToEdit.createEntity();
 	}
 
-    public function getEntitiesWithComponents(entityComponents:Array<EntityComponent>):Array<Entity>
+    public static function getEntitiesWithComponents(entityComponents:Array<EntityComponent>):Array<Entity>
     {
         return worldToEdit.getEntitiesWithComponents(entityComponents);
     }
 
-    public function addComponent(entity:Entity,entityComponent:EntityComponent):Void
+    public static function addComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
         worldToEdit.addComponent(entity,entityComponent);
 	}
 
-    public function removeComponent(entity:Entity,entityComponent:EntityComponent):Void
+    public static function removeComponent(entity:Entity,entityComponent:EntityComponent):Void
 	{
         worldToEdit.removeComponent(entity,entityComponent);
 	}
 
-    public function getComponent(entity:Entity,entityComponent:EntityComponent):EntityComponent
+    public static function getComponent(entity:Entity,entityComponent:EntityComponent):EntityComponent
 	{
         return worldToEdit.getComponent(entity,entityComponent);
 	}
 
-    public function hasComponents(entity:Entity,entityComponentsToCheckFor:Array<EntityComponent>):Bool
+    public static function hasComponents(entity:Entity,entityComponentsToCheckFor:Array<EntityComponent>):Bool
 	{
         return worldToEdit.hasComponents(entity,entityComponentsToCheckFor);
 	}
 
-    public function hasComponent(entity:Entity, entityComponent:EntityComponent):Bool
+    public static function hasComponent(entity:Entity, entityComponent:EntityComponent):Bool
 	{	
         return hasComponent(entity,entityComponent);
 	}
