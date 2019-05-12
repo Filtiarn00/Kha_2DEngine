@@ -16,6 +16,7 @@ class Imgui
 
     //Themeing
     private static var theme = ImguiThemes.dark;
+    private static var toggledTheme = ImguiThemes.dark;
 
     //Fonts
     private static var fonts:Map<String,Font> = new Map<String,Font>();
@@ -26,10 +27,17 @@ class Imgui
     private static var isMouseDown:Bool = false;
     private static var isMousePressed:Bool = false;
 
-    //Layout
+    //Window
     private static var windowRect:FastVector4 = new FastVector4(0,0);
 
+    //Layout
+    private static var layoutPosition:FastVector2 = new FastVector2(0,0);
+    private static var doLayout:Bool = false;
+    private static var layoutType:Int = 0;
+    
     //States
+    private static var toggleGroups:Map<String,Array<String>> = new Map<String,Array<String>>();
+    private static var toggled:Map<String,String> = new Map<String,String>();
     private static var pressedId:String;
     private static var pressedThisFrame:Bool;
 
@@ -47,39 +55,95 @@ class Imgui
         graphics.end();
     }
 
-    public static function beginWindow(rect:FastVector4)
+    public static function beginWindow(rect:FastVector4):Void
     {
         graphics.scissor(cast(rect.x,Int),cast(rect.y,Int),cast(rect.z,Int),cast(rect.w,Int));
+        graphics.color = theme.NORMAL_COLOR;
+        graphics.fillRect(rect.x,rect.y,rect.z,rect.w);
+        graphics.color = Color.White;
         windowRect = rect;
     }
 
-    public static function endWindow()
+    public static function endWindow():Void
     {
         windowRect = new FastVector4(0,0,0,0);
         graphics.scissor(0,0,Window.get(0).width,Window.get(0).height);
     }
 
-    public static function button(id:String,rect:FastVector4,text:String):Void
+    public static function beginLayout(layoutType:Int):Void
+    {
+        Imgui.layoutType = layoutType;
+        doLayout = true;
+    }
+
+    public static function endLayouy():Void
+    {
+        layoutPosition = new FastVector2(0,0);
+        doLayout = false;
+    }
+
+    public static function continueLayout(rect:FastVector4):FastVector4
+    {
+        if (doLayout)
+        {
+            if (layoutType == 0)
+            {
+                rect.x += layoutPosition.x;
+                layoutPosition.x += rect.z;
+            }
+
+            if (layoutType == 1)
+            {
+                rect.y += layoutPosition.y;
+                layoutPosition.y += rect.w;
+            }
+        }
+
+        return rect;
+    }
+
+    public static function button(id:String,rect:FastVector4,text:String,isAToggle:Bool,toggledGroupId:String,canUntoggle:Bool):Void
     {   
-        var inRect = isMouseInRect(getWorlRect(rect));
-        graphics.color = inRect ?  (isMouseDown ? theme.PRESSED_COLOR : theme.HOVER_COLOR) : theme.NORMAL_COLOR;
+        rect = continueLayout(rect);
+
+        var targetTheme = isAToggle && toggled.get(id) != null ? toggledTheme : theme;
+        var isInRect = isMouseInRect(getWorlRect(rect));
+        graphics.color = isInRect ?  (isMouseDown ? targetTheme.PRESSED_COLOR : targetTheme.HOVER_COLOR) : targetTheme.NORMAL_COLOR;
         graphics.fillRect(rect.x + windowRect.x,rect.y + windowRect.y,rect.z,rect.w);
 
         if (currentFont != null)
         {
-            graphics.color = inRect ?  (isMouseDown ? theme.TEXT_PRESSED_COLOR : theme.TEXT_HOVER_COLOR) : theme.TEXT_NORMAL_COLOR;
-            graphics.fontSize = theme.TEXT_SIZE;
+            graphics.color = isInRect ?  (isMouseDown ? targetTheme.TEXT_PRESSED_COLOR : targetTheme.TEXT_HOVER_COLOR) : targetTheme.TEXT_NORMAL_COLOR;
+            graphics.fontSize = targetTheme.TEXT_SIZE;
 
             var x  = windowRect.x + rect.x + (rect.z / 2) - cast(currentFont.width(graphics.fontSize,text),Float) / 2;
             var y = windowRect.y + rect.y + (rect.w / 2) - cast(currentFont.height(graphics.fontSize),Float) / 2;
             graphics.drawString(text,x,y);
         }
 
-        if (inRect && isMouseDown && !isMousePressed)
+        if (isInRect && isMouseDown && !isMousePressed)
         {
             pressedId = id;
             pressedThisFrame = true;
             isMousePressed = true;
+
+            if (isAToggle)
+            {
+                if (toggled.get(id) == null)
+                    toggled.set(id,id);
+                else if (canUntoggle && toggled.get(id) != null)
+                    toggled.remove(id);
+
+                if (toggled.get(id) != null)
+                {
+                    var toggledGroup = toggleGroups.get(toggledGroupId);
+
+                    if (toggledGroup != null)
+                        for (i in toggledGroup)
+                            if (i != id)
+                                setIsToggled(i,false);
+                }
+            }
         }
 
         graphics.color = Color.White;
@@ -87,14 +151,17 @@ class Imgui
 
     public static function rect(rect:FastVector4):Void
     {   
+        rect = continueLayout(rect);
+
         graphics.color = theme.NORMAL_COLOR;
         graphics.fillRect(rect.x + windowRect.x,rect.y + windowRect.y,rect.z,rect.w);
         graphics.color = Color.White;
     }
 
-    public static function setTheme(theme:TUITheme):Void
+    public static function setTheme(theme:TUITheme,toggledTheme:TUITheme):Void
     {
         Imgui.theme = theme;
+        Imgui.toggledTheme = toggledTheme;
     }
 
     public static function addFont(key:String,font:Font):Void 
@@ -125,6 +192,23 @@ class Imgui
             return pressedId;
         }
         return '';
+    }
+
+    public static function addToggleGroup(key:String,ids:Array<String>) 
+    {
+        toggleGroups.set(key,ids);
+    }
+
+    public static function setIsToggled(key:String, state:Bool) 
+    {
+        if (state == false)
+            toggled.remove(key);
+        else toggled.set(key,key);
+    }
+
+    public static function getIsToggled(key:String):Bool
+    {
+        return toggled.get(key) != null;
     }
 
     private static function getWorlRect(rect:FastVector4):FastVector4

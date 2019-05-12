@@ -215,7 +215,10 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	}
 };
 var editor_Editor = function() {
+	this.windowSize = new kha_math_FastVector2();
 	var _gthis = this;
+	this.windowSize.x = kha_Window.get(0).get_width();
+	this.windowSize.y = kha_Window.get(0).get_height();
 	kha_System.notifyOnFrames(function(frames) {
 		_gthis.render(frames);
 	});
@@ -226,55 +229,70 @@ $hxClasses["editor.Editor"] = editor_Editor;
 editor_Editor.__name__ = "editor.Editor";
 editor_Editor.prototype = {
 	isPlaying: null
+	,windowSize: null
 	,load: function() {
 		khaEngine2D_imgui_Imgui.addFont("roboto",kha_Assets.fonts.roboto);
+		khaEngine2D_imgui_Imgui.setIsToggled("scene_button",true);
+		khaEngine2D_imgui_Imgui.addToggleGroup("workplaces",["scene_button","entities_button","ui_button"]);
+		khaEngine2D_imgui_Imgui.addToggleGroup("scene_tools",["tile_button","entity_button"]);
 	}
 	,render: function(frames) {
-		var $window = kha_Window.get(0);
+		this.windowSize.x = kha_Window.get(0).get_width();
+		this.windowSize.y = kha_Window.get(0).get_height();
 		var graphics = frames[0].get_g2();
+		khaEngine2D_imgui_Imgui.begin(graphics,false);
 		if(!this.isPlaying) {
-			khaEngine2D_imgui_Imgui.begin(graphics,false);
-			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(0,0,$window.get_width(),25));
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.normalTheme);
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,$window.get_width(),25));
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme);
-			khaEngine2D_imgui_Imgui.button("",new kha_math_FastVector4(0,0,75,25),"Scene");
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.normalTheme,editor_Editor.normalTheme);
+			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(0,0,this.windowSize.x,25));
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.normalTheme,editor_Editor.darkerTheme);
+			khaEngine2D_imgui_Imgui.beginLayout(0);
+			khaEngine2D_imgui_Imgui.button("scene_button",new kha_math_FastVector4(0,0,75,25),"Scene",true,"workplaces",false);
+			khaEngine2D_imgui_Imgui.button("entities_button",new kha_math_FastVector4(0,0,75,25),"Entity",true,"workplaces",false);
+			khaEngine2D_imgui_Imgui.button("ui_button",new kha_math_FastVector4(0,0,75,25),"UI",true,"workplaces",false);
+			khaEngine2D_imgui_Imgui.endLayouy();
 			khaEngine2D_imgui_Imgui.endWindow();
-			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(0,25,$window.get_width() - 300,25));
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,$window.get_width() - 300,25));
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.playButton);
-			khaEngine2D_imgui_Imgui.button("play_button",new kha_math_FastVector4(0,0,40,25),">");
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.seperatorTheme);
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(40,0,1,25));
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme,editor_Editor.darkerTheme);
+			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(0,25,this.windowSize.x - 300,25));
+			if(khaEngine2D_imgui_Imgui.getIsToggled("scene_button")) {
+				khaEngine2D_imgui_Imgui.setTheme(editor_Editor.playButton,editor_Editor.stopButton);
+				khaEngine2D_imgui_Imgui.beginLayout(0);
+				khaEngine2D_imgui_Imgui.button("play_button",new kha_math_FastVector4(0,0,40,25),khaEngine2D_imgui_Imgui.getIsToggled("play_button") ? "[]" : ">",true,"",true);
+				khaEngine2D_imgui_Imgui.setTheme(editor_Editor.seperatorTheme,editor_Editor.seperatorTheme);
+				khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,1,25));
+				khaEngine2D_imgui_Imgui.setTheme(editor_Editor.toolButton,editor_Editor.toolButtonToggled);
+				khaEngine2D_imgui_Imgui.button("tile_button",new kha_math_FastVector4(0,0,40,25),"T",true,"scene_tools",false);
+				khaEngine2D_imgui_Imgui.button("entity_button",new kha_math_FastVector4(0,0,40,25),"E",true,"scene_tools",false);
+				khaEngine2D_imgui_Imgui.setTheme(editor_Editor.seperatorTheme,editor_Editor.seperatorTheme);
+				khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,1,25));
+				khaEngine2D_imgui_Imgui.endLayouy();
+			}
 			khaEngine2D_imgui_Imgui.endWindow();
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme);
-			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4($window.get_width() - 300,0,300,$window.get_height()));
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,300,$window.get_height()));
-			khaEngine2D_imgui_Imgui.button("",new kha_math_FastVector4(0,0,150,25),"Properties");
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.normalTheme);
-			khaEngine2D_imgui_Imgui.button("",new kha_math_FastVector4(150,0,150,25),"Test");
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.borderTheme);
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,1,$window.get_height()));
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme,editor_Editor.darkerTheme);
+			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(this.windowSize.x - 300,0,300,this.windowSize.y / 1.5 | 0));
+			khaEngine2D_imgui_Imgui.button("",new kha_math_FastVector4(0,0,100,25),"Properties",true,"",false);
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.borderTheme,editor_Editor.normalTheme);
+			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,1,this.windowSize.y));
 			khaEngine2D_imgui_Imgui.endWindow();
-			khaEngine2D_imgui_Imgui.end();
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme,editor_Editor.darkerTheme);
+			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4(this.windowSize.x - 300,this.windowSize.y / 1.5 | 0,300,this.windowSize.y / 2.5 | 0));
+			khaEngine2D_imgui_Imgui.button("",new kha_math_FastVector4(0,0,100,25),"Outline",true,"",false);
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.borderTheme,editor_Editor.normalTheme);
+			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,1,this.windowSize.y));
+			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,this.windowSize.x,1));
+			khaEngine2D_imgui_Imgui.endWindow();
 		}
 		if(this.isPlaying) {
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme);
-			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4($window.get_width() / 2 - 120,0,120,25));
-			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(0,0,$window.get_width(),25));
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.stopButton);
-			khaEngine2D_imgui_Imgui.button("stop_button",new kha_math_FastVector4(0,0,40,25),"[]");
-			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.seperatorTheme);
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.darkerTheme,editor_Editor.darkerTheme);
+			khaEngine2D_imgui_Imgui.beginWindow(new kha_math_FastVector4((this.windowSize.x / 2 | 0) - 60,0,120,25));
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.playButton,editor_Editor.stopButton);
+			khaEngine2D_imgui_Imgui.button("play_button",new kha_math_FastVector4(0,0,40,25),khaEngine2D_imgui_Imgui.getIsToggled("play_button") ? "[]" : ">",true,"",true);
+			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.seperatorTheme,editor_Editor.seperatorTheme);
 			khaEngine2D_imgui_Imgui.rect(new kha_math_FastVector4(40,0,1,25));
 			khaEngine2D_imgui_Imgui.endWindow();
 		}
-		switch(khaEngine2D_imgui_Imgui.getPressedId()) {
-		case "play_button":
-			this.isPlaying = true;
-			break;
-		case "stop_button":
-			this.isPlaying = false;
-			break;
+		khaEngine2D_imgui_Imgui.end();
+		if(khaEngine2D_imgui_Imgui.getPressedId() == "play_button") {
+			this.isPlaying = !this.isPlaying;
 		}
 		khaEngine2D_game_Game.get().doUpdate = this.isPlaying;
 	}
@@ -430,7 +448,6 @@ game_systems_ActorCameraSystem.prototype = $extend(khaEngine2D_entities_EntitySy
 		}
 		khaEngine2D_graphics_Camera.position.x += (this.positions[0].x - khaEngine2D_graphics_Camera.position.x) / 15;
 		khaEngine2D_graphics_Camera.position.y += (this.positions[0].y - khaEngine2D_graphics_Camera.position.y) / 15;
-		khaEngine2D_graphics_Camera.bounds = new kha_math_FastVector4(khaEngine2D_game_Scene.getBounds().x,khaEngine2D_game_Scene.getBounds().y,khaEngine2D_game_Scene.getBounds().z,khaEngine2D_game_Scene.getBounds().w);
 	}
 	,render: function() {
 	}
@@ -1305,6 +1322,22 @@ haxe_ds_StringMap.prototype = {
 			return false;
 		}
 		return this.rh.hasOwnProperty("$" + key);
+	}
+	,remove: function(key) {
+		if(__map_reserved[key] != null) {
+			key = "$" + key;
+			if(this.rh == null || !this.rh.hasOwnProperty(key)) {
+				return false;
+			}
+			delete(this.rh[key]);
+			return true;
+		} else {
+			if(!this.h.hasOwnProperty(key)) {
+				return false;
+			}
+			delete(this.h[key]);
+			return true;
+		}
 	}
 	,arrayKeys: function() {
 		var out = [];
@@ -21174,15 +21207,11 @@ khaEngine2D_game_Scene.setBackgroundColor = function(color) {
 khaEngine2D_game_Scene.getBackgroundColor = function() {
 	return khaEngine2D_game_Scene.backgroundColor;
 };
-khaEngine2D_game_Scene.setBounds = function(width,height) {
-	khaEngine2D_game_Scene.bounds.z = width;
-	khaEngine2D_game_Scene.bounds.w = height;
-};
-khaEngine2D_game_Scene.getBounds = function() {
-	return khaEngine2D_game_Scene.bounds;
-};
 khaEngine2D_game_Scene.render = function() {
-	khaEngine2D_graphics_SpriteBatch.getGraphics().drawRect(khaEngine2D_game_Scene.bounds.x + 1,khaEngine2D_game_Scene.bounds.y + 1,khaEngine2D_game_Scene.bounds.z - 1,khaEngine2D_game_Scene.bounds.w - 2);
+	khaEngine2D_graphics_SpriteBatch.getGraphics().set_color(-11513776);
+	khaEngine2D_graphics_SpriteBatch.getGraphics().drawLine(-9999,0,9999,0,1);
+	khaEngine2D_graphics_SpriteBatch.getGraphics().drawLine(0,-9999,0,9999,1);
+	khaEngine2D_graphics_SpriteBatch.getGraphics().set_color(-1);
 };
 var khaEngine2D_graphics_Camera = function() { };
 $hxClasses["khaEngine2D.graphics.Camera"] = khaEngine2D_graphics_Camera;
@@ -21286,37 +21315,109 @@ khaEngine2D_imgui_Imgui.end = function() {
 };
 khaEngine2D_imgui_Imgui.beginWindow = function(rect) {
 	khaEngine2D_imgui_Imgui.graphics.scissor(js_Boot.__cast(rect.x , Int),js_Boot.__cast(rect.y , Int),js_Boot.__cast(rect.z , Int),js_Boot.__cast(rect.w , Int));
+	khaEngine2D_imgui_Imgui.graphics.set_color(khaEngine2D_imgui_Imgui.theme.NORMAL_COLOR);
+	khaEngine2D_imgui_Imgui.graphics.fillRect(rect.x,rect.y,rect.z,rect.w);
+	khaEngine2D_imgui_Imgui.graphics.set_color(-1);
 	khaEngine2D_imgui_Imgui.windowRect = rect;
 };
 khaEngine2D_imgui_Imgui.endWindow = function() {
 	khaEngine2D_imgui_Imgui.windowRect = new kha_math_FastVector4(0,0,0,0);
 	khaEngine2D_imgui_Imgui.graphics.scissor(0,0,kha_Window.get(0).get_width(),kha_Window.get(0).get_height());
 };
-khaEngine2D_imgui_Imgui.button = function(id,rect,text) {
-	var inRect = khaEngine2D_imgui_Imgui.isMouseInRect(khaEngine2D_imgui_Imgui.getWorlRect(rect));
-	khaEngine2D_imgui_Imgui.graphics.set_color(inRect ? khaEngine2D_imgui_Imgui.isMouseDown ? khaEngine2D_imgui_Imgui.theme.PRESSED_COLOR : khaEngine2D_imgui_Imgui.theme.HOVER_COLOR : khaEngine2D_imgui_Imgui.theme.NORMAL_COLOR);
+khaEngine2D_imgui_Imgui.beginLayout = function(layoutType) {
+	khaEngine2D_imgui_Imgui.layoutType = layoutType;
+	khaEngine2D_imgui_Imgui.doLayout = true;
+};
+khaEngine2D_imgui_Imgui.endLayouy = function() {
+	khaEngine2D_imgui_Imgui.layoutPosition = new kha_math_FastVector2(0,0);
+	khaEngine2D_imgui_Imgui.doLayout = false;
+};
+khaEngine2D_imgui_Imgui.continueLayout = function(rect) {
+	if(khaEngine2D_imgui_Imgui.doLayout) {
+		if(khaEngine2D_imgui_Imgui.layoutType == 0) {
+			rect.x += khaEngine2D_imgui_Imgui.layoutPosition.x;
+			khaEngine2D_imgui_Imgui.layoutPosition.x += rect.z;
+		}
+		if(khaEngine2D_imgui_Imgui.layoutType == 1) {
+			rect.y += khaEngine2D_imgui_Imgui.layoutPosition.y;
+			khaEngine2D_imgui_Imgui.layoutPosition.y += rect.w;
+		}
+	}
+	return rect;
+};
+khaEngine2D_imgui_Imgui.button = function(id,rect,text,isAToggle,toggledGroupId,canUntoggle) {
+	rect = khaEngine2D_imgui_Imgui.continueLayout(rect);
+	var targetTheme;
+	if(isAToggle) {
+		var _this = khaEngine2D_imgui_Imgui.toggled;
+		targetTheme = (__map_reserved[id] != null ? _this.getReserved(id) : _this.h[id]) != null;
+	} else {
+		targetTheme = false;
+	}
+	var targetTheme1 = targetTheme ? khaEngine2D_imgui_Imgui.toggledTheme : khaEngine2D_imgui_Imgui.theme;
+	var isInRect = khaEngine2D_imgui_Imgui.isMouseInRect(khaEngine2D_imgui_Imgui.getWorlRect(rect));
+	khaEngine2D_imgui_Imgui.graphics.set_color(isInRect ? khaEngine2D_imgui_Imgui.isMouseDown ? targetTheme1.PRESSED_COLOR : targetTheme1.HOVER_COLOR : targetTheme1.NORMAL_COLOR);
 	khaEngine2D_imgui_Imgui.graphics.fillRect(rect.x + khaEngine2D_imgui_Imgui.windowRect.x,rect.y + khaEngine2D_imgui_Imgui.windowRect.y,rect.z,rect.w);
 	if(khaEngine2D_imgui_Imgui.currentFont != null) {
-		khaEngine2D_imgui_Imgui.graphics.set_color(inRect ? khaEngine2D_imgui_Imgui.isMouseDown ? khaEngine2D_imgui_Imgui.theme.TEXT_PRESSED_COLOR : khaEngine2D_imgui_Imgui.theme.TEXT_HOVER_COLOR : khaEngine2D_imgui_Imgui.theme.TEXT_NORMAL_COLOR);
-		khaEngine2D_imgui_Imgui.graphics.set_fontSize(khaEngine2D_imgui_Imgui.theme.TEXT_SIZE);
+		khaEngine2D_imgui_Imgui.graphics.set_color(isInRect ? khaEngine2D_imgui_Imgui.isMouseDown ? targetTheme1.TEXT_PRESSED_COLOR : targetTheme1.TEXT_HOVER_COLOR : targetTheme1.TEXT_NORMAL_COLOR);
+		khaEngine2D_imgui_Imgui.graphics.set_fontSize(targetTheme1.TEXT_SIZE);
 		var x = khaEngine2D_imgui_Imgui.windowRect.x + rect.x + rect.z / 2 - js_Boot.__cast(khaEngine2D_imgui_Imgui.currentFont.width(khaEngine2D_imgui_Imgui.graphics.get_fontSize(),text) , Float) / 2;
 		var y = khaEngine2D_imgui_Imgui.windowRect.y + rect.y + rect.w / 2 - js_Boot.__cast(khaEngine2D_imgui_Imgui.currentFont.height(khaEngine2D_imgui_Imgui.graphics.get_fontSize()) , Float) / 2;
 		khaEngine2D_imgui_Imgui.graphics.drawString(text,x,y);
 	}
-	if(inRect && khaEngine2D_imgui_Imgui.isMouseDown && !khaEngine2D_imgui_Imgui.isMousePressed) {
+	if(isInRect && khaEngine2D_imgui_Imgui.isMouseDown && !khaEngine2D_imgui_Imgui.isMousePressed) {
 		khaEngine2D_imgui_Imgui.pressedId = id;
 		khaEngine2D_imgui_Imgui.pressedThisFrame = true;
 		khaEngine2D_imgui_Imgui.isMousePressed = true;
+		if(isAToggle) {
+			var _this1 = khaEngine2D_imgui_Imgui.toggled;
+			if((__map_reserved[id] != null ? _this1.getReserved(id) : _this1.h[id]) == null) {
+				var _this2 = khaEngine2D_imgui_Imgui.toggled;
+				if(__map_reserved[id] != null) {
+					_this2.setReserved(id,id);
+				} else {
+					_this2.h[id] = id;
+				}
+			} else {
+				var tmp;
+				if(canUntoggle) {
+					var _this3 = khaEngine2D_imgui_Imgui.toggled;
+					tmp = (__map_reserved[id] != null ? _this3.getReserved(id) : _this3.h[id]) != null;
+				} else {
+					tmp = false;
+				}
+				if(tmp) {
+					khaEngine2D_imgui_Imgui.toggled.remove(id);
+				}
+			}
+			var _this4 = khaEngine2D_imgui_Imgui.toggled;
+			if((__map_reserved[id] != null ? _this4.getReserved(id) : _this4.h[id]) != null) {
+				var _this5 = khaEngine2D_imgui_Imgui.toggleGroups;
+				var toggledGroup = __map_reserved[toggledGroupId] != null ? _this5.getReserved(toggledGroupId) : _this5.h[toggledGroupId];
+				if(toggledGroup != null) {
+					var _g = 0;
+					while(_g < toggledGroup.length) {
+						var i = toggledGroup[_g];
+						++_g;
+						if(i != id) {
+							khaEngine2D_imgui_Imgui.setIsToggled(i,false);
+						}
+					}
+				}
+			}
+		}
 	}
 	khaEngine2D_imgui_Imgui.graphics.set_color(-1);
 };
 khaEngine2D_imgui_Imgui.rect = function(rect) {
+	rect = khaEngine2D_imgui_Imgui.continueLayout(rect);
 	khaEngine2D_imgui_Imgui.graphics.set_color(khaEngine2D_imgui_Imgui.theme.NORMAL_COLOR);
 	khaEngine2D_imgui_Imgui.graphics.fillRect(rect.x + khaEngine2D_imgui_Imgui.windowRect.x,rect.y + khaEngine2D_imgui_Imgui.windowRect.y,rect.z,rect.w);
 	khaEngine2D_imgui_Imgui.graphics.set_color(-1);
 };
-khaEngine2D_imgui_Imgui.setTheme = function(theme) {
+khaEngine2D_imgui_Imgui.setTheme = function(theme,toggledTheme) {
 	khaEngine2D_imgui_Imgui.theme = theme;
+	khaEngine2D_imgui_Imgui.toggledTheme = toggledTheme;
 };
 khaEngine2D_imgui_Imgui.addFont = function(key,font) {
 	var _this = khaEngine2D_imgui_Imgui.fonts;
@@ -21344,6 +21445,30 @@ khaEngine2D_imgui_Imgui.getPressedId = function() {
 		return khaEngine2D_imgui_Imgui.pressedId;
 	}
 	return "";
+};
+khaEngine2D_imgui_Imgui.addToggleGroup = function(key,ids) {
+	var _this = khaEngine2D_imgui_Imgui.toggleGroups;
+	if(__map_reserved[key] != null) {
+		_this.setReserved(key,ids);
+	} else {
+		_this.h[key] = ids;
+	}
+};
+khaEngine2D_imgui_Imgui.setIsToggled = function(key,state) {
+	if(state == false) {
+		khaEngine2D_imgui_Imgui.toggled.remove(key);
+	} else {
+		var _this = khaEngine2D_imgui_Imgui.toggled;
+		if(__map_reserved[key] != null) {
+			_this.setReserved(key,key);
+		} else {
+			_this.h[key] = key;
+		}
+	}
+};
+khaEngine2D_imgui_Imgui.getIsToggled = function(key) {
+	var _this = khaEngine2D_imgui_Imgui.toggled;
+	return (__map_reserved[key] != null ? _this.getReserved(key) : _this.h[key]) != null;
 };
 khaEngine2D_imgui_Imgui.getWorlRect = function(rect) {
 	return new kha_math_FastVector4(rect.x + khaEngine2D_imgui_Imgui.windowRect.x,rect.y + khaEngine2D_imgui_Imgui.windowRect.y,rect.z,rect.w);
@@ -21439,11 +21564,13 @@ if(ArrayBuffer.prototype.slice == null) {
 	ArrayBuffer.prototype.slice = js_html__$ArrayBuffer_ArrayBufferCompat.sliceImpl;
 }
 editor_Editor.normalTheme = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : -15065822, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
-editor_Editor.darkerTheme = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : -15723754, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
+editor_Editor.darkerTheme = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : -15723754, HOVER_COLOR : -15723754, PRESSED_COLOR : -15723754};
 editor_Editor.seperatorTheme = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : -12827055, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
 editor_Editor.borderTheme = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : -16777216, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
-editor_Editor.stopButton = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -2915196, TEXT_HOVER_COLOR : -3487289, TEXT_PRESSED_COLOR : -3487289, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
-editor_Editor.playButton = { TEXT_SIZE : 20, TEXT_NORMAL_COLOR : -7285884, TEXT_HOVER_COLOR : -3487289, TEXT_PRESSED_COLOR : -3487289, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
+editor_Editor.stopButton = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -2915196, TEXT_HOVER_COLOR : -2915196, TEXT_PRESSED_COLOR : -2915196, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
+editor_Editor.playButton = { TEXT_SIZE : 20, TEXT_NORMAL_COLOR : -7285884, TEXT_HOVER_COLOR : -7285884, TEXT_PRESSED_COLOR : -7285884, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
+editor_Editor.toolButton = { TEXT_SIZE : 18, TEXT_NORMAL_COLOR : -10325371, TEXT_HOVER_COLOR : -10325371, TEXT_PRESSED_COLOR : -10325371, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
+editor_Editor.toolButtonToggled = { TEXT_SIZE : 18, TEXT_NORMAL_COLOR : -2262473, TEXT_HOVER_COLOR : -2262473, TEXT_PRESSED_COLOR : -2262473, NORMAL_COLOR : 0, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
 haxe_Unserializer.DEFAULT_RESOLVER = new haxe__$Unserializer_DefaultResolver();
 haxe_Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -21675,7 +21802,6 @@ kha_netsync_SyncBuilder.nextId = 0;
 kha_netsync_SyncBuilder.objects = [];
 khaEngine2D_entities_EntityManager.worlds = new haxe_ds_StringMap();
 khaEngine2D_game_Scene.backgroundColor = -16777216;
-khaEngine2D_game_Scene.bounds = new kha_math_FastVector4(1000,0,2000,2000);
 khaEngine2D_graphics_Camera.bounds = new kha_math_FastVector4(0,0,0,0);
 khaEngine2D_graphics_Camera.view = new kha_math_FastVector4(0,0,0,0);
 khaEngine2D_graphics_Camera.position = new kha_math_FastVector2(0,0);
@@ -21684,11 +21810,17 @@ khaEngine2D_graphics_Camera.transformation = new kha_math_FastMatrix3(1,0,0,0,1,
 khaEngine2D_graphics_SpriteBatch.images = [];
 khaEngine2D_imgui_ImguiThemes.dark = { TEXT_SIZE : 16, TEXT_NORMAL_COLOR : -3487289, TEXT_HOVER_COLOR : -3487289, TEXT_PRESSED_COLOR : -3487289, NORMAL_COLOR : -15065822, HOVER_COLOR : -12895429, PRESSED_COLOR : -15000805};
 khaEngine2D_imgui_Imgui.theme = khaEngine2D_imgui_ImguiThemes.dark;
+khaEngine2D_imgui_Imgui.toggledTheme = khaEngine2D_imgui_ImguiThemes.dark;
 khaEngine2D_imgui_Imgui.fonts = new haxe_ds_StringMap();
 khaEngine2D_imgui_Imgui.mousePosition = new kha_math_FastVector2(-1,-1);
 khaEngine2D_imgui_Imgui.isMouseDown = false;
 khaEngine2D_imgui_Imgui.isMousePressed = false;
 khaEngine2D_imgui_Imgui.windowRect = new kha_math_FastVector4(0,0);
+khaEngine2D_imgui_Imgui.layoutPosition = new kha_math_FastVector2(0,0);
+khaEngine2D_imgui_Imgui.doLayout = false;
+khaEngine2D_imgui_Imgui.layoutType = 0;
+khaEngine2D_imgui_Imgui.toggleGroups = new haxe_ds_StringMap();
+khaEngine2D_imgui_Imgui.toggled = new haxe_ds_StringMap();
 khaEngine2D_input_Input.keyDowns = new haxe_ds_IntMap();
 khaEngine2D_input_Input.mousePosition = new kha_math_FastVector2(0,0);
 khaEngine2D_input_Input.isMouseDown = false;

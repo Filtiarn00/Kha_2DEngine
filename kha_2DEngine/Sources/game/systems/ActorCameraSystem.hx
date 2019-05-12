@@ -43,9 +43,6 @@ class ActorCameraSystem extends EntitySystem
         //Update position to target
         Camera.position.x += (positions[0].x - Camera.position.x) / 15;
         Camera.position.y += (positions[0].y - Camera.position.y) / 15;
-
-        //Set Camera bounds
-        Camera.bounds = new FastVector4(Scene.getBounds().x,Scene.getBounds().y,Scene.getBounds().z,Scene.getBounds().w);
     }
 
 	public override function render():Void 
