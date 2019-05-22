@@ -9,6 +9,8 @@ import khaEngine2D.graphics.Camera;
 class SpriteBatch
 {
 	private static var images:Array<Image> = new Array<Image>();
+
+	
 	private static var internalGraphics:Graphics;
 
 	public static function getGraphics(): Graphics

@@ -1,5 +1,7 @@
 package game;
 
+import kha.Image;
+import kha.Assets;
 import khaEngine2D.input.Input;
 //Core Kha
 import kha.Framebuffer;
@@ -9,11 +11,9 @@ import khaEngine2D.game.Game;
 import khaEngine2D.game.Scene;
 import khaEngine2D.entities.EntityManager;
 import khaEngine2D.graphics.SpriteBatch;
+import khaEngine2D.graphics.TileManager;
 
 //Game
-import game.components.ActorInputComponent;
-import game.components.ActorPlayerComponent;
-import game.components.Position2DComponent;
 import game.systems.ActorCameraSystem;
 import game.systems.ActorPlayerSystem;
 import game.systems.ActorMoverSystem;
@@ -21,17 +21,14 @@ import game.systems.ActorRenderSystem;
 
 class GameOne extends Game
 {
+	private var i:Image;
+
 	public function new()
 	{
 		super();
 
 		//Init our input
 		Input.Init();
-
-		var entity = EntityManager.createEntity();
-		EntityManager.addComponent(entity,new ActorInputComponent());
-		EntityManager.addComponent(entity,new ActorPlayerComponent());
-		EntityManager.addComponent(entity,new Position2DComponent());
 
 		//Add Systems
 		EntityManager.addSystem(new ActorPlayerSystem());
@@ -56,8 +53,17 @@ class GameOne extends Game
 	{
 		super.render(frames);
 
+		if (i == null)
+		{
+			i = Assets.images.Tileset_Test;
+
+			TileManager.createTileset('test',i, 16,16);
+			TileManager.createTileLayer('test','background');
+		}
+
 		SpriteBatch.begin(frames[0].g2);
 		Scene.render();
+		TileManager.render();
 		EntityManager.render();
 		SpriteBatch.end();
 	}

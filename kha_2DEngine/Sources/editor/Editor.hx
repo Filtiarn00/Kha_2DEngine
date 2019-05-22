@@ -8,15 +8,25 @@ import kha.Assets;
 import kha.math.FastVector4;
 import kha.Framebuffer;
 
-//Library
+//Engine
 import khaEngine2D.game.Game;
+import khaEngine2D.entities.EntityManager;
+import khaEngine2D.graphics.TileManager;
+import khaEngine2D.graphics.Camera;
+import khaEngine2D.input.Input;
 import khaEngine2D.imgui.Imgui;
 import khaEngine2D.imgui.ImguiThemes.TUITheme;
+
+//Game 
+import game.components.ActorInputComponent;
+import game.components.ActorPlayerComponent;
+import game.components.Position2DComponent;
 
 class Editor
 {
 	private var isPlaying:Bool;
 	private var windowSize:FastVector2 = new FastVector2();
+	private var mouseWorldPosition:FastVector2 = new FastVector2();
 
 	public function new()
 	{
@@ -33,7 +43,7 @@ class Editor
 		Imgui.addFont("roboto",Assets.fonts.roboto);
 
 		Imgui.setIsToggled('scene_button',true);
-		Imgui.addToggleGroup('workplaces',['scene_button','entities_button','ui_button']);
+		Imgui.setIsToggled('tile_button',true);
 		Imgui.addToggleGroup('scene_tools',['tile_button','entity_button']);
 	}
 
@@ -41,6 +51,7 @@ class Editor
 	{
 		windowSize.x = Window.get(0).width;
 		windowSize.y = Window.get(0).height;
+		mouseWorldPosition = Camera.getScreenToWorldSpace(Input.getMousePosition());
 
 		var graphics = frames[0].g2;
 
@@ -53,15 +64,8 @@ class Editor
 			Imgui.setTheme(normalTheme,normalTheme);
 			Imgui.beginWindow(new FastVector4(0,0,windowSize.x,25));
 			Imgui.setTheme(normalTheme,darkerTheme);
-
-			Imgui.beginLayout(0);
 			Imgui.button('scene_button',new FastVector4(0,0,75,25),'Scene',true,'workplaces',false);
-			Imgui.button('entities_button',new FastVector4(0,0,75,25),'Entity',true,'workplaces',false);
-			Imgui.button('ui_button',new FastVector4(0,0,75,25),'UI',true,'workplaces',false);
-			Imgui.endLayouy();
 			Imgui.endWindow();
-
-			//
 
 			//Tool Settings Bar
 			{
@@ -88,10 +92,22 @@ class Editor
 				Imgui.endWindow();
 			}
 
+			//Viewport
+			if (Imgui.getIsToggled('scene_button'))
+			{
+				//Viewport
+				Imgui.setTheme(viewPortTextTheme,viewPortTextTheme);
+				Imgui.beginWindow(new FastVector4(10,windowSize.y - 50,200,200));
+				Imgui.beginLayout(1);
+				Imgui.text(new FastVector4(0,0,200,16),'mouse: ' + mouseWorldPosition.x + ',' + mouseWorldPosition.y);
+				Imgui.endLayouy();
+				Imgui.endWindow();
+			}
+
 			//Properties
 			Imgui.setTheme(darkerTheme,darkerTheme);
 			Imgui.beginWindow(new FastVector4(windowSize.x - 300,0,300,(Std.int(windowSize.y / 1.5))));
-			Imgui.button('',new FastVector4(0,0,100,25),'Properties',true,'',false);
+			Imgui.text(new FastVector4(10,10,100,25),'Properties');
 			Imgui.setTheme(borderTheme,normalTheme);
 			Imgui.rect(new FastVector4(0,0,1,windowSize.y));
 			Imgui.endWindow();
@@ -99,7 +115,7 @@ class Editor
 			//Outline
 			Imgui.setTheme(darkerTheme,darkerTheme);
 			Imgui.beginWindow(new FastVector4(windowSize.x - 300,(Std.int(windowSize.y / 1.5)),300,(Std.int(windowSize.y / 2.5))));
-			Imgui.button('',new FastVector4(0,0,100,25),'Outline',true,'',false);
+			Imgui.text(new FastVector4(10,10,100,25),'Outline');
 			Imgui.setTheme(borderTheme,normalTheme);
 			Imgui.rect(new FastVector4(0,0,1,windowSize.y));
 			Imgui.rect(new FastVector4(0,0,windowSize.x,1));
@@ -131,8 +147,47 @@ class Editor
 			case 'play_button': isPlaying = !isPlaying;
 		}
 
+		//T
+		if (Input.getIsMousePressed() && !Imgui.getIsMouseDownInGUI() && !isPlaying)
+		{
+			//Entity Tool
+			if (Imgui.getIsToggled('scene_button') && Imgui.getIsToggled('entity_button'))
+			{
+				var entity = EntityManager.createEntity();
+
+				var p = new Position2DComponent();
+				p.x = mouseWorldPosition.x;
+				p.y = mouseWorldPosition.y;
+
+				EntityManager.addComponent(entity,new ActorInputComponent());
+				EntityManager.addComponent(entity,new ActorPlayerComponent());
+				EntityManager.addComponent(entity,p);
+				EntityManager.forceCheckForChanges();
+				
+				graphics.begin(false);
+				graphics.end();
+			}
+		}
+
+		//Tile
+		if (Input.getIsMouseDown() && !Imgui.getIsMouseDownInGUI() && Imgui.getIsToggled('scene_button') && Imgui.getIsToggled('tile_button'))
+		{
+			TileManager.addTile('background',mouseWorldPosition.x,mouseWorldPosition.y,0,0);
+		}
+
 		//Update game if we are playing
 		Game.get().doUpdate = isPlaying;
+	}
+
+	public static var viewPortTextTheme:TUITheme =
+	{
+		TEXT_SIZE:16,
+		TEXT_NORMAL_COLOR: 0xff909090,
+		TEXT_HOVER_COLOR: 0,
+		TEXT_PRESSED_COLOR: 0,
+		NORMAL_COLOR: 0,
+		HOVER_COLOR: 0,
+		PRESSED_COLOR: 0,
 	}
 	
 	public static var normalTheme: TUITheme = 

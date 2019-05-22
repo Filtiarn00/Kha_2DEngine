@@ -1,5 +1,6 @@
 package khaEngine2D.graphics;
 
+import kha.math.Vector2i;
 import kha.Color;
 import kha.System;
 import kha.graphics2.Graphics;
@@ -43,11 +44,11 @@ class Camera
 		graphics.translate(-position.x + view.x,-position.y + view.y);
 	}
 		
-	public static function getScreenToWorldSpace(x:Float, y:Float): FastVector2
+	public static function getScreenToWorldSpace(inPosition:FastVector2): FastVector2
 	{
-		x +=  position.x - view.z / 2;
-        y +=  position.y - view.w / 2;
-		return new FastVector2(x,y);
+		var newPositionX = Std.int(position.x + inPosition.x - view.x);
+		var newPositionY = Std.int(position.y + inPosition.y - view.y);
+		return new FastVector2(newPositionX,newPositionY);
 	}
 
 	public static function getViewWidth():Float 

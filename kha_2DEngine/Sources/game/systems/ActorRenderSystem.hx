@@ -1,8 +1,6 @@
 package game.systems;
 
 import kha.Image;
-import kha.Color;
-import kha.graphics2.Graphics;
 import kha.Assets;
 
 import khaEngine2D.graphics.SpriteBatch;

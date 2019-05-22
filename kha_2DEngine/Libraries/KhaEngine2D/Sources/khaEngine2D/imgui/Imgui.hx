@@ -25,6 +25,7 @@ class Imgui
     //Input
     private static var mousePosition:FastVector2 = new FastVector2(-1,-1);
     private static var isMouseDown:Bool = false;
+    private static var isMouseDownInGUI = false;
     private static var isMousePressed:Bool = false;
 
     //Window
@@ -55,13 +56,19 @@ class Imgui
         graphics.end();
     }
 
-    public static function beginWindow(rect:FastVector4):Void
+    public static function beginWindow(rect:FastVector4,?renderWindow:Bool):Void
     {
         graphics.scissor(cast(rect.x,Int),cast(rect.y,Int),cast(rect.z,Int),cast(rect.w,Int));
+
+        var isInRect = isMouseInRect(getWorlRect(rect));
         graphics.color = theme.NORMAL_COLOR;
         graphics.fillRect(rect.x,rect.y,rect.z,rect.w);
-        graphics.color = Color.White;
         windowRect = rect;
+
+        if (isInRect && isMouseDown)
+            isMouseDownInGUI = true;
+
+        graphics.color = Color.White;
     }
 
     public static function endWindow():Void
@@ -121,6 +128,9 @@ class Imgui
             graphics.drawString(text,x,y);
         }
 
+        if (isInRect && isMouseDown)
+            isMouseDownInGUI = true;
+
         if (isInRect && isMouseDown && !isMousePressed)
         {
             pressedId = id;
@@ -149,13 +159,35 @@ class Imgui
         graphics.color = Color.White;
     }
 
+    public static function text(rect:FastVector4,text:String):Void
+    {
+         rect = continueLayout(rect);
+
+        if (currentFont != null)
+        {
+            graphics.color = theme.TEXT_NORMAL_COLOR;
+            graphics.fontSize = theme.TEXT_SIZE;
+
+            var x  = windowRect.x + rect.x;
+            var y = windowRect.y + rect.y;
+            
+            graphics.drawString(text,x,y);
+        }
+
+        graphics.color = Color.White;
+    }
+
     public static function rect(rect:FastVector4):Void
     {   
         rect = continueLayout(rect);
+        var isInRect = isMouseInRect(getWorlRect(rect));
 
         graphics.color = theme.NORMAL_COLOR;
         graphics.fillRect(rect.x + windowRect.x,rect.y + windowRect.y,rect.z,rect.w);
         graphics.color = Color.White;
+
+        if (isInRect && isMouseDown)
+            isMouseDownInGUI = true;
     }
 
     public static function setTheme(theme:TUITheme,toggledTheme:TUITheme):Void
@@ -199,6 +231,15 @@ class Imgui
         toggleGroups.set(key,ids);
     }
 
+    public static function addToToggleGroup(groupId:String,elementId:String) 
+    {
+        if (toggleGroups.get(groupId) == null)
+            toggleGroups.set(groupId,new Array());
+
+        if (toggleGroups.get(groupId).indexOf(elementId) == - 1)
+            toggleGroups.get(groupId).push(elementId);
+    }
+
     public static function setIsToggled(key:String, state:Bool) 
     {
         if (state == false)
@@ -216,6 +257,11 @@ class Imgui
         return new FastVector4(rect.x + windowRect.x,rect.y + windowRect.y, rect.z, rect.w);
     }
 
+    public static function getIsMouseDownInGUI():Bool
+    {
+        return isMouseDownInGUI;
+    }
+
     private static function onMouseDown(x:Int, y:Int, cx:Int):Void 
     {
         isMouseDown = true;	
@@ -224,6 +270,7 @@ class Imgui
     private static function onMouseUp(x:Int, y:Int, cx:Int):Void 
     {
         isMouseDown = false;	
+        isMouseDownInGUI = false;
         isMousePressed = false;
         pressedThisFrame = false;
 	}
