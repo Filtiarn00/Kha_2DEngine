@@ -43,6 +43,6 @@ class ActorRenderSystem extends EntitySystem
         }
         
         for (i in positions)
-            SpriteBatch.DrawSpriteSheet(image,i.x,i.y,0.5,0.5,0,0,48,48);
+            SpriteBatch.drawSpriteSheet(image,i.x,i.y,0.5,0.5,0,0,48,48);
     }
 }

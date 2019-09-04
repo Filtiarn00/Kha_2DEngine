@@ -215,6 +215,7 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	}
 };
 var editor_Editor = function() {
+	this.editorTools = [];
 	this.mouseWorldPosition = new kha_math_FastVector2();
 	this.windowSize = new kha_math_FastVector2();
 	var _gthis = this;
@@ -225,6 +226,8 @@ var editor_Editor = function() {
 	});
 	kha_Assets.loadEverything($bind(this,this.load));
 	khaEngine2D_game_Game.get().doUpdate = false;
+	this.editorTools.push(new editor_tools_TileSceneEditorTool());
+	this.editorTools.push(new editor_tools_EntitySceneEditorTool());
 };
 $hxClasses["editor.Editor"] = editor_Editor;
 editor_Editor.__name__ = "editor.Editor";
@@ -232,6 +235,7 @@ editor_Editor.prototype = {
 	isPlaying: null
 	,windowSize: null
 	,mouseWorldPosition: null
+	,editorTools: null
 	,load: function() {
 		khaEngine2D_imgui_Imgui.addFont("roboto",kha_Assets.fonts.roboto);
 		khaEngine2D_imgui_Imgui.setIsToggled("scene_button",true);
@@ -243,6 +247,15 @@ editor_Editor.prototype = {
 		this.windowSize.y = kha_Window.get(0).get_height();
 		this.mouseWorldPosition = khaEngine2D_graphics_Camera.getScreenToWorldSpace(khaEngine2D_input_Input.getMousePosition());
 		var graphics = frames[0].get_g2();
+		if(!this.isPlaying) {
+			var _g = 0;
+			var _g1 = this.editorTools;
+			while(_g < _g1.length) {
+				var i = _g1[_g];
+				++_g;
+				i.checkViewportRender(graphics);
+			}
+		}
 		khaEngine2D_imgui_Imgui.begin(graphics,false);
 		if(!this.isPlaying) {
 			khaEngine2D_imgui_Imgui.setTheme(editor_Editor.normalTheme,editor_Editor.normalTheme);
@@ -301,27 +314,78 @@ editor_Editor.prototype = {
 		if(khaEngine2D_imgui_Imgui.getPressedId() == "play_button") {
 			this.isPlaying = !this.isPlaying;
 		}
-		if(khaEngine2D_input_Input.getIsMousePressed() && !khaEngine2D_imgui_Imgui.getIsMouseDownInGUI() && !this.isPlaying) {
-			if(khaEngine2D_imgui_Imgui.getIsToggled("scene_button") && khaEngine2D_imgui_Imgui.getIsToggled("entity_button")) {
-				var entity = khaEngine2D_entities_EntityManager.createEntity();
-				var p = new game_components_Position2DComponent();
-				p.x = this.mouseWorldPosition.x;
-				p.y = this.mouseWorldPosition.y;
-				khaEngine2D_entities_EntityManager.addComponent(entity,new game_components_ActorInputComponent());
-				khaEngine2D_entities_EntityManager.addComponent(entity,new game_components_ActorPlayerComponent());
-				khaEngine2D_entities_EntityManager.addComponent(entity,p);
-				khaEngine2D_entities_EntityManager.forceCheckForChanges();
-				graphics.begin(false);
-				graphics.end();
+		if(!this.isPlaying) {
+			var _g11 = 0;
+			var _g2 = this.editorTools;
+			while(_g11 < _g2.length) {
+				var i1 = _g2[_g11];
+				++_g11;
+				i1.checkEditorRender(graphics);
 			}
-		}
-		if(khaEngine2D_input_Input.getIsMouseDown() && !khaEngine2D_imgui_Imgui.getIsMouseDownInGUI() && khaEngine2D_imgui_Imgui.getIsToggled("scene_button") && khaEngine2D_imgui_Imgui.getIsToggled("tile_button")) {
-			khaEngine2D_graphics_TileManager.addTile("background",this.mouseWorldPosition.x,this.mouseWorldPosition.y,0,0);
 		}
 		khaEngine2D_game_Game.get().doUpdate = this.isPlaying;
 	}
 	,__class__: editor_Editor
 };
+var editor_tools_EditorTool = function() {
+};
+$hxClasses["editor.tools.EditorTool"] = editor_tools_EditorTool;
+editor_tools_EditorTool.__name__ = "editor.tools.EditorTool";
+editor_tools_EditorTool.prototype = {
+	workspaceButtonId: null
+	,toolButtonId: null
+	,checkViewportRender: function(graphics) {
+		if(khaEngine2D_imgui_Imgui.getIsToggled(this.workspaceButtonId) && khaEngine2D_imgui_Imgui.getIsToggled(this.toolButtonId)) {
+			this.viewportRenderer(graphics);
+		}
+	}
+	,checkEditorRender: function(graphics) {
+		if(khaEngine2D_imgui_Imgui.getIsToggled(this.workspaceButtonId) && khaEngine2D_imgui_Imgui.getIsToggled(this.toolButtonId)) {
+			this.editorRenderer(graphics);
+		}
+	}
+	,viewportRenderer: function(graphics) {
+	}
+	,editorRenderer: function(graphics) {
+	}
+	,__class__: editor_tools_EditorTool
+};
+var editor_tools_EntitySceneEditorTool = function() {
+	editor_tools_EditorTool.call(this);
+};
+$hxClasses["editor.tools.EntitySceneEditorTool"] = editor_tools_EntitySceneEditorTool;
+editor_tools_EntitySceneEditorTool.__name__ = "editor.tools.EntitySceneEditorTool";
+editor_tools_EntitySceneEditorTool.__super__ = editor_tools_EditorTool;
+editor_tools_EntitySceneEditorTool.prototype = $extend(editor_tools_EditorTool.prototype,{
+	viewportRenderer: function(graphics) {
+	}
+	,editorRenderer: function(graphics) {
+	}
+	,__class__: editor_tools_EntitySceneEditorTool
+});
+var editor_tools_TileSceneEditorTool = function() {
+	editor_tools_EditorTool.call(this);
+	this.workspaceButtonId = "scene_button";
+	this.toolButtonId = "tile_button";
+};
+$hxClasses["editor.tools.TileSceneEditorTool"] = editor_tools_TileSceneEditorTool;
+editor_tools_TileSceneEditorTool.__name__ = "editor.tools.TileSceneEditorTool";
+editor_tools_TileSceneEditorTool.__super__ = editor_tools_EditorTool;
+editor_tools_TileSceneEditorTool.prototype = $extend(editor_tools_EditorTool.prototype,{
+	viewportRenderer: function(graphics) {
+		var mouseWorldPosition = khaEngine2D_graphics_Camera.getScreenToWorldSpace(khaEngine2D_input_Input.getMousePosition());
+		khaEngine2D_graphics_SpriteBatch.begin(false,graphics);
+		khaEngine2D_graphics_TileManager.renderPreviewTile("test",mouseWorldPosition.x,mouseWorldPosition.y,0,0,16,16);
+		khaEngine2D_graphics_SpriteBatch.end();
+	}
+	,editorRenderer: function(graphics) {
+		var mouseWorldPosition = khaEngine2D_graphics_Camera.getScreenToWorldSpace(khaEngine2D_input_Input.getMousePosition());
+		if(khaEngine2D_input_Input.getIsMouseDown() && !khaEngine2D_imgui_Imgui.getIsMouseDownInGUI()) {
+			khaEngine2D_graphics_TileManager.addTile("background",mouseWorldPosition.x,mouseWorldPosition.y,0,0);
+		}
+	}
+	,__class__: editor_tools_TileSceneEditorTool
+});
 var khaEngine2D_game_Game = function() {
 	this.doUpdate = true;
 	var _gthis = this;
@@ -375,7 +439,7 @@ game_GameOne.prototype = $extend(khaEngine2D_game_Game.prototype,{
 			khaEngine2D_graphics_TileManager.createTileset("test",this.i,16,16);
 			khaEngine2D_graphics_TileManager.createTileLayer("test","background");
 		}
-		khaEngine2D_graphics_SpriteBatch.begin(frames[0].get_g2());
+		khaEngine2D_graphics_SpriteBatch.begin(true,frames[0].get_g2());
 		khaEngine2D_game_Scene.render();
 		khaEngine2D_graphics_TileManager.render();
 		khaEngine2D_entities_EntityManager.render();
@@ -608,7 +672,7 @@ game_systems_ActorRenderSystem.prototype = $extend(khaEngine2D_entities_EntitySy
 		while(_g < _g1.length) {
 			var i = _g1[_g];
 			++_g;
-			khaEngine2D_graphics_SpriteBatch.DrawSpriteSheet(this.image,i.x,i.y,0.5,0.5,0,0,48,48);
+			khaEngine2D_graphics_SpriteBatch.drawSpriteSheet(this.image,i.x,i.y,0.5,0.5,0,0,48,48);
 		}
 	}
 	,__class__: game_systems_ActorRenderSystem
@@ -21362,19 +21426,19 @@ khaEngine2D_graphics_SpriteBatch.__name__ = "khaEngine2D.graphics.SpriteBatch";
 khaEngine2D_graphics_SpriteBatch.getGraphics = function() {
 	return khaEngine2D_graphics_SpriteBatch.internalGraphics;
 };
-khaEngine2D_graphics_SpriteBatch.begin = function(graphics) {
+khaEngine2D_graphics_SpriteBatch.begin = function(clear,graphics) {
 	khaEngine2D_graphics_SpriteBatch.internalGraphics = graphics;
 	khaEngine2D_graphics_SpriteBatch.internalGraphics.set_color(-1);
-	khaEngine2D_graphics_SpriteBatch.internalGraphics.begin(null,khaEngine2D_graphics_Camera.clearColor);
+	khaEngine2D_graphics_SpriteBatch.internalGraphics.begin(clear,khaEngine2D_graphics_Camera.clearColor);
 	khaEngine2D_graphics_Camera.set(graphics);
 	khaEngine2D_graphics_SpriteBatch.internalGraphics.scissor(0,0,kha_Window.get(0).get_width(),kha_Window.get(0).get_height());
 };
-khaEngine2D_graphics_SpriteBatch.DrawSprite = function(image,worldPosX,worldPosY,originX,originY) {
+khaEngine2D_graphics_SpriteBatch.drawSprite = function(image,worldPosX,worldPosY,originX,originY) {
 	if(image != null && khaEngine2D_graphics_Camera.isInView(worldPosX,worldPosY)) {
 		khaEngine2D_graphics_SpriteBatch.internalGraphics.drawImage(image,worldPosX - image.get_width() * originX,worldPosY - image.get_height() * originY);
 	}
 };
-khaEngine2D_graphics_SpriteBatch.DrawSpriteSheet = function(image,worldPosX,worldPosY,originX,originY,imageX,imageY,imageWidth,imageHeight) {
+khaEngine2D_graphics_SpriteBatch.drawSpriteSheet = function(image,worldPosX,worldPosY,originX,originY,imageX,imageY,imageWidth,imageHeight) {
 	if(image != null && khaEngine2D_graphics_Camera.isInView(worldPosX,worldPosY)) {
 		khaEngine2D_graphics_SpriteBatch.internalGraphics.drawSubImage(image,worldPosX - imageWidth * originX,worldPosY - imageWidth * originY,imageX,imageY,imageWidth,imageHeight);
 	}
@@ -21427,6 +21491,15 @@ khaEngine2D_graphics_TileManager.addTile = function(tileLayerKey,positionX,posit
 		}
 	}
 };
+khaEngine2D_graphics_TileManager.renderPreviewTile = function(tilesetKey,positionX,positionY,imageX,imageY,imageWidth,imageHeight) {
+	var _this = khaEngine2D_graphics_TileManager.tilesets;
+	var tileset = __map_reserved[tilesetKey] != null ? _this.getReserved(tilesetKey) : _this.h[tilesetKey];
+	if(tileset != null && tileset.image != null) {
+		positionX -= positionX % tileset.tileWidth;
+		positionY -= positionY % tileset.tileHeight;
+		khaEngine2D_graphics_SpriteBatch.drawSpriteSheet(tileset.image,positionX,positionY,0,0,imageX,imageY,imageX + imageWidth,imageY + imageHeight);
+	}
+};
 khaEngine2D_graphics_TileManager.render = function() {
 	var _this = khaEngine2D_graphics_TileManager.tileLayers;
 	var i = new haxe_ds__$StringMap_StringMapIterator(_this,_this.arrayKeys());
@@ -21439,7 +21512,7 @@ khaEngine2D_graphics_TileManager.render = function() {
 			var j = i1.tiles.iterator();
 			while(j.hasNext()) {
 				var j1 = j.next();
-				khaEngine2D_graphics_SpriteBatch.DrawSpriteSheet(tileset.image,i1.xWorldPosition + j1.positionX,i1.yWorldPosition + j1.positionY,0,0,j1.imageX,j1.imageY,j1.imageX + tileset.tileWidth,j1.imageY + tileset.tileHeight);
+				khaEngine2D_graphics_SpriteBatch.drawSpriteSheet(tileset.image,i1.xWorldPosition + j1.positionX,i1.yWorldPosition + j1.positionY,0,0,j1.imageX,j1.imageY,j1.imageX + tileset.tileWidth,j1.imageY + tileset.tileHeight);
 			}
 		}
 	}

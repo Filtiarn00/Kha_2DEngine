@@ -10,23 +10,23 @@ import kha.Framebuffer;
 
 //Engine
 import khaEngine2D.game.Game;
-import khaEngine2D.entities.EntityManager;
-import khaEngine2D.graphics.TileManager;
 import khaEngine2D.graphics.Camera;
 import khaEngine2D.input.Input;
 import khaEngine2D.imgui.Imgui;
 import khaEngine2D.imgui.ImguiThemes.TUITheme;
 
-//Game 
-import game.components.ActorInputComponent;
-import game.components.ActorPlayerComponent;
-import game.components.Position2DComponent;
+//Editor
+import editor.tools.EditorTool;
+import editor.tools.TileSceneEditorTool;
+import editor.tools.EntitySceneEditorTool;
 
 class Editor
 {
 	private var isPlaying:Bool;
 	private var windowSize:FastVector2 = new FastVector2();
 	private var mouseWorldPosition:FastVector2 = new FastVector2();
+
+	private var editorTools:Array<EditorTool> = new Array<EditorTool>();
 
 	public function new()
 	{
@@ -36,6 +36,9 @@ class Editor
 		System.notifyOnFrames(function (frames) {render(frames); });
 		Assets.loadEverything(load);
 		Game.get().doUpdate = false;
+
+		editorTools.push(new TileSceneEditorTool());
+		editorTools.push(new EntitySceneEditorTool());
 	}
 
 	public function load():Void
@@ -54,6 +57,10 @@ class Editor
 		mouseWorldPosition = Camera.getScreenToWorldSpace(Input.getMousePosition());
 
 		var graphics = frames[0].g2;
+
+		if (!isPlaying)
+			for (i in editorTools)
+				i.checkViewportRender(graphics);
 
 		Imgui.begin(graphics,false);
 
@@ -147,33 +154,10 @@ class Editor
 			case 'play_button': isPlaying = !isPlaying;
 		}
 
-		//T
-		if (Input.getIsMousePressed() && !Imgui.getIsMouseDownInGUI() && !isPlaying)
-		{
-			//Entity Tool
-			if (Imgui.getIsToggled('scene_button') && Imgui.getIsToggled('entity_button'))
-			{
-				var entity = EntityManager.createEntity();
+		if (!isPlaying)
+			for (i in editorTools)
+				i.checkEditorRender(graphics);
 
-				var p = new Position2DComponent();
-				p.x = mouseWorldPosition.x;
-				p.y = mouseWorldPosition.y;
-
-				EntityManager.addComponent(entity,new ActorInputComponent());
-				EntityManager.addComponent(entity,new ActorPlayerComponent());
-				EntityManager.addComponent(entity,p);
-				EntityManager.forceCheckForChanges();
-				
-				graphics.begin(false);
-				graphics.end();
-			}
-		}
-
-		//Tile
-		if (Input.getIsMouseDown() && !Imgui.getIsMouseDownInGUI() && Imgui.getIsToggled('scene_button') && Imgui.getIsToggled('tile_button'))
-		{
-			TileManager.addTile('background',mouseWorldPosition.x,mouseWorldPosition.y,0,0);
-		}
 
 		//Update game if we are playing
 		Game.get().doUpdate = isPlaying;

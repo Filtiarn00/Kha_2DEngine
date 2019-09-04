@@ -18,24 +18,24 @@ class SpriteBatch
 		return internalGraphics;
 	}
 
-	public static function begin(graphics:Graphics):Void
+	public static function begin(clear:Bool,graphics:Graphics):Void
 	{
 		internalGraphics = graphics;
 		
 		internalGraphics.color = Color.White;
-		internalGraphics.begin(Camera.clearColor);
+		internalGraphics.begin(clear,Camera.clearColor);
 		Camera.set(graphics);
 
 		internalGraphics.scissor(0,0,Window.get(0).width,Window.get(0).height);
 	}
 
-	public static function DrawSprite(image:Image, worldPosX:Float, worldPosY:Float, originX:Float, originY:Float):Void
+	public static function drawSprite(image:Image, worldPosX:Float, worldPosY:Float, originX:Float, originY:Float):Void
 	{
 		if (image != null && Camera.isInView(worldPosX,worldPosY))
 			internalGraphics.drawImage(image,worldPosX - image.width * originX,worldPosY - image.height * originY);
 	}
 
-	public static function DrawSpriteSheet(image:Image, worldPosX:Float, worldPosY:Float, originX:Float, originY:Float, imageX:Float, imageY:Float, imageWidth:Float, imageHeight:Float):Void
+	public static function drawSpriteSheet(image:Image, worldPosX:Float, worldPosY:Float, originX:Float, originY:Float, imageX:Float, imageY:Float, imageWidth:Float, imageHeight:Float):Void
 	{
 		if (image != null && Camera.isInView(worldPosX,worldPosY))
 			internalGraphics.drawSubImage(image,worldPosX - imageWidth * originX,worldPosY - imageWidth * originY,imageX,imageY,imageWidth,imageHeight);

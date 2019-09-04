@@ -3,6 +3,7 @@ package game;
 import kha.Image;
 import kha.Assets;
 import khaEngine2D.input.Input;
+
 //Core Kha
 import kha.Framebuffer;
 
@@ -61,7 +62,7 @@ class GameOne extends Game
 			TileManager.createTileLayer('test','background');
 		}
 
-		SpriteBatch.begin(frames[0].g2);
+		SpriteBatch.begin(true,frames[0].g2);
 		Scene.render();
 		TileManager.render();
 		EntityManager.render();

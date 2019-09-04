@@ -46,6 +46,18 @@ class TileManager
             }
         }
     }
+    
+    public static function renderPreviewTile(tilesetKey:String,positionX:Float, positionY:Float,imageX:Float, imageY:Float,imageWidth:Float, imageHeight:Float) 
+    {
+        var tileset = tilesets[tilesetKey];
+
+        if (tileset != null && tileset.image != null)
+        {
+            positionX = positionX - positionX % tileset.tileWidth;
+            positionY = positionY - positionY % tileset.tileHeight;
+            SpriteBatch.drawSpriteSheet(tileset.image,positionX,positionY,0,0,imageX,imageY,imageX + imageWidth, imageY + imageHeight);
+        }
+    }
 
     public static function render() 
     {
@@ -55,7 +67,7 @@ class TileManager
 
             if (tileset != null && tileset.image != null)
                 for (j in i.tiles)
-                    SpriteBatch.DrawSpriteSheet(tileset.image,i.xWorldPosition + j.positionX,i.yWorldPosition + j.positionY,0,0,j.imageX,j.imageY,j.imageX + tileset.tileWidth,j.imageY + tileset.tileHeight);
+                    SpriteBatch.drawSpriteSheet(tileset.image,i.xWorldPosition + j.positionX,i.yWorldPosition + j.positionY,0,0,j.imageX,j.imageY,j.imageX + tileset.tileWidth,j.imageY + tileset.tileHeight);
         }
     }
 }
